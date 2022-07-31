@@ -15,12 +15,11 @@ const stylesHandler = isProduction
 const config = {
   entry: "./src/index.tsx",
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "docs"),
   },
   devServer: {
     // contentBase: './app',
     host: "localhost",
-    // disableHostCheck: true,   // To run on replit
     open: true,
     hot: true,
     // proxy: {
