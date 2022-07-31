@@ -8,10 +8,10 @@ class Card extends Component {
                 className={cardClasses}
                 onClick={() => this.props.openDetails(this.props.id)}
             >
-                { ( this.props.color || this.props.image ) ? <div className="card-hero" style={{
-                    backgroundColor: this.props.color,
+                <div className="card-hero" style={{
+                    backgroundColor: this.props.color || "#999999",
                     // backgroundImage: this.props.image 
-                }}></div> : null }
+                }}></div>
                 <span className="card-title">{this.props.title}</span>
             </div>
         )

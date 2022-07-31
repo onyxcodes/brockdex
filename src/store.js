@@ -1,8 +1,9 @@
+import pokeapi from './features/pokeapi';
 import { configureStore } from '@reduxjs/toolkit';
 
 export const store = configureStore({
   reducer: {
-    // counter: counterReducer,
+    pokeapi: pokeapi,
     // // feeds: feedsearch,
     // feeds: search,
     // auth: firebaseauth

@@ -18,22 +18,9 @@ const config = {
     path: path.resolve(__dirname, "docs"),
   },
   devServer: {
-    // contentBase: './app',
     host: "localhost",
     open: true,
     hot: true,
-    // proxy: {
-    //   "/search/feeds": {
-    //     changeOrigin: true,
-    //     cookieDomainRewrite: "localhost",
-    //     target: "https://cloud.feedly.com/v3/",
-    //     onProxyReq: (proxyReq) => {
-    //       if (proxyReq.getHeader("origin")) {
-    //         proxyReq.setHeader("origin", api);
-    //       }
-    //     },
-    //   },
-    // },
   },
   plugins: [
     new HtmlWebpackPlugin({

@@ -6,54 +6,6 @@ import Loader from "../components/Loader";
 import ListView from "../views/ListView";
 import Modal from "../views/Modal";
 
-const exampleData = {
-    entries: [
-        {
-            id: 1,
-            name: "Bulbasaur",
-            color: "#999999",
-            image: "src/assets/images/bb_green.png"
-        },
-        {
-            id: 2,
-            name: "Empoleon",
-            color: "#999999",
-            image: "../assets/images/empoleon_blue.png"
-        },
-        {
-            id: 3,
-            name: "Geodude",
-            color: "#999999",
-            image: "../assets/images/geodude_gray.png"
-        },
-        {
-            id: 4,
-            name: "Mr. mime",
-            color: "#999999",
-            image: "../assets/images/mr_mime_rose.png"
-        },
-        {
-            id: 5,
-            name: "Torchic",
-            color: "#999999",
-            image: "../assets/images/torchic_orange.png"
-        },
-        {
-            id: 6,
-            name: "Togepi",
-            color: "#999999",
-            image: "../assets/images/togepi_yellow.png"
-        },
-        {
-            id: 7,
-            name: "Magneton",
-            color: "#999999",
-            image: "../assets/images/magneton_gray.png"
-        },
-
-    ]
-}
-
 class App extends Component {
     constructor(props) {
         super(props);
@@ -69,6 +21,7 @@ class App extends Component {
     }
 
     openDetails( element ) {
+        console.log("REached app trigger modal", element)
         this.setState({
             showModal: true,
             focusedElement: element
@@ -122,7 +75,6 @@ class App extends Component {
                     paginated={false}
                     size="medium"
                     openDetails={(el) => this.openDetails(el)}
-                    data={exampleData} 
                 />
                 <Modal
                     visible={this.state.showModal}
