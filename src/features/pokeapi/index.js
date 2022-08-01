@@ -17,10 +17,7 @@ export const listPokemon = (count, limit) => dispatch => {
     })
 }
 
-const initialState = {value: 'Washington Post'};
-// const initialState = {value: 'Washington Post'};
-
-export default function reducer(state = initialState, action) {
+export default function reducer(state = null, action) {
   switch(action.type) {
     case "LIST": {
         return action.payload || null;

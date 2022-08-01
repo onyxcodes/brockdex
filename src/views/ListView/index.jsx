@@ -1,8 +1,10 @@
 import React, { Component } from "react";
-import Card from "../../components/Card";
 import { connect } from "react-redux";
 import {bindActionCreators} from 'redux';
 import { listPokemon } from "../../features/pokeapi";
+
+import Loader from "../../components/Loader";
+import Card from "../../components/Card";
 
 // TODO: component that accept different size configurations
 // and displays a card for each data.entries passed to this
@@ -10,7 +12,8 @@ import { listPokemon } from "../../features/pokeapi";
 class ListView extends Component {
     constructor(props) {
         super(props);
-        this.state = { 
+        this.state = {
+            isLoading: false,
             page: props.paginated ? props.data.page : null
         }
     }
@@ -20,9 +23,10 @@ class ListView extends Component {
     }
 
     render() {
-        const { pokeapi, openDetails } = this.props;
+        const { pokeapi, openDetails, isLoading } = this.props;
         return(
             <div className="listView">
+                <Loader show={isLoading} />
                 {pokeapi?.results?.map( (i, index) => {
                     return <Card key={i.name}
                         openDetails={() => openDetails(i)}
@@ -36,15 +40,18 @@ class ListView extends Component {
 }
 
 function mapStateToProps({pokeapi}) {
-    console.log("mapping props from redux", pokeapi)
-        if (pokeapi && pokeapi?.count) {
-        return { pokeapi }
+    console.log("mapping props from redux", pokeapi);
+    let isLoading = true;
+    if (pokeapi && pokeapi?.count) {
+        isLoading = false; 
+        return { pokeapi, isLoading }
     }
-    return { pokeapi: [] }
+
+    return { pokeapi: [], isLoading}
 }
 
 function mapDispatchToProps(dispatch) {
-return bindActionCreators({listPokemon}, dispatch);
+    return bindActionCreators({listPokemon}, dispatch);
 }
   
 export default connect(mapStateToProps, mapDispatchToProps)(ListView);
