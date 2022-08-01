@@ -1,5 +1,7 @@
 import React, { Component } from "react"
 
+
+// TODO: add padding beetween items
 class ActionBar extends Component {
 
     render() {
@@ -8,17 +10,17 @@ class ActionBar extends Component {
             <div className={barClasses}>
                 <div className="actionbar-left">
                     {this.props.items?.map((i, index) => {
-                        if (i.position == "left") return (<React.Fragment key={index}>{i?.item}</React.Fragment>)
+                        if (i.position == "left" && i.item) return (<div key={index} className="actionbar-item">{i?.item}</div>)
                     })}
                 </div>
                 <div className="actionbar-center">
                     {this.props.items?.map((i, index) => {
-                        if (i.position == "center") return (<React.Fragment key={index}>{i?.item}</React.Fragment>)
+                        if (i.position == "center" && i.item) return (<div key={index} className="actionbar-item">{i?.item}</div>)
                     })}
                 </div>
                 <div className="actionbar-right">
                     {this.props.items?.map((i, index) => {
-                        if (i.position == "right") return (<React.Fragment key={index}>{i?.item}</React.Fragment>)
+                        if (i.position == "right" && i.item) return (<div key={index} className="actionbar-item">{i.item}</div>)
                     })}
                 </div>
             </div>

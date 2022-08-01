@@ -1,11 +1,10 @@
-import pokeapi from './features/pokeapi';
+import list from './features/pokeapi/list';
+import pokemon from './features/pokeapi/pokemon';
 import { configureStore } from '@reduxjs/toolkit';
 
 export const store = configureStore({
   reducer: {
-    pokeapi: pokeapi,
-    // // feeds: feedsearch,
-    // feeds: search,
-    // auth: firebaseauth
+    list: list,
+    pokemon: pokemon
   },
 });

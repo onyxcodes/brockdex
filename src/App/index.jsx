@@ -21,7 +21,6 @@ class App extends Component {
     }
 
     openDetails( element ) {
-        console.log("REached app trigger modal", element)
         this.setState({
             showModal: true,
             focusedElement: element
@@ -76,13 +75,14 @@ class App extends Component {
                     size="medium"
                     openDetails={(el) => this.openDetails(el)}
                 />
-                <Modal
+                { this.state.showModal ? <Modal
                     visible={this.state.showModal}
                     closeModal={() => this.closeModal()}
+                    changeContent={(element) => this.openDetails(element)}
                     addToFavorites={(elId) => this.addToFavorites(elId)}
-                    content={this.state.focusedElement}
+                    data={this.state.focusedElement}
                     size="medium"
-                />
+                /> : null }
             </div>
         )
     }
