@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export default ( offset = 0, limit = 20 ) => {
+export default ( offset, limit ) => {
     return new Promise ( (resolve, reject) => {
         axios({
             "method": "GET",
