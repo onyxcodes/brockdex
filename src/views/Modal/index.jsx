@@ -57,7 +57,10 @@ class Modal extends Component {
     }
 
     render() {
-        const { size, visible, data, loading, pokemon, addToFavorites, closeModal } = this.props;
+        const { 
+            size, visible, closeModal, data, loading, pokemon, 
+            favorites, addToFavorites, removeFromFavorites
+        } = this.props;
         var modalClasses = size ? "modal".concat(" "+size) : "modal";
         var modalFgClasses  = visible ? "modal-fg".concat(" "+"visible") : "modal-fg";
         return(
@@ -66,8 +69,10 @@ class Modal extends Component {
                     <ActionBar position="top"
                         items={[
                             { item: <span>{data?.current}</span>, position: "center" },
-                            { item: <button onClick={() => addToFavorites(data?.current)}>Add to favorites</button>, position: "right"},
-                            { item: <button onClick={() => closeModal()}>Close</button>, position: "right"}
+                            { item: !favorites.includes(data?.current) ? 
+                                <button onClick={() => addToFavorites(data?.current)}>⭐ Add</button> :
+                                <button onClick={() => removeFromFavorites(data?.current)}>⭐ Remove</button>, position: "right"},
+                            { item: <button onClick={() => closeModal()}>❌ Close</button>, position: "right"}
                         ]}
                     />
                     <Loader show={loading} />
@@ -88,12 +93,12 @@ class Modal extends Component {
                             {renderPropsDetails(pokemon)}
                         </div>
                     </div> : <div className="modal-content"></div>}
-                    <ActionBar position="bottom"
+                    {/* <ActionBar position="bottom"
                         items={[
                             { item: <button disabled={!data.next} onClick={() => this.openNextDetails(data)}>Next</button>, position: "right"},
                             { item: <button disabled={!data.previous} onClick={() => this.openPreviousDetails(data)}>Previous</button>, position: "left"}
                         ]}
-                    />
+                    /> */}
                 </div>
             </div>
         )

@@ -66,7 +66,9 @@ class App extends Component {
                     visible={this.state.showModal}
                     closeModal={() => this.closeModal()}
                     changeContent={(element) => this.openDetails(element)}
+                    favorites={this.state.favoritesMgt.getFavorites()}
                     addToFavorites={(elId) => this.addToFavorites(elId)}
+                    removeFromFavorites={(elId) => this.removeFromFavorites(elId)}
                     data={this.state.focusedElement}
                     size="medium"
                 /> : null }
