@@ -18,6 +18,9 @@ const pokemon = (id, name) => {
         })
             .then(({ data }) => {
                 if (data?.id) resolve(data)
+                else resolve({
+                    error: new Error("Missing Id. Check logs", data)
+                })
             })
             .catch((error) => {
                 console.log(error)
@@ -33,9 +36,11 @@ export const getPokemon = (id, name) => dispatch => {
         }
     });
     pokemon(id, name).then(res => {
-        if (res?.id) {
+        if (res) {
             dispatch({
                 type: "POKEMON",
+                loading: false,
+                error: res.error,
                 payload: res
             })
         }

@@ -5,6 +5,29 @@ import { getPokemon } from "../../features/pokeapi/pokemon";
 
 import ActionBar from "../../components/ActionBar";
 import Loader from "../../components/Loader";
+import PropDetail from "../../components/PropDetail";
+
+const renderPropsDetails = (data) => {
+    let details;
+    if (data) details = Object.entries(data).map( ( [key, value], index) => {
+        if ( ["base_experience", "weight", "height"].includes(key) ) {
+            return <PropDetail 
+                key={index}
+                propType="string"
+                propName={key}
+                value={value}
+            />
+        } else if ( [""].includes(key) ) {
+            return <PropDetail 
+                key={index}
+                propType="list"
+                propName={key}
+                value={value}
+            />
+        }
+    });
+    return details;
+}
 
 class Modal extends Component {
     
@@ -34,7 +57,7 @@ class Modal extends Component {
     }
 
     render() {
-        const { size, visible, data, isLoading, pokemon, addToFavorites, closeModal } = this.props;
+        const { size, visible, data, loading, pokemon, addToFavorites, closeModal } = this.props;
         var modalClasses = size ? "modal".concat(" "+size) : "modal";
         var modalFgClasses  = visible ? "modal-fg".concat(" "+"visible") : "modal-fg";
         return(
@@ -43,28 +66,28 @@ class Modal extends Component {
                     <ActionBar position="top"
                         items={[
                             { item: <span>{data?.current}</span>, position: "center" },
-                            { item: <button onClick={() => addToFavorites(data?.current.id)}>Add to favorites</button>, position: "right"},
+                            { item: <button onClick={() => addToFavorites(data?.current)}>Add to favorites</button>, position: "right"},
                             { item: <button onClick={() => closeModal()}>Close</button>, position: "right"}
                         ]}
                     />
-                    <Loader show={isLoading} />
-                    {/* TODO: Add loader while fetching additional details */}
-                    <div className="modal-content">
+                    <Loader show={loading} />
+                    { console.log("Got pokemon data", pokemon)}
+                    { !loading ? <div className="modal-content">
                         <div 
-                            className="modal-content-hero"
-                            style={{
-                                backgroundImage: pokemon?.sprites.other["official-artwork"].front_default ? "url("+pokemon?.sprites.other["official-artwork"].front_default+")" : ""
-                            }}
-                        >&nbsp;</div>
-                        <div className="modal-content-details">
-                            <ul>
-                                <li>Types: { pokemon?.types?.map( (el, index) => {
-                                    if (index) return ", "+el.type.name;
-                                    else return el.type.name;
-                                })}</li>
-                            </ul>
+                            className="hero-container"
+                        >   <div className="hero"
+                                style={{
+                                    backgroundImage: pokemon?.sprites?.other["official-artwork"]?.front_default ? 
+                                        "url("+pokemon?.sprites.other["official-artwork"].front_default+")" : ""
+                                }}
+                            >
+                            &nbsp;
+                            </div>
                         </div>
-                    </div>
+                        <div className="modal-content-details">
+                            {renderPropsDetails(pokemon)}
+                        </div>
+                    </div> : <div className="modal-content"></div>}
                     <ActionBar position="bottom"
                         items={[
                             { item: <button disabled={!data.next} onClick={() => this.openNextDetails(data)}>Next</button>, position: "right"},
@@ -78,13 +101,11 @@ class Modal extends Component {
 }
 
 function mapStateToProps({pokemon}) {
-    let isLoading = true; // this when the compoenent is first mounted
-    if (pokemon && pokemon?.id) {
-        console.log("Modal - Recieved data", pokemon)
-        isLoading = false; 
-        return { pokemon, isLoading }
+    return { 
+        pokemon, 
+        loading: pokemon ? pokemon.loading : true,
+        error: pokemon ? pokemon.error : false
     }
-    return { pokemon: null, isLoading: pokemon?.loading || isLoading }
 }
 
 function mapDispatchToProps(dispatch) {

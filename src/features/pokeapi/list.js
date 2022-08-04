@@ -18,7 +18,11 @@ const list = ( offset, limit ) => {
             if (data && data?.results?.length) resolve(data)
         })
         .catch((error) => {
-            console.log(error)
+            console.log(error);
+            let data = {
+                error: error
+            }
+            resolve(data)
         })
     });
 }
@@ -37,8 +41,10 @@ export const listPokemon = (offset = 0, limit = 24) => dispatch => {
             dispatch({
                 type: "LIST",
                 payload: {
+                    loading: false,
                     count: res.count,
                     results: res.results,
+                    error: res.error,
                     next: res.next ? {
                         offset: (offset || 0) + limit,
                         limit: limit

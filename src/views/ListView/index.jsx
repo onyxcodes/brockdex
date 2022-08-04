@@ -39,10 +39,10 @@ class ListView extends Component {
     }
 
     render() {
-        const { list, openDetails, isLoading } = this.props;
+        const { list, openDetails, loading } = this.props;
         return(
             <div className="listView">
-                <Loader show={isLoading} />
+                <Loader show={loading} />
                 {list?.results?.map( (i, index) => {
                     // TODO: consider saving results in current page into an array
                     // therefore it can be used to fetch next and previous from modals
@@ -68,12 +68,11 @@ class ListView extends Component {
 }
 
 function mapStateToProps({list}) {
-    let isLoading = true; // this when the compoenent is first mounted
-    if (list && list?.count) {
-        isLoading = false; 
-        return { list, isLoading }
+    return { 
+        list: list || [],
+        loading: list ? list.loading : true,
+        error: list ? list.error : false
     }
-    return { list: [], isLoading: list?.loading || isLoading }
 }
 
 function mapDispatchToProps(dispatch) {

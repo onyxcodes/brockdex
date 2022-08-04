@@ -6,13 +6,18 @@ import Loader from "../components/Loader";
 import ListView from "../views/ListView";
 import Modal from "../views/Modal";
 
+import FavoritesMgt from "../features/favoritesMgt";
+
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isLoading: false,
             showModal: false,
-            focusedElement: null
+            focusedElement: null,
+            favoritesMgt: new FavoritesMgt(),
+            favorites: null,
+            favoritesVisible: false
         }
     }
 
@@ -34,37 +39,19 @@ class App extends Component {
     }
 
     addToFavorites(elementId) {
-        if (elementId) {
-            var storedFavorites;
-            try {
-                storedFavorites = JSON.parse(localStorage.getItem("favorites"));
-            } catch (e) {
-                storedFavorites = null;
-            }
-            if (!storedFavorites) {
-                var favorites = JSON.stringify([elementId]);
-                localStorage.setItem("favorites", favorites);
-                console.log("Set fot the first time favorites", JSON.parse(localStorage.getItem("favorites")));
-            } else {
-                // check if element is already in favorites
-                // altough btn that calls this function should already be disabled
-                var favorites = [...storedFavorites];
-                if ( !favorites.includes(elementId) ) {
-                    favorites.push(elementId);
-                    localStorage.setItem("favorites", JSON.stringify(favorites));
-                    console.log("Favorites updated",  JSON.parse(localStorage.getItem("favorites")));
-                } else {
-                    console.log("Favorites unchanged", JSON.parse(localStorage.getItem("favorites")));
-                }
-                
-            }
-        } else console.log("missing element id")
+        let favorites = this.state.favoritesMgt.addToFavorites(elementId);
+        this.setState({ favoritesMgt: new FavoritesMgt(favorites) })
+    }
+
+    removeFromFavorites(elementId) {
+        let favorites = this.state.favoritesMgt.removeFromFavorites(elementId);
+        this.setState({ favoritesMgt: new FavoritesMgt(favorites) })
     }
 
     render() {
         return (
             <div id="app">
-                <ActionBar position="top" items={[
+                <ActionBar bgColor="blueviolet" position="top" items={[
                     { item: <SearchBar ctrlLoading={(loadingState) => this.ctrlLoading(loadingState)} />, position: "left" },
                     { item: <span>BrockDex</span>, position: "center" },
                     { item: <button>Favs</button>, position: "right" }
