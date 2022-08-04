@@ -54,6 +54,14 @@ export const listPokemon = (offset = 0, limit = 24) => dispatch => {
                         limit: limit
                     } : null
                 }
+            });
+            dispatch({
+                type: "POKEMON_LIST",
+                payload: {
+                    loading: false,
+                    success: false,
+                    results: []
+                }
             })
         }
     })

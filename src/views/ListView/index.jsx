@@ -48,6 +48,7 @@ class ListView extends Component {
                 this.props.list.next.offset,
                 this.props.list.next.limit
             )
+            this.setState({ listSet: false })
         } // else throw Error
     }
 
@@ -57,6 +58,7 @@ class ListView extends Component {
                 this.props.list.previous.offset,
                 this.props.list.previous.limit
             )
+            this.setState({ listSet: false })
         } // else throw Error
     }
 
@@ -91,11 +93,11 @@ class ListView extends Component {
 function mapStateToProps({list, detailedList}) {
     return { 
         list: list || [],
+        loading: list ? list.loading : true,
+        error: list ? list.error : false,
         detailedList: detailedList || [],
         loadingList: detailedList ? detailedList.loading : false,
         loadingListSuccess: detailedList ? detailedList.success : false,
-        loading: list ? list.loading : true,
-        error: list ? list.error : false
     }
 }
 
