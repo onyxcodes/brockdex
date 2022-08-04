@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import {bindActionCreators} from 'redux';
 import { listPokemon } from "../../features/pokeapi/list";
+import { getPokemonList } from "../../features/pokeapi/detailedList";
 
 import Loader from "../../components/Loader";
 import Card from "../../components/Card";
@@ -18,6 +19,16 @@ class ListView extends Component {
     componentDidMount() {
         // at first load data
         this.props.listPokemon();
+    }
+
+    componentDidUpdate() {
+        
+        if ( this.props.list?.results && 
+            !this.props.loadingList &&
+            !this.props.loadingListSuccess
+        ) {
+            this.props.getPokemonList(this.props.list.results);
+        }
     }
 
     fetchNext() {
@@ -39,7 +50,7 @@ class ListView extends Component {
     }
 
     render() {
-        const { list, openDetails, loading } = this.props;
+        const { list, detailedList, openDetails, loading } = this.props;
         return(
             <div className="listView">
                 <Loader show={loading} />
@@ -48,9 +59,11 @@ class ListView extends Component {
                     // therefore it can be used to fetch next and previous from modals
                     // obviously dont compute it here..
                     return <Card key={i.name}
-                        openDetails={(data) => openDetails(data)}
+                        openDetails={(data) => openDetails(data)} // TODO: fix
+                        list={detailedList?.results}
                         next={ list.results?.[index+1]?.name }
                         previous={ list.results?.[index-1]?.name }
+                        id={i.name} // based on api response structure, it matches name
                         title={i.name}
                         size={this.props.size}
                     />
@@ -67,16 +80,19 @@ class ListView extends Component {
     }
 }
 
-function mapStateToProps({list}) {
+function mapStateToProps({list, detailedList}) {
     return { 
         list: list || [],
+        detailedList: detailedList || [],
+        loadingList: detailedList ? detailedList.loading : false,
+        loadingListSuccess: detailedList ? detailedList.success : false,
         loading: list ? list.loading : true,
         error: list ? list.error : false
     }
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({listPokemon}, dispatch);
+    return bindActionCreators({listPokemon, getPokemonList}, dispatch);
 }
   
 export default connect(mapStateToProps, mapDispatchToProps)(ListView);

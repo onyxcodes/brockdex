@@ -116,7 +116,7 @@ height: 400px;
   margin: -1%;
   flex: 1;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
 }
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const pokemon = (id, name) => {
+export const pokemon = (id, name) => {
     let param;
     if (id != null && !isNaN(id)) param = id;
     else if (name != null) param = name;

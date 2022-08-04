@@ -1,26 +1,28 @@
-import React, { Component } from "react"
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import {bindActionCreators} from 'redux';
+
+import { getPokemonList } from "../../features/pokeapi/detailedList";
+import Loader from "../Loader";
 
 class Card extends Component {
-    componentDidMount() {
-        // TOCO
-    }
+
     render() {
-        var cardClasses = this.props.size ? "card".concat(" "+this.props.size) : "card";
-        var data = {
-            current: this.props.title,
-            next: this.props.next,
-            previous: this.props.previous
-        }
+        const { id, list, title, size, openDetails, color, loading, pokemon } = this.props;
+        var data = list?.[id];
+        var cardClasses = size ? "card".concat(" "+size) : "card";
         return(
             <div 
                 className={cardClasses}
-                onClick={() => this.props.openDetails(data)}
+                onClick={() => openDetails(list[id] || pokemon)}
             >
+                <Loader show={loading} />
                 <div className="card-hero" style={{
-                    backgroundColor: this.props.color || "#999999",
-                    // backgroundImage: this.props.image 
+                    backgroundColor: !data?.sprites?.other["official-artwork"]?.front_default ? color || "#999999" : null,
+                    backgroundImage: data?.sprites?.other["official-artwork"]?.front_default ? 
+                    "url("+data?.sprites.other["official-artwork"].front_default+")" : null
                 }}></div>
-                <span className="card-title">{this.props.title}</span>
+                <span className="card-title">{title}</span>
             </div>
         )
     }

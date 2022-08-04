@@ -2,7 +2,6 @@ import React, { Component } from "react";
 
 import ActionBar from "../components/ActionBar";
 import SearchBar from "../components/SearchBar";
-import Loader from "../components/Loader";
 import ListView from "../views/ListView";
 import Modal from "../views/Modal";
 
@@ -12,7 +11,6 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: false,
             showModal: false,
             focusedElement: null,
             favoritesMgt: new FavoritesMgt(),
@@ -21,14 +19,13 @@ class App extends Component {
         }
     }
 
-    ctrlLoading(loadingState) {
-        this.setState({ isLoading: loadingState })
-    }
-
     openDetails( element ) {
         this.setState({
-            showModal: true,
             focusedElement: element
+        }, () => {
+            this.setState({
+                showModal: true
+            })
         })
     }
 
@@ -45,7 +42,6 @@ class App extends Component {
 
     removeFromFavorites(elementId) {
         let favorites = this.state.favoritesMgt.removeFromFavorites(elementId);
-        debugger;
         this.setState({ favoritesMgt: new FavoritesMgt(favorites) })
     }
 
@@ -53,11 +49,10 @@ class App extends Component {
         return (
             <div id="app">
                 <ActionBar bgColor="blueviolet" position="top" items={[
-                    { item: <SearchBar ctrlLoading={(loadingState) => this.ctrlLoading(loadingState)} />, position: "left" },
+                    { item: <SearchBar />, position: "left" },
                     { item: <span>BrockDex</span>, position: "center" },
                     { item: <button>Favs</button>, position: "right" }
                 ]} />
-                <Loader show={this.state.isLoading} />
                 <ListView 
                     paginated={false}
                     size="medium"

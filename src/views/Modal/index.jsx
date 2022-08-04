@@ -31,75 +31,56 @@ const renderPropsDetails = (data) => {
 
 class Modal extends Component {
     
-    // TODO: on component mount fetch deatils through given id or name
     componentDidMount() {
-        this.props.getPokemon(null, this.props.data?.current);
-    }
-
-    openNextDetails(data) {
-        let nextdata = {
-            current: data.next,
-            previous: data.current,
-            next: null
-        }
-        this.props.changeContent(nextdata);
-        this.props.getPokemon(null, nextdata?.current);
-    }
-
-    openPreviousDetails(data) {
-        let prevdata = {
-            current: data.previous,
-            previous: null,
-            next: data.current
-        }
-        this.props.changeContent(prevdata);
-        this.props.getPokemon(null, prevdata?.current);
+        // Condition allows avoiding calling redux action when data is already present 
+        if ( !this.props.data?.id && this.props.id ) this.props.getPokemon(null, this.props.id);
     }
 
     render() {
         const { 
-            size, visible, closeModal, data, loading, pokemon, 
+            size, visible, closeModal, 
             favorites, addToFavorites, removeFromFavorites
         } = this.props;
+        var data = this.props.data || this.props.pokemon;
+        var loading = data ? false : this.props.loading;
+        // var nextItem = list ? 
         var modalClasses = size ? "modal".concat(" "+size) : "modal";
         var modalFgClasses  = visible ? "modal-fg".concat(" "+"visible") : "modal-fg";
-        debugger;
         return(
             <div className={modalFgClasses}>
                 <div className={modalClasses}>
                     <ActionBar position="top"
                         items={[
-                            { item: <span>{data?.current}</span>, position: "center" },
-                            { item: !favorites.includes(data?.current) ? 
-                                <button onClick={() => addToFavorites(data?.current)}>⭐ Add</button> :
-                                <button onClick={() => removeFromFavorites(data?.current)}>⭐ Remove</button>, position: "right"},
+                            { item: <span>{data?.name}</span>, position: "center" },
+                            { item: !favorites.includes(data?.name) ? 
+                                <button onClick={() => addToFavorites(data?.name)}>⭐ Add</button> :
+                                <button onClick={() => removeFromFavorites(data?.name)}>⭐ Remove</button>, position: "right"},
                             { item: <button onClick={() => closeModal()}>❌ Close</button>, position: "right"}
                         ]}
                     />
                     <Loader show={loading} />
-                    { console.log("Got pokemon data", pokemon)}
                     { !loading ? <div className="modal-content">
                         <div 
                             className="hero-container"
                         >   <div className="hero"
                                 style={{
-                                    backgroundImage: pokemon?.sprites?.other["official-artwork"]?.front_default ? 
-                                        "url("+pokemon?.sprites.other["official-artwork"].front_default+")" : ""
+                                    backgroundImage: data?.sprites?.other["official-artwork"]?.front_default ? 
+                                        "url("+data?.sprites.other["official-artwork"].front_default+")" : null
                                 }}
                             >
                             &nbsp;
                             </div>
                         </div>
                         <div className="modal-content-details">
-                            {renderPropsDetails(pokemon)}
+                            {renderPropsDetails(data)}
                         </div>
                     </div> : <div className="modal-content"></div>}
-                    {/* <ActionBar position="bottom"
+                    <ActionBar position="bottom"
                         items={[
                             { item: <button disabled={!data.next} onClick={() => this.openNextDetails(data)}>Next</button>, position: "right"},
                             { item: <button disabled={!data.previous} onClick={() => this.openPreviousDetails(data)}>Previous</button>, position: "left"}
                         ]}
-                    /> */}
+                    />
                 </div>
             </div>
         )

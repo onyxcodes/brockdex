@@ -9,7 +9,6 @@ class FavoritesMgt {
     
     getFavorites() {
         let favorites: number[] = [];
-        debugger;
         try {
             if (localStorage.getItem("favorites")) favorites = JSON.parse(localStorage.getItem("favorites"));
         } catch (e) {
@@ -20,7 +19,6 @@ class FavoritesMgt {
 
     updateFavorites( favorites: number[] ) {
         let favoritesStr: string =  JSON.stringify(favorites)
-        debugger;
         localStorage.setItem(this.favoritesKey, favoritesStr);
         this.favorites = favorites;
         return true;

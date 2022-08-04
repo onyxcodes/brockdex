@@ -27,13 +27,12 @@ class SearchBar extends Component {
     }
     
     performSearch() {
-        console.log("Do my search query thing", this.state.searchQuery);
-        this.props.ctrlLoading(true);
+        // this.props.ctrlLoading(true);
         this.setState({
             searchBtnDisabled: true
         });
         // NOTE: simulating loading
-        setTimeout( () => this.props.ctrlLoading(false), 5000);
+        // setTimeout( () => this.props.ctrlLoading(false), 5000);
     }
     render() {
         return(
