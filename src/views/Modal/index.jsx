@@ -39,7 +39,8 @@ class Modal extends Component {
     render() {
         const { 
             size, visible, closeModal, 
-            favorites, addToFavorites, removeFromFavorites
+            favorites, addToFavorites, removeFromFavorites,
+            changeContent
         } = this.props;
         var data = this.props.data || this.props.pokemon;
         var loading = data ? false : this.props.loading;
@@ -77,8 +78,8 @@ class Modal extends Component {
                     </div> : <div className="modal-content"></div>}
                     <ActionBar position="bottom"
                         items={[
-                            { item: <button disabled={!data.next} onClick={() => this.openNextDetails(data)}>Next</button>, position: "right"},
-                            { item: <button disabled={!data.previous} onClick={() => this.openPreviousDetails(data)}>Previous</button>, position: "left"}
+                            { item: <button disabled={!data?.next} onClick={() => changeContent(data?.next)}>Next</button>, position: "right"},
+                            { item: <button disabled={!data?.previous} onClick={() => changeContent(data?.previous)}>Previous</button>, position: "left"}
                         ]}
                     />
                 </div>

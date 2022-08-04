@@ -1,20 +1,24 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
-import {bindActionCreators} from 'redux';
 
-import { getPokemonList } from "../../features/pokeapi/detailedList";
 import Loader from "../Loader";
 
 class Card extends Component {
 
     render() {
-        const { id, list, title, size, openDetails, color, loading, pokemon } = this.props;
+        const { id, list,
+            loading, title, size, openDetails, color,
+            next, previous
+        } = this.props;
         var data = list?.[id];
+        if (data) {
+            data.next = next,
+            data.previous = previous;
+        }
         var cardClasses = size ? "card".concat(" "+size) : "card";
         return(
             <div 
                 className={cardClasses}
-                onClick={() => openDetails(list[id] || pokemon)}
+                onClick={() => openDetails(data)}
             >
                 <Loader show={loading} />
                 <div className="card-hero" style={{

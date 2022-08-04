@@ -15,8 +15,15 @@ class App extends Component {
             focusedElement: null,
             favoritesMgt: new FavoritesMgt(),
             favorites: null,
-            favoritesVisible: false
+            favoritesVisible: false,
+            list: {}
         }
+    }
+
+    setPokemonList( list ) {
+        this.setState({
+            list: list
+        })
     }
 
     openDetails( element ) {
@@ -27,6 +34,13 @@ class App extends Component {
                 showModal: true
             })
         })
+    }
+
+    changeContent( elementName ) {
+        let element = this.state.list[elementName];
+        this.setState({
+            showModal: false
+        }, () => this.openDetails(element));
     }
 
     closeModal() {
@@ -56,12 +70,13 @@ class App extends Component {
                 <ListView 
                     paginated={false}
                     size="medium"
+                    setPokemonList={(list) => this.setPokemonList(list)}
                     openDetails={(el) => this.openDetails(el)}
                 />
                 { this.state.showModal ? <Modal
                     visible={this.state.showModal}
                     closeModal={() => this.closeModal()}
-                    changeContent={(element) => this.openDetails(element)}
+                    changeContent={(element) => this.changeContent(element)}
                     favorites={this.state.favoritesMgt.getFavorites()}
                     addToFavorites={(elId) => this.addToFavorites(elId)}
                     removeFromFavorites={(elId) => this.removeFromFavorites(elId)}

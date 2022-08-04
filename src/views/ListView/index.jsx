@@ -14,6 +14,9 @@ import ActionBar from "../../components/ActionBar";
 class ListView extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            listSet: false
+        }
     }
 
     componentDidMount() {
@@ -29,6 +32,13 @@ class ListView extends Component {
         ) {
             this.props.getPokemonList(this.props.list.results);
         }
+        if ( this.props.loadingListSuccess && 
+            this.props.detailedList?.results && // TODO: improve to avoid updating state for empty lists
+            !this.state.listSet ) {
+                this.props.setPokemonList(this.props.detailedList?.results)
+                this.setState({ listSet: true })
+            
+        };
     }
 
     fetchNext() {
@@ -59,7 +69,7 @@ class ListView extends Component {
                     // therefore it can be used to fetch next and previous from modals
                     // obviously dont compute it here..
                     return <Card key={i.name}
-                        openDetails={(data) => openDetails(data)} // TODO: fix
+                        openDetails={(data) => openDetails(data, detailedList?.results)} // TODO: fix
                         list={detailedList?.results}
                         next={ list.results?.[index+1]?.name }
                         previous={ list.results?.[index-1]?.name }
