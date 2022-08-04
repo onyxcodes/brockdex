@@ -45,6 +45,7 @@ class App extends Component {
 
     removeFromFavorites(elementId) {
         let favorites = this.state.favoritesMgt.removeFromFavorites(elementId);
+        debugger;
         this.setState({ favoritesMgt: new FavoritesMgt(favorites) })
     }
 

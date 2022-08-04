@@ -9,6 +9,7 @@ class FavoritesMgt {
     
     getFavorites() {
         let favorites: number[] = [];
+        debugger;
         try {
             if (localStorage.getItem("favorites")) favorites = JSON.parse(localStorage.getItem("favorites"));
         } catch (e) {
@@ -19,6 +20,7 @@ class FavoritesMgt {
 
     updateFavorites( favorites: number[] ) {
         let favoritesStr: string =  JSON.stringify(favorites)
+        debugger;
         localStorage.setItem(this.favoritesKey, favoritesStr);
         this.favorites = favorites;
         return true;
@@ -40,12 +42,12 @@ class FavoritesMgt {
             let favorites = this.getFavorites();
             let found = false;
             favorites = favorites.filter( element => {
-                found = element === id;
-                return !found;
+                if (!found) found = element === id;
+                return element !== id;
             });
             if ( found ) {
                 this.updateFavorites(favorites);
-            } else console.log("addToFavorites - attention, favorite with id `"+id+"` was not found", favorites);
+            } else console.log("removeFromFavorites - attention, favorite with id `"+id+"` was not found", favorites);
             return favorites;
         } else throw new Error("removeFromFavorites - missing id parameter");
     }

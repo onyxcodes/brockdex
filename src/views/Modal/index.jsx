@@ -63,6 +63,7 @@ class Modal extends Component {
         } = this.props;
         var modalClasses = size ? "modal".concat(" "+size) : "modal";
         var modalFgClasses  = visible ? "modal-fg".concat(" "+"visible") : "modal-fg";
+        debugger;
         return(
             <div className={modalFgClasses}>
                 <div className={modalClasses}>

@@ -18,9 +18,10 @@ const pokemon = (id, name) => {
         })
             .then(({ data }) => {
                 if (data?.id) resolve(data)
-                else resolve({
-                    error: new Error("Missing Id. Check logs", data)
-                })
+                else {
+                    data.error = "Missing id parameter"
+                    resolve(data);
+                }
             })
             .catch((error) => {
                 console.log(error)
