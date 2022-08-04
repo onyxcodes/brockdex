@@ -8,9 +8,6 @@ import Loader from "../../components/Loader";
 import Card from "../../components/Card";
 import ActionBar from "../../components/ActionBar";
 
-// TODO: component that accept different size configurations
-// and displays a card for each data.entries passed to this
-// support pagination and items per page conf
 class ListView extends Component {
     constructor(props) {
         super(props);
@@ -25,16 +22,20 @@ class ListView extends Component {
     }
 
     componentDidUpdate() {
-        
+        // If result list ( with minimum information ) was loaded
+        // attempt to load also detailed list
         if ( this.props.list?.results && 
-            !this.props.loadingList &&
-            !this.props.loadingListSuccess
+            !this.props.loadingList && // avoids when is already loading
+            !this.props.loadingListSuccess // avoids when load was already completed
         ) {
             this.props.getPokemonList(this.props.list.results);
         }
+        
+        // If detailed list was successfully loaded, pass to parent comp
         if ( this.props.loadingListSuccess && 
             this.props.detailedList?.results && // TODO: improve to avoid updating state for empty lists
-            !this.state.listSet ) {
+            !this.state.listSet // avoid when already passed
+        ) {
                 this.props.setPokemonList(this.props.detailedList?.results)
                 this.setState({ listSet: true })
             
@@ -65,11 +66,8 @@ class ListView extends Component {
             <div className="listView">
                 <Loader show={loading} />
                 {list?.results?.map( (i, index) => {
-                    // TODO: consider saving results in current page into an array
-                    // therefore it can be used to fetch next and previous from modals
-                    // obviously dont compute it here..
                     return <Card key={i.name}
-                        openDetails={(data) => openDetails(data, detailedList?.results)} // TODO: fix
+                        openDetails={(data) => openDetails(data)}
                         list={detailedList?.results}
                         next={ list.results?.[index+1]?.name }
                         previous={ list.results?.[index-1]?.name }
