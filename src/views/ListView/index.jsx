@@ -28,11 +28,16 @@ class ListView extends Component {
             !this.props.loadingList && // avoids when is already loading
             !this.props.loadingListSuccess // avoids when load was already completed
         ) {
+            // Send the request for a new detailed list
             this.props.getPokemonList(this.props.list.results);
+            // Since we just sent out the request for loading a new detailed list
+            // the relative lists setter flag must be set to false
+            this.setState({ listSet: false })
         }
         
         // If detailed list was successfully loaded, pass to parent comp
-        if ( this.props.loadingListSuccess && 
+        if ( this.props.loadingListSuccess &&
+            this.props.list?.results &&
             this.props.detailedList?.results && // TODO: improve to avoid updating state for empty lists
             !this.state.listSet // avoid when already passed
         ) {
@@ -48,7 +53,6 @@ class ListView extends Component {
                 this.props.list.next.offset,
                 this.props.list.next.limit
             )
-            this.setState({ listSet: false })
         } // else throw Error
     }
 
@@ -58,7 +62,6 @@ class ListView extends Component {
                 this.props.list.previous.offset,
                 this.props.list.previous.limit
             )
-            this.setState({ listSet: false })
         } // else throw Error
     }
 
@@ -91,14 +94,16 @@ class ListView extends Component {
 }
 
 function mapStateToProps({list, detailedList}) {
-    return { 
+    const props = { 
         list: list || [],
         loading: list ? list.loading : true,
         error: list ? list.error : false,
         detailedList: detailedList || [],
         loadingList: detailedList ? detailedList.loading : false,
         loadingListSuccess: detailedList ? detailedList.success : false,
-    }
+    };
+    debugger;
+    return props;
 }
 
 function mapDispatchToProps(dispatch) {

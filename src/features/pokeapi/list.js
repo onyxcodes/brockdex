@@ -28,14 +28,23 @@ const list = ( offset, limit ) => {
 }
 
 export const listPokemon = (offset = 0, limit = 24) => dispatch => {
-    // The first dispatch is to mark that we are going to make an async call
-    // when it responds, we are going to mark the call as completed
+    // The first dispatch is to mark that we are going to request the list of pokemon names
+    // on its response, we are going to mark the call as completed
     dispatch({
         type: "LIST",
         payload: {
             loading: true
         }
     });
+    // This second dispatch is to reset the action to the store that contains the detailed list and keeps track of its the status
+    dispatch({
+        type: "POKEMON_LIST",
+        payload: {
+            loading: false,
+            success: false,
+            results: null
+        }
+    })
     list(offset, limit).then( res => {
         if (res) {
             dispatch({
@@ -55,14 +64,6 @@ export const listPokemon = (offset = 0, limit = 24) => dispatch => {
                     } : null
                 }
             });
-            dispatch({
-                type: "POKEMON_LIST",
-                payload: {
-                    loading: false,
-                    success: false,
-                    results: []
-                }
-            })
         }
     })
 }

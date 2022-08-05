@@ -4,13 +4,14 @@ export const getPokemonList = (list) => dispatch => {
     dispatch({
         type: "POKEMON_LIST",
         payload: {
-            loading: list.length ? true : false,
-            success: list.length ? false : true,
+            loading: true,
+            success: false,
             results: []
         }
     });
     var pokemonList = {},
         loadedCount = 0;
+    // if ( list && list)
     for ( var i = 0; i < list.length; i++) {
         var el = list[i];
         pokemon(null, el.name).then( result => {
