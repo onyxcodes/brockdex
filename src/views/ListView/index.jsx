@@ -12,7 +12,11 @@ class ListView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            listSet: false
+            listSet: false,
+            query: null,
+            offset: 0,
+            limit: 24,
+            newPageReq: false
         }
     }
 
@@ -22,6 +26,34 @@ class ListView extends Component {
     }
 
     componentDidUpdate() {
+        if (this.props.query !== this.state.query) {
+            // A new search query was provided, track in state
+            // and clean offset and limit parameters
+            this.setState({ 
+                query: this.props.query,
+                limit: 24,
+                offset: 0
+            }, () => {
+                this.props.listPokemon(
+                    this.state.offset, this.state.limit, {
+                    query: this.state.query,
+                    total: this.props.total
+                });
+            });
+        }
+
+        if ( this.state.newPageReq ) {
+            // new page was requested, before fetching new page's data
+            // mark the request flag to false to avoid loops
+            this.setState({ newPageReq: false }, () => {
+                this.props.listPokemon(
+                    this.state.offset, this.state.limit, {
+                    query: this.state.query,
+                    total: this.props.total
+                });
+            })
+        }
+        
         // If result list ( with minimum information ) was loaded
         // attempt to load also detailed list
         if ( this.props.list?.results && 
@@ -31,8 +63,10 @@ class ListView extends Component {
             // Send the request for a new detailed list
             this.props.getPokemonList(this.props.list.results);
             // Since we just sent out the request for loading a new detailed list
-            // the relative lists setter flag must be set to false
-            this.setState({ listSet: false })
+            
+            this.setState({ 
+                listSet: false, // the relative lists setter flag must be set to false
+            })
         }
         
         // If detailed list was successfully loaded, pass to parent comp
@@ -41,7 +75,7 @@ class ListView extends Component {
             this.props.detailedList?.results && // TODO: improve to avoid updating state for empty lists
             !this.state.listSet // avoid when already passed
         ) {
-                this.props.setPokemonList(this.props.detailedList?.results)
+                this.props.setPokemonList(this.props.detailedList?.results, this.props.total)
                 this.setState({ listSet: true })
             
         };
@@ -49,19 +83,21 @@ class ListView extends Component {
 
     fetchNext() {
         if ( this.props.list && this.props.list?.next ) {
-            this.props.listPokemon(
-                this.props.list.next.offset,
-                this.props.list.next.limit
-            )
+            this.setState({
+                offset: this.props.list.next.offset,
+                limit: this.props.list.next.limit,
+                newPageReq: true,
+            })
         } // else throw Error
     }
 
     fetchPrevious() {
         if ( this.props.list && this.props.list?.previous ) {
-            this.props.listPokemon(
-                this.props.list.previous.offset,
-                this.props.list.previous.limit
-            )
+            this.setState({
+                offset: this.props.list.previous.offset,
+                limit: this.props.list.previous.limit,
+                newPageReq: true
+            })
         } // else throw Error
     }
 
@@ -96,13 +132,13 @@ class ListView extends Component {
 function mapStateToProps({list, detailedList}) {
     const props = { 
         list: list || [],
+        total: list ? list.total : null,
         loading: list ? list.loading : true,
         error: list ? list.error : false,
         detailedList: detailedList || [],
         loadingList: detailedList ? detailedList.loading : false,
         loadingListSuccess: detailedList ? detailedList.success : false,
     };
-    debugger;
     return props;
 }
 

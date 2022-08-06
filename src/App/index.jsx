@@ -13,17 +13,38 @@ class App extends Component {
         this.state = {
             showModal: false,
             focusedElement: null,
+            searchQuery: null,
+            total: null,
             favoritesMgt: new FavoritesMgt(),
             favorites: null,
             favoritesVisible: false,
-            list: {}
+            list: {},
         }
     }
 
-    setPokemonList( list ) {
+    updateTotal( total ) {
+        let storedTotal = localStorage.getItem("total") ? Number(localStorage.getItem("total")) : null;
+        if ( storedTotal && // total already stored
+            storedTotal !== total && // update only when different
+            !isNaN(total) // given total is a number
+        ) {
+            localStorage.setItem("total", total);
+        } else if ( !storedTotal ) { // in case was not stored yet
+            localStorage.setItem("total", total)
+        } else if ( !isNaN(total) ) {
+            throw Error("Given total is not a number", total);
+        } // else // skip update cause not needed
+    }
+
+    setPokemonList( list, total ) {
+        this.updateTotal(total);
         this.setState({
             list: list
         })
+    }
+
+    setSearchQuery(name) {
+        this.setState({ searchQuery: name })
     }
 
     openDetails( element ) {
@@ -63,13 +84,14 @@ class App extends Component {
         return (
             <div id="app">
                 <ActionBar bgColor="blueviolet" position="top" items={[
-                    { item: <SearchBar />, position: "left" },
+                    { item: <SearchBar value={this.state.searchQuery} disabled={this.state.favoritesVisible} setSearchQuery={(name)=> this.setSearchQuery(name)}/>, position: "left" },
                     { item: <span>BrockDex</span>, position: "center" },
                     { item: <button>Favs</button>, position: "right" }
                 ]} />
                 <ListView 
-                    paginated={false}
                     size="medium"
+                    query={this.state.searchQuery}
+                    total={localStorage.getItem("total")}
                     setPokemonList={(list) => this.setPokemonList(list)}
                     openDetails={(el) => this.openDetails(el)}
                 />
