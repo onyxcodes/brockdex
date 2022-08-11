@@ -1,7 +1,7 @@
-import React, { ReactElement } from "react";
+import React from "react";
 
 export interface ActionBarItemProps {
-    item: ReactElement,
+    item: JSX.Element,
     position: "left" | "center" | "right"
 }
 

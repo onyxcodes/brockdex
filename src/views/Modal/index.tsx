@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { connect, useSelector } from "react-redux";
 import {AnyAction, bindActionCreators, Dispatch} from 'redux';
 import { getPokemon } from "../../features/pokeapi/pokemon";
@@ -9,7 +9,7 @@ import PropDetail from "../../components/PropDetail";
 
 import { ActionBarItemProps } from "../../components/ActionBar"
 
-interface PropDetailProps {
+interface PropDetailRenderProps {
     [key: string]: any;
 }
 
@@ -20,7 +20,18 @@ const propDetailNames = {
     height: "Height",
 }
 
-const renderPropsDetails = (props: PropDetailProps) => {
+const propListValues = {
+    "types": function(el: {
+        type: { name: string }
+    }) {
+        let className = "pokemon-type ".concat(el.type.name);
+        return (<div className={className}>
+            {el.type.name}
+        </div>);
+    }
+}
+
+const renderPropsDetails = (props: PropDetailRenderProps) => {
     let details;
     if (props) details = Object.entries(props).map( ( [key, value], index) => {
         if ( ["base_experience", "weight", "height"].includes(key) ) {
@@ -31,12 +42,13 @@ const renderPropsDetails = (props: PropDetailProps) => {
                 propName={key}
                 value={value}
             />
-        } else if ( [""].includes(key) ) {
+        } else if ( ["types"].includes(key) ) {
             return <PropDetail 
                 key={index}
                 propType="list"
                 propName={key}
                 propNameMap={propDetailNames}
+                propValueMap={propListValues}
                 value={value}
             />
         }
@@ -53,7 +65,7 @@ interface ModalProps {
     visible: boolean;
     closeModal: () => void;
     loading: boolean;
-    pokemon: PropDetailProps;
+    pokemon: PropDetailRenderProps;
     getPokemon: (id: number, name: string) => void;
 };
 
@@ -93,7 +105,7 @@ const Modal = ( props: ModalProps ) => {
                         </div>
                     </div>
                     <div className="modal-content-details">
-                        {renderPropsDetails({propDetailNames, ...pokemon})}
+                        {renderPropsDetails({propDetailNames, propListValues,...pokemon})}
                     </div>
                 </div> : <div className="modal-content"></div>}
                 <ActionBar position="bottom"
