@@ -9,7 +9,7 @@ class Card extends Component {
             loading, title, size, openDetails, color,
             next, previous
         } = this.props;
-        var data = list?.[id];
+        var data = { name: id, ...list?.[id] };
         if (data) {
             data.next = next,
             data.previous = previous;

@@ -59,6 +59,7 @@ class App extends Component {
 
     changeContent( elementName ) {
         let element = this.state.list[elementName];
+        debugger;
         this.setState({
             showModal: false
         }, () => this.openDetails(element));
@@ -96,6 +97,8 @@ class App extends Component {
                     openDetails={(el) => this.openDetails(el)}
                 />
                 { this.state.showModal ? <Modal
+                    id={this.state.focusedElement?.id}
+                    name={this.state.focusedElement?.name}
                     visible={this.state.showModal}
                     closeModal={() => this.closeModal()}
                     changeContent={(element) => this.changeContent(element)}
