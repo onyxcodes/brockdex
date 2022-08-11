@@ -6,7 +6,7 @@ export interface ActionBarProps {
         item: ReactElement,
         position: "left" | "center" | "right"
     }[];
-    bgColor: string;
+    bgColor?: string;
 };
 
 const ActionBar = ( props: ActionBarProps ) => {

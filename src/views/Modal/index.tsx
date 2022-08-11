@@ -1,13 +1,18 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { connect, useSelector } from "react-redux";
-import {bindActionCreators} from 'redux';
+import {AnyAction, bindActionCreators, Dispatch} from 'redux';
 import { getPokemon } from "../../features/pokeapi/pokemon";
 
 import ActionBar from "../../components/ActionBar";
 import Loader from "../../components/Loader";
 import PropDetail from "../../components/PropDetail";
 
-const renderPropsDetails = (data) => {
+interface PropDetailProps {
+    [key: string]: any;
+}
+
+const renderPropsDetails = (props: PropDetailProps) => {
+    const { data } = props;
     let details;
     if (data) details = Object.entries(data).map( ( [key, value], index) => {
         if ( ["base_experience", "weight", "height"].includes(key) ) {
@@ -29,11 +34,23 @@ const renderPropsDetails = (data) => {
     return details;
 }
 
-const FnModal = ({id, name, size, visible, closeModal, 
-    favorites, addToFavorites, removeFromFavorites,
-    changeContent, loading, pokemon, getPokemon}
-) => {
+interface ModalProps {
+    id: number;
+    name: string;
+    size: string;
+    visible: boolean;
+    favorites: string[];
+    addToFavorites: (name: string) => void;
+    removeFromFavorites: (name: string) => void;
+    closeModal: () => void;
+    changeContent: (name: string) => void;
+    loading: boolean;
+    pokemon: PropDetailProps;
+    getPokemon: (id: number, name: string) => void;
+};
 
+const Modal = ( props: ModalProps ) => {
+    const { id, name, size, visible, favorites, addToFavorites, removeFromFavorites, closeModal, changeContent, loading, pokemon, getPokemon } = props;
     React.useEffect(() =>  name && !id && getPokemon(null, name), [name, id]);
 
     var modalClasses = size ? "modal".concat(" "+size) : "modal";
@@ -44,10 +61,10 @@ const FnModal = ({id, name, size, visible, closeModal,
             <div className={modalClasses}>
                 <ActionBar position="top"
                     items={[
-                        { item: <span>{pokemon?.name}</span>, position: "center" },
-                        { item: !favorites.includes(pokemon?.name) ? 
-                            <button onClick={() => addToFavorites(pokemon?.name)}>⭐ Add</button> :
-                            <button onClick={() => removeFromFavorites(pokemon?.name)}>⭐ Remove</button>, position: "right"},
+                        { item: <span>{name}</span>, position: "center" },
+                        { item: !favorites.includes(name) ? 
+                            <button onClick={() => addToFavorites(name)}>⭐ Add</button> :
+                            <button onClick={() => removeFromFavorites(name)}>⭐ Remove</button>, position: "right"},
                         { item: <button onClick={() => closeModal()}>❌ Close</button>, position: "right"}
                     ]}
                 />
@@ -80,7 +97,7 @@ const FnModal = ({id, name, size, visible, closeModal,
 }
 
 // TODO: Change to hooks
-function mapStateToProps({pokemon}, ownProps) {
+function mapStateToProps({pokemon}: any, ownProps: { data: any; }) {
     debugger;
     let pokemonData = pokemon,
         loading = false;
@@ -95,8 +112,8 @@ function mapStateToProps({pokemon}, ownProps) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch<AnyAction>) {
     return bindActionCreators({getPokemon}, dispatch);
 }
   
-export default connect(mapStateToProps, mapDispatchToProps)(FnModal);
+export default connect(mapStateToProps, mapDispatchToProps)(Modal);
