@@ -7,6 +7,33 @@ import Modal from "../views/Modal";
 
 import FavoritesMgt from "../features/favoritesMgt";
 
+// interface FavoritesActions {
+//     favoriteKey: string;
+
+// }
+const favoriteActionBarItems = ( favorites, favoriteKey, add, remove ) => {
+    return [
+        { 
+            item: !favorites.includes(favoriteKey) ? 
+            <button onClick={() => add(favoriteKey)}>⭐ Add</button> :
+            <button onClick={() => remove(favoriteKey)}>⭐ Remove</button>, position: "right"
+        }
+    ];
+}
+
+const listMoveActionBarItems = ( pokemon, changeContent ) => {
+    return [
+        { item: <button 
+            disabled={!pokemon?.next}
+            onClick={() => changeContent(pokemon?.next)}>Next
+        </button>, position: "right"},
+        { item: <button
+            disabled={!pokemon?.previous}
+            onClick={() => changeContent(pokemon?.previous)}>Previous
+        </button>, position: "left"}
+    ]
+}
+
 class App extends Component {
     constructor(props) {
         super(props);
@@ -59,7 +86,6 @@ class App extends Component {
 
     changeContent( elementName ) {
         let element = this.state.list[elementName];
-        debugger;
         this.setState({
             showModal: false
         }, () => this.openDetails(element));
@@ -101,10 +127,14 @@ class App extends Component {
                     name={this.state.focusedElement?.name}
                     visible={this.state.showModal}
                     closeModal={() => this.closeModal()}
+                    topActionBarItems={favoriteActionBarItems(
+                        this.state.favoritesMgt.getFavorites(),
+                        this.state.focusedElement?.name,
+                        (elId) => this.addToFavorites(elId),
+                        (elId) => this.removeFromFavorites(elId)
+                    )}
+                    btmActionBarItems={(element) => listMoveActionBarItems(element, (element) => this.changeContent(element))}
                     changeContent={(element) => this.changeContent(element)}
-                    favorites={this.state.favoritesMgt.getFavorites()}
-                    addToFavorites={(elId) => this.addToFavorites(elId)}
-                    removeFromFavorites={(elId) => this.removeFromFavorites(elId)}
                     data={this.state.focusedElement}
                     size="medium"
                 /> : null }

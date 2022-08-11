@@ -7,18 +7,27 @@ import ActionBar from "../../components/ActionBar";
 import Loader from "../../components/Loader";
 import PropDetail from "../../components/PropDetail";
 
+import { ActionBarItemProps } from "../../components/ActionBar"
+
 interface PropDetailProps {
     [key: string]: any;
 }
 
+// TODO: Consider extracting into localization file
+const propDetailNames = {
+    base_experience: "Base exeperience",
+    weight: "Weight",
+    height: "Height",
+}
+
 const renderPropsDetails = (props: PropDetailProps) => {
-    const { data } = props;
     let details;
-    if (data) details = Object.entries(data).map( ( [key, value], index) => {
+    if (props) details = Object.entries(props).map( ( [key, value], index) => {
         if ( ["base_experience", "weight", "height"].includes(key) ) {
             return <PropDetail 
                 key={index}
                 propType="string"
+                propNameMap={propDetailNames}
                 propName={key}
                 value={value}
             />
@@ -27,6 +36,7 @@ const renderPropsDetails = (props: PropDetailProps) => {
                 key={index}
                 propType="list"
                 propName={key}
+                propNameMap={propDetailNames}
                 value={value}
             />
         }
@@ -35,22 +45,25 @@ const renderPropsDetails = (props: PropDetailProps) => {
 }
 
 interface ModalProps {
-    id: number;
+    id?: number;
     name: string;
     size: string;
+    topActionBarItems?: ActionBarItemProps[];
+    btmActionBarItems?: (element: {}) => ActionBarItemProps[];
     visible: boolean;
-    favorites: string[];
-    addToFavorites: (name: string) => void;
-    removeFromFavorites: (name: string) => void;
     closeModal: () => void;
-    changeContent: (name: string) => void;
     loading: boolean;
     pokemon: PropDetailProps;
     getPokemon: (id: number, name: string) => void;
 };
 
 const Modal = ( props: ModalProps ) => {
-    const { id, name, size, visible, favorites, addToFavorites, removeFromFavorites, closeModal, changeContent, loading, pokemon, getPokemon } = props;
+    const { 
+        id, name, 
+        size = "medium", visible = false, closeModal,
+        topActionBarItems, btmActionBarItems,
+        loading, pokemon, getPokemon
+    } = props;
     React.useEffect(() =>  name && !id && getPokemon(null, name), [name, id]);
 
     var modalClasses = size ? "modal".concat(" "+size) : "modal";
@@ -62,9 +75,7 @@ const Modal = ( props: ModalProps ) => {
                 <ActionBar position="top"
                     items={[
                         { item: <span>{name}</span>, position: "center" },
-                        { item: !favorites.includes(name) ? 
-                            <button onClick={() => addToFavorites(name)}>⭐ Add</button> :
-                            <button onClick={() => removeFromFavorites(name)}>⭐ Remove</button>, position: "right"},
+                        ...topActionBarItems,
                         { item: <button onClick={() => closeModal()}>❌ Close</button>, position: "right"}
                     ]}
                 />
@@ -82,13 +93,12 @@ const Modal = ( props: ModalProps ) => {
                         </div>
                     </div>
                     <div className="modal-content-details">
-                        {renderPropsDetails(pokemon)}
+                        {renderPropsDetails({propDetailNames, ...pokemon})}
                     </div>
                 </div> : <div className="modal-content"></div>}
                 <ActionBar position="bottom"
                     items={[
-                        { item: <button disabled={!pokemon?.next} onClick={() => changeContent(pokemon?.next)}>Next</button>, position: "right"},
-                        { item: <button disabled={!pokemon?.previous} onClick={() => changeContent(pokemon?.previous)}>Previous</button>, position: "left"}
+                        ...btmActionBarItems(pokemon)
                     ]}
                 />
             </div>
@@ -98,7 +108,6 @@ const Modal = ( props: ModalProps ) => {
 
 // TODO: Change to hooks
 function mapStateToProps({pokemon}: any, ownProps: { data: any; }) {
-    debugger;
     let pokemonData = pokemon,
         loading = false;
     if ( ownProps.data ) pokemonData = ownProps.data;

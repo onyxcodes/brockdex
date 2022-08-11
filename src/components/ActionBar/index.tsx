@@ -1,11 +1,13 @@
 import React, { ReactElement } from "react";
 
+export interface ActionBarItemProps {
+    item: ReactElement,
+    position: "left" | "center" | "right"
+}
+
 export interface ActionBarProps {
     position: string;
-    items: {
-        item: ReactElement,
-        position: "left" | "center" | "right"
-    }[];
+    items: ActionBarItemProps[];
     bgColor?: string;
 };
 
