@@ -3,7 +3,7 @@ import React, { Component } from "react"
 class ActionBar extends Component {
     render() {
         const { position, items, bgColor } = this.props;
-        var barClasses = this.props.position ? "actionbar-container".concat(" "+this.props.position) : "actionbar-container";
+        var barClasses = position ? "actionbar-container".concat(" "+position) : "actionbar-container";
         return (
             <div 
                 className={barClasses}
@@ -12,17 +12,17 @@ class ActionBar extends Component {
                 }}
             >
                 <div className="actionbar-left">
-                    {this.props.items?.map((i, index) => {
+                    {items?.map((i, index) => {
                         if (i.position == "left" && i.item) return (<div key={index} className="actionbar-item">{i?.item}</div>)
                     })}
                 </div>
                 <div className="actionbar-center">
-                    {this.props.items?.map((i, index) => {
+                    {items?.map((i, index) => {
                         if (i.position == "center" && i.item) return (<div key={index} className="actionbar-item">{i?.item}</div>)
                     })}
                 </div>
                 <div className="actionbar-right">
-                    {this.props.items?.map((i, index) => {
+                    {items?.map((i, index) => {
                         if (i.position == "right" && i.item) return (<div key={index} className="actionbar-item">{i.item}</div>)
                     })}
                 </div>
