@@ -9,11 +9,17 @@ class Card extends Component {
             loading, title, size, openDetails, color,
             next, previous
         } = this.props;
-        var data = { name: id, ...list?.[id] };
+
+        // The following actually modifies the referenced object in the list passed
+        // by the parent component
+        // TODO: Check if is a doable practice in React
+        var data = list?.[id];
         if (data) {
+            data.name = id;
             data.next = next,
             data.previous = previous;
-        }
+        } else data = { name: id };
+        
         var cardClasses = size ? "card".concat(" "+size) : "card";
         return(
             <div 
