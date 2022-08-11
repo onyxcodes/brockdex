@@ -36,7 +36,7 @@ export const listPokemon = (offset = 0, limit = 24, searchParams = {query: null,
             loading: true
         }
     });
-    // This second dispatch is to reset the action to the store that contains the detailed list and keeps track of its the status
+    // This second dispatch is to reset the action to the reducer that handles detailed list and keeps track of its the status
     dispatch({
         type: "POKEMON_LIST",
         payload: {
