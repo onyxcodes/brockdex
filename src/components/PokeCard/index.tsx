@@ -2,6 +2,7 @@ import React from 'react';
 
 import Card, { CardProps }  from '../Card';
 
+// TODO: Consider extracting list's type to specific type
 interface PokeCardProps extends CardProps {
     id: string;
     list?: { [key: string]: {

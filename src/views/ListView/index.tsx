@@ -8,12 +8,12 @@ import Loader from "../../components/Loader";
 import PokeCard from "../../components/PokeCard";
 import ActionBar from "../../components/ActionBar";
 
-interface PokemonShallowList {
+interface PokeListShallow {
     name: string, url: string
 }
 
 interface ListViewProps {
-    list: PokemonShallowList[];
+    list: PokeListShallow[];
     loading: boolean;
     previous: { offset: number; limit: number};
     next: { offset: number; limit: number };
@@ -24,7 +24,7 @@ interface ListViewProps {
     detailedList: { [key: string]: any };
     loadingList: boolean;
     loadingListSuccess: boolean;
-    getPokemonList: (list: PokemonShallowList[]) => void;
+    getPokemonList: (list: PokeListShallow[]) => void;
     setPokemonList: ( detailtedList: { [key: string]: any }, total: number ) => void;
     // TODO: change to exported inferface, since it's reused
     openDetails: ( el: { [key: string]: any } ) => void;
