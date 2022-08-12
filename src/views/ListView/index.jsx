@@ -8,134 +8,87 @@ import Loader from "../../components/Loader";
 import PokeCard from "../../components/PokeCard";
 import ActionBar from "../../components/ActionBar";
 
-class ListView extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            listSet: false,
-            query: null,
-            offset: 0,
-            limit: 24,
-            newPageReq: false
+const ListView = ( props ) => {
+    const { 
+        list, loading, previous, next, total, listPokemon,
+        detailedList, loadingList, loadingListSuccess, getPokemonList,
+        setPokemonList, openDetails
+    } = props;
+
+    const [ listSet, markListSet ] = React.useState(false);
+    const [ query, setQuery ] = React.useState(null);
+    const [ offset, setOffset ] = React.useState(0);
+    const [ limit, setLimit ] = React.useState(28);
+
+    // Should request pokemon (shallow) list only when
+    // offset, limit or query changes 
+    React.useEffect( () => {
+        listPokemon(offset, limit, { query, total }
+    )}, [offset, limit, query]);
+
+    // If result list ( with minimum information ) was loaded
+    // attempt to load also detailed list
+    React.useEffect( () => {
+        if ( list.length && !loadingList && !loadingListSuccess ) {
+            getPokemonList(list);
+            markListSet(false); // probably this
+        }
+    }, [list, loadingList, loadingListSuccess]);
+
+    React.useEffect( () => {
+        if (loadingListSuccess && detailedList && !listSet) {
+            setPokemonList(detailedList, total);
+            markListSet(true);
+        }
+    }, [loadingListSuccess, detailedList, listSet]);
+
+    const fetchNext = () => {
+        if (list && next) {
+            setOffset(next.offset);
+            setLimit(next.limit);
         }
     }
 
-    componentDidMount() {
-        // at first load data
-        this.props.listPokemon();
-    }
-
-    componentDidUpdate() {
-        if (this.props.query !== this.state.query) {
-            // A new search query was provided, track in state
-            // and clean offset and limit parameters
-            this.setState({ 
-                query: this.props.query,
-                limit: 24,
-                offset: 0
-            }, () => {
-                this.props.listPokemon(
-                    this.state.offset, this.state.limit, {
-                    query: this.state.query,
-                    total: this.props.total
-                });
-            });
+    const fetchPrevious = () => {
+        if (list && previous) {
+            setOffset(previous.offset);
+            setLimit(previous.limit);
         }
-
-        if ( this.state.newPageReq ) {
-            // new page was requested, before fetching new page's data
-            // mark the request flag to false to avoid loops
-            this.setState({ newPageReq: false }, () => {
-                this.props.listPokemon(
-                    this.state.offset, this.state.limit, {
-                    query: this.state.query,
-                    total: this.props.total
-                });
-            })
-        }
-        
-        // If result list ( with minimum information ) was loaded
-        // attempt to load also detailed list
-        if ( this.props.list?.results && 
-            !this.props.loadingList && // avoids when is already loading
-            !this.props.loadingListSuccess // avoids when load was already completed
-        ) {
-            // Send the request for a new detailed list
-            this.props.getPokemonList(this.props.list.results);
-            // Since we just sent out the request for loading a new detailed list
-            
-            this.setState({ 
-                listSet: false, // the relative lists setter flag must be set to false
-            })
-        }
-        
-        // If detailed list was successfully loaded, pass to parent comp
-        if ( this.props.loadingListSuccess &&
-            this.props.list?.results &&
-            this.props.detailedList?.results && // TODO: improve to avoid updating state for empty lists
-            !this.state.listSet // avoid when already passed
-        ) {
-                this.props.setPokemonList(this.props.detailedList?.results, this.props.total)
-                this.setState({ listSet: true })
-            
-        };
     }
 
-    fetchNext() {
-        if ( this.props.list && this.props.list?.next ) {
-            this.setState({
-                offset: this.props.list.next.offset,
-                limit: this.props.list.next.limit,
-                newPageReq: true,
-            })
-        } // else throw Error
-    }
-
-    fetchPrevious() {
-        if ( this.props.list && this.props.list?.previous ) {
-            this.setState({
-                offset: this.props.list.previous.offset,
-                limit: this.props.list.previous.limit,
-                newPageReq: true
-            })
-        } // else throw Error
-    }
-
-    render() {
-        const { list, detailedList, openDetails, loading } = this.props;
-        return(
-            <div className="listView">
-                <Loader show={loading} />
-                {list?.results?.map( (i, index) => {
-                    return <PokeCard key={i.name}
-                        openDetails={(data) => openDetails(data)}
-                        list={detailedList?.results}
-                        next={ list.results?.[index+1]?.name }
-                        previous={ list.results?.[index-1]?.name }
-                        id={i.name} // based on api response structure, it matches name
-                        title={i.name}
-                        size={this.props.size}
-                    />
-                })}
-
-                <ActionBar position="bottom"
-                    items={[
-                        { item: <button onClick={() => this.fetchPrevious()} disabled={!list.previous}>Previous</button>, position: "left"},
-                        { item: <button onClick={() => this.fetchNext()} disabled={!list.next}>Next</button>, position: "right"}
-                    ]}
+    return(
+        <div className="listView">
+            <Loader show={loading} />
+            {list?.map( (i, index) => {
+                return <PokeCard key={i.name}
+                    openDetails={(data) => openDetails(data)}
+                    list={detailedList}
+                    next={list?.[index+1]?.name}
+                    previous={list?.[index-1]?.name}
+                    id={i.name}
+                    title={i.name}
                 />
-            </div>
-        )
-    }
+            })}
+
+            <ActionBar position="bottom"
+                items={[
+                    { item: <button onClick={() => fetchPrevious()} disabled={!previous}>Previous</button>, position: "left"},
+                    { item: <button onClick={() => fetchNext()} disabled={!next}>Next</button>, position: "right"}
+                ]}
+            />
+        </div>
+    )
 }
 
 function mapStateToProps({list, detailedList}) {
     const props = { 
-        list: list || [],
+        list: list?.results || [],
+        next: list?.next,
+        previous: list?.previous,
         total: list ? list.total : null,
         loading: list ? list.loading : true,
         error: list ? list.error : false,
-        detailedList: detailedList || [],
+        detailedList: detailedList?.results || [],
         loadingList: detailedList ? detailedList.loading : false,
         loadingListSuccess: detailedList ? detailedList.success : false,
     };
