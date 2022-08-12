@@ -2,7 +2,20 @@ import React from "react";
 
 import Loader from "../Loader";
 
-const FnCard = ( props ) => {
+interface CardProps {
+    id: string;
+    list?: { [key: string]: {
+        [key: string]: any
+    }};
+    loading: boolean;
+    title: string;
+    size: string; // TODO: set sizes and style accordingly
+    openDetails?: (data: {}) => void;
+    color?: string;
+    next?: string;
+    previous?: string;
+}
+const Card = ( props: CardProps ) => {
     const { id, list,
         loading, title, size, openDetails, color,
         next, previous
@@ -23,7 +36,7 @@ const FnCard = ( props ) => {
     return(
         <div 
             className={cardClasses}
-            onClick={() => openDetails(data)}
+            onClick={() => openDetails && openDetails(data)}
         >
             <Loader show={loading} />
             <div className="card-hero" style={{
@@ -36,4 +49,4 @@ const FnCard = ( props ) => {
     )
 }
 
-export default FnCard;
+export default Card;
