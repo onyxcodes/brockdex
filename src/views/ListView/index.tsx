@@ -21,6 +21,7 @@ interface ListViewProps {
     listPokemon: (offset?: number, limit?: number, params?: {
         query?: string, total?: number
     }) => void;
+    query?: string;
     detailedList: { [key: string]: any };
     loadingList: boolean;
     loadingListSuccess: boolean;
@@ -32,13 +33,12 @@ interface ListViewProps {
 
 const ListView = ( props: ListViewProps ) => {
     const { 
-        list, loading, previous, next, total, listPokemon,
+        list, loading, previous, next, total, query, listPokemon,
         detailedList, loadingList, loadingListSuccess, getPokemonList,
         setPokemonList, openDetails
     } = props;
 
     const [ listSet, markListSet ] = React.useState(false);
-    const [ query, setQuery ] = React.useState(null);
     const [ offset, setOffset ] = React.useState(0);
     const [ limit, setLimit ] = React.useState(28);
 
@@ -62,7 +62,7 @@ const ListView = ( props: ListViewProps ) => {
             setPokemonList(detailedList, total);
             markListSet(true);
         }
-    }, [loadingListSuccess, detailedList, listSet]);
+    }, [loadingListSuccess, detailedList.length, listSet]);
 
     const fetchNext = () => {
         if (list && next) {
