@@ -6,8 +6,10 @@ import { getPokemon } from "../../features/pokeapi/pokemon";
 import ActionBar from "../../components/ActionBar";
 import Loader from "../../components/Loader";
 import PropDetail from "../../components/PropDetail";
+import Bar from "../../components/Bar";
 
-import { ActionBarItemProps } from "../../components/ActionBar"
+import { ActionBarItemProps } from "../../components/ActionBar";
+import { PropDetailListLayout } from '../../components/PropDetail';
 
 interface PropDetailRenderProps {
     [key: string]: any;
@@ -20,6 +22,20 @@ const propDetailNames = {
     height: "Height",
 }
 
+const pokemonTypesColor: { [key: string]: string } = {
+    "hp": "#FF0000",
+    "attack": "#F08030",
+    "defense": "#F8D030",
+    "special-attack": "#6890F0",
+    "special-defense": "#78C850",
+    "speed": "#F85888"
+};
+
+const pokemonDataLayout: { [key: string]: PropDetailListLayout } = {
+    "types": "row",
+    "stats": "column"
+}
+
 const propListValues = {
     "types": function(el: {
         type: { name: string }
@@ -28,6 +44,22 @@ const propListValues = {
         return (<div className={className}>
             {el.type.name}
         </div>);
+    },
+    "stats": function(el: {
+        "base_stat": number,
+        "effort": number,
+        "stat": {
+            "name": string,
+            "url": string
+        }
+    }) {
+        let className = "pokemon-stat",
+            maxValue= 255,
+            color = pokemonTypesColor[el.stat.name];
+        return (<div className={className}>
+            <span className='pokemon-stat-label'>{el.stat.name}</span>
+            <Bar value={el.base_stat} maxValue={maxValue} color={color}/>
+        </div>)
     }
 }
 
@@ -42,10 +74,11 @@ const renderPropsDetails = (props: PropDetailRenderProps) => {
                 propName={key}
                 value={value}
             />
-        } else if ( ["types"].includes(key) ) {
+        } else if ( ["types", "stats"].includes(key) ) {
             return <PropDetail 
                 key={index}
                 propType="list"
+                propListLayout={pokemonDataLayout[key]}
                 propName={key}
                 propNameMap={propDetailNames}
                 propValueMap={propListValues}

@@ -153,12 +153,15 @@ height: 400px;
 .modal-content {
   flex: 1;
   width: 100%;
+  /*TODO: move height setting to JSX, since it changes base on the presenc of actionbars */
+  height: calc(100% - 80px); 
   display: flex;
 }
 
 .modal-content .hero-container {
   flex: 0.25;
   width: 25%;
+  height: 100%;
   padding: 30px;
 }
 
@@ -174,6 +177,8 @@ height: 400px;
 .modal-content-details {
   flex: 0.75;
   width: 75%;
+  overflow: scroll;
+  height: 100%;
 }
 
 .propDetail {
@@ -201,16 +206,27 @@ height: 400px;
   display: flex;
   width: 100%;
   list-style: none;
-  gap: 10px;
   padding-left: 0;
   white-space: nowrap;
   margin: 0;
 }
 
-.propDetail-value-container .propDetail-value {
+.propDetail-value-container.column {
+  flex-direction: column;
+  /* gap: 5px; */
+}
+
+.propDetail-value-container.row {
+  flex-direction: row;
+  /* gap: 10px; */
+}
+
+.propDetail-value-container.column .propDetail-value {
+  padding: 2.5px 0;
+}
+
+.propDetail-value-container.row .propDetail-value {
   padding: 10px 0;
-  /* display: flex; */
-  /* place-content: center; */
 }
 
 .pokemon-type {
@@ -290,4 +306,25 @@ height: 400px;
 
 .pokemon-type.fairy {
   background-color: #EE99AC;
+}
+
+.pokemon-stat-label {
+  text-transform: capitalize;
+}
+
+.pokemon-stat {
+display: flex;
+justify-content: space-between;
+}
+.bar-container {
+flex: 0.7;
+}
+.bar-value {
+  padding-left: 10px;
+}
+.pokemon-stat-label::after {
+content: ':';
+}
+.pokemon-stat-label {
+flex: 0.3;
 }
