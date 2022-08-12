@@ -33,7 +33,8 @@ const pokemonTypesColor: { [key: string]: string } = {
 
 const pokemonDataLayout: { [key: string]: PropDetailListLayout } = {
     "types": "row",
-    "stats": "column"
+    "stats": "column",
+    'abilities': 'row'
 }
 
 const propListValues = {
@@ -60,6 +61,19 @@ const propListValues = {
             <span className='pokemon-stat-label'>{el.stat.name}</span>
             <Bar value={el.base_stat} maxValue={maxValue} color={color}/>
         </div>)
+    },
+    "abilities": function(el: {
+        "ability": {
+            "name": string,
+            "url": string
+        },
+        "is_hidden": boolean,
+        "slot": number
+    }) {
+        let className = 'pokemon-ability';
+        return (<span className={className}>
+            {el.ability.name}{el.is_hidden && ' '.concat(' (hidden)')}
+        </span>)
     }
 }
 
@@ -74,7 +88,7 @@ const renderPropsDetails = (props: PropDetailRenderProps) => {
                 propName={key}
                 value={value}
             />
-        } else if ( ["types", "stats"].includes(key) ) {
+        } else if ( [ 'types', 'stats', 'abilities' ].includes(key) ) {
             return <PropDetail 
                 key={index}
                 propType="list"

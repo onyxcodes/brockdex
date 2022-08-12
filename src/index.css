@@ -328,3 +328,11 @@ content: ':';
 .pokemon-stat-label {
 flex: 0.3;
 }
+
+.pokemon-ability {
+  padding: 0 10px;
+}
+
+.propDetail-value:nth-child(1) .pokemon-ability {
+  padding: 0;
+}

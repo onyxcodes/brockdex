@@ -12,9 +12,9 @@ const renderList = (
     let className = "propDetail-value-container ".concat(layout);
     let result = <ul className={className}>
         {list.map( (el, i) => {
-            return <li key={i} className="propDetail-value"><span>
-                    {extractor(el)}
-            </span></li>
+            return <li key={i} className="propDetail-value">
+                {extractor(el)}
+            </li>
         })}
     </ul>
     return result;
