@@ -7,7 +7,7 @@ interface PokeCardProps extends CardProps {
     list?: { [key: string]: {
         [key: string]: any
     }};
-    openDetails?: (data: {}) => void;
+    openDetails?: (data: { [key: string]: any }) => void;
     next?: string;
     previous?: string;
 }

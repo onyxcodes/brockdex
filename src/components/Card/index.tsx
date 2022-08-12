@@ -3,7 +3,7 @@ import React from "react";
 export interface CardProps {
     title: string;
     // TODO: set accepted sizes, and style accordingly
-    size: string;
+    size?: string;
     classes?: string;
     onClick?: () => void;
     bgColor?: string;

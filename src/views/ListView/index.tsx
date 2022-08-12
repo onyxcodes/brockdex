@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import {bindActionCreators} from 'redux';
+import {AnyAction, bindActionCreators, Dispatch} from 'redux';
 import { listPokemon } from "../../features/pokeapi/list";
 import { getPokemonList } from "../../features/pokeapi/detailedList";
 
@@ -8,7 +8,29 @@ import Loader from "../../components/Loader";
 import PokeCard from "../../components/PokeCard";
 import ActionBar from "../../components/ActionBar";
 
-const ListView = ( props ) => {
+interface PokemonShallowList {
+    name: string, url: string
+}
+
+interface ListViewProps {
+    list: PokemonShallowList[];
+    loading: boolean;
+    previous: { offset: number; limit: number};
+    next: { offset: number; limit: number };
+    total: number;
+    listPokemon: (offset?: number, limit?: number, params?: {
+        query?: string, total?: number
+    }) => void;
+    detailedList: { [key: string]: any };
+    loadingList: boolean;
+    loadingListSuccess: boolean;
+    getPokemonList: (list: PokemonShallowList[]) => void;
+    setPokemonList: ( detailtedList: { [key: string]: any }, total: number ) => void;
+    // TODO: change to exported inferface, since it's reused
+    openDetails: ( el: { [key: string]: any } ) => void;
+}
+
+const ListView = ( props: ListViewProps ) => {
     const { 
         list, loading, previous, next, total, listPokemon,
         detailedList, loadingList, loadingListSuccess, getPokemonList,
@@ -80,7 +102,11 @@ const ListView = ( props ) => {
     )
 }
 
-function mapStateToProps({list, detailedList}) {
+// TODO: Change to redux-hooks
+function mapStateToProps({list, detailedList}: { 
+    list: { results: [], next: {}, previous: {}, total: number; loading: boolean; error: string | boolean }, 
+    detailedList: { results: [], loading: boolean; success: boolean}
+}) {
     const props = { 
         list: list?.results || [],
         next: list?.next,
@@ -95,7 +121,7 @@ function mapStateToProps({list, detailedList}) {
     return props;
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch<AnyAction>) {
     return bindActionCreators({listPokemon, getPokemonList}, dispatch);
 }
   
