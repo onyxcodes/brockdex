@@ -3,9 +3,9 @@ import React, { Component } from "react";
 import ActionBar from "../components/ActionBar";
 import SearchBar from "../components/SearchBar";
 import ListView from "../views/ListView";
-import Modal from "../views/Modal";
 
 import FavoritesMgt from "../features/favoritesMgt";
+import PokeModal from "../views/PokeModal";
 
 // interface FavoritesActions {
 //     favoriteKey: string;
@@ -122,7 +122,7 @@ class App extends Component {
                     setPokemonList={(list) => this.setPokemonList(list)}
                     openDetails={(el) => this.openDetails(el)}
                 />
-                { this.state.showModal ? <Modal
+                { this.state.showModal ? <PokeModal
                     id={this.state.focusedElement?.id}
                     name={this.state.focusedElement?.name}
                     visible={this.state.showModal}
@@ -133,7 +133,7 @@ class App extends Component {
                         (elId) => this.addToFavorites(elId),
                         (elId) => this.removeFromFavorites(elId)
                     )}
-                    btmActionBarItems={(element) => listMoveActionBarItems(element, (element) => this.changeContent(element))}
+                    getBtmBarItems={(element) => listMoveActionBarItems(element, (element) => this.changeContent(element))}
                     changeContent={(element) => this.changeContent(element)}
                     data={this.state.focusedElement}
                     size="medium"
