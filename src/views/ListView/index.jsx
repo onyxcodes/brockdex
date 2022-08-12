@@ -5,7 +5,7 @@ import { listPokemon } from "../../features/pokeapi/list";
 import { getPokemonList } from "../../features/pokeapi/detailedList";
 
 import Loader from "../../components/Loader";
-import Card from "../../components/Card";
+import PokeCard from "../../components/PokeCard";
 import ActionBar from "../../components/ActionBar";
 
 class ListView extends Component {
@@ -107,7 +107,7 @@ class ListView extends Component {
             <div className="listView">
                 <Loader show={loading} />
                 {list?.results?.map( (i, index) => {
-                    return <Card key={i.name}
+                    return <PokeCard key={i.name}
                         openDetails={(data) => openDetails(data)}
                         list={detailedList?.results}
                         next={ list.results?.[index+1]?.name }

@@ -1,48 +1,32 @@
 import React from "react";
 
-import Loader from "../Loader";
-
-interface CardProps {
-    id: string;
-    list?: { [key: string]: {
-        [key: string]: any
-    }};
-    loading: boolean;
+export interface CardProps {
     title: string;
-    size: string; // TODO: set sizes and style accordingly
-    openDetails?: (data: {}) => void;
-    color?: string;
-    next?: string;
-    previous?: string;
+    // TODO: set accepted sizes, and style accordingly
+    size: string;
+    classes?: string;
+    onClick?: () => void;
+    bgColor?: string;
+    bgImage?: string;
 }
 const Card = ( props: CardProps ) => {
-    const { id, list,
-        loading, title, size, openDetails, color,
-        next, previous
+    const {
+        title, size = "medium", onClick, 
+        bgColor = "#999999", bgImage,
+        classes = "card"
     } = props;
 
-    // The following actually modifies the referenced object in the list passed
-    // by the parent component
-    // TODO: Check if is a doable practice in React
-    var data = list?.[id];
-    if (data) {
-        data.name = id;
-        data.next = next,
-        data.previous = previous;
-    } else data = { name: id };
-    
-    var cardClasses = size ? "card".concat(" "+size) : "card";
+    let cardClasses = classes;
+    cardClasses = size ? cardClasses.concat(" "+size) : cardClasses;
 
     return(
         <div 
             className={cardClasses}
-            onClick={() => openDetails && openDetails(data)}
+            onClick={onClick}
         >
-            <Loader show={loading} />
             <div className="card-hero" style={{
-                backgroundColor: !data?.sprites?.other["official-artwork"]?.front_default ? color || "#999999" : null,
-                backgroundImage: data?.sprites?.other["official-artwork"]?.front_default ? 
-                "url("+data?.sprites.other["official-artwork"].front_default+")" : null
+                backgroundColor: !bgImage && bgColor,
+                backgroundImage: bgImage ? "url("+bgImage+")" : null 
             }}></div>
             <span className="card-title">{title}</span>
         </div>
