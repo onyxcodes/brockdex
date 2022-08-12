@@ -1,11 +1,10 @@
-import React, { Component} from "react";
+import React from "react";
 
-class Loader extends Component {
-    render() {
-        if ( this.props.show ) {
-            return <div className="loader">Loading</div>
-        } else return null;
-    }
+const Loader = ( props ) => {
+    const { show } = props;
+    return (
+        show && <div className="loader">Loading</div>
+    );
 }
 
 export default Loader;
