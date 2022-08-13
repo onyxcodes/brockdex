@@ -108,9 +108,9 @@ const renderPropsDetails = (
 interface PokeModalProps extends ModalProps {
     id?: number;
     name: string;
-    pokemon: { [key: string]: any };
-    getPokemon: (id: number, name: string) => void;
-    getBtmBarItems: (element: {}) => ActionBarItemProps[];
+    pokemon?: { [key: string]: any };
+    getPokemon?: (id: number, name: string) => void;
+    getBtmBarItems?: (element: {}) => ActionBarItemProps[];
 };
 
 const PokeModal = (props: PokeModalProps) => {
@@ -123,10 +123,10 @@ const PokeModal = (props: PokeModalProps) => {
         <Modal 
             title={name}
             heroImg={heroImg}
-            btmActionBarItems={getBtmBarItems(pokemon)}
+            btmActionBarItems={getBtmBarItems && pokemon && getBtmBarItems(pokemon)}
             {...props}
         >
-            {renderPropsDetails({...pokemon}, inlineProps, listProps)}
+            {pokemon && renderPropsDetails({...pokemon}, inlineProps, listProps)}
         </Modal>
     )
 }

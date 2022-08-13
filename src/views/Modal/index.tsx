@@ -4,8 +4,8 @@ import ActionBar, { ActionBarItemProps } from "../../components/ActionBar";
 import Loader from "../../components/Loader";
 
 export interface ModalProps {
-    title: string;
-    children: JSX.Element[];
+    title?: string;
+    children?: JSX.Element[];
     heroImg?: string;
     // TODO: set accepted sizes, and style accordingly
     size?: string;
@@ -18,7 +18,7 @@ export interface ModalProps {
 
 const Modal = ( props: ModalProps ) => {
     const { 
-        title, heroImg,
+        title = "Modal", heroImg,
         children,
         size = "medium", visible = false,  loading = false,
         topActionBarItems, btmActionBarItems,
@@ -34,7 +34,7 @@ const Modal = ( props: ModalProps ) => {
                 <ActionBar position="top"
                     items={[
                         { item: <span>{title}</span>, position: "center" },
-                        ...topActionBarItems,
+                        ...(topActionBarItems || []),
                         { item: <button onClick={() => closeModal()}>❌ Close</button>, position: "right"}
                     ]}
                 />
@@ -52,14 +52,14 @@ const Modal = ( props: ModalProps ) => {
                         </div>
                     </div> }
                     <div className="modal-content-details">
-                        {...children}
+                        {...(children || [])}
                     </div>
                 </div> : <div className="modal-content"></div>}
-                <ActionBar position="bottom"
+                {btmActionBarItems && <ActionBar position="bottom"
                     items={[
                         ...btmActionBarItems
                     ]}
-                />
+                />}
             </div>
         </div>
     );

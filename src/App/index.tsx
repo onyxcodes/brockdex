@@ -1,13 +1,19 @@
 import React from "react";
 
-import ActionBar from "../components/ActionBar";
+import ActionBar, { ActionBarItemProps } from "../components/ActionBar";
 import SearchBar from "../components/SearchBar";
 import ListView from "../views/ListView";
 
 import FavoritesMgt from "../features/favoritesMgt";
 import PokeModal from "../views/PokeModal";
 
-const favoriteActionBarItems = ( favorites, favoriteKey, add, remove ) => {
+
+const favoriteActionBarItems = ( 
+    favorites: (number | string)[],
+    favoriteKey: number | string, 
+    add: () => void,
+    remove: () => void
+): ActionBarItemProps[] => {
     return [
         { 
             item: !favorites.includes(favoriteKey) ? 
@@ -17,7 +23,10 @@ const favoriteActionBarItems = ( favorites, favoriteKey, add, remove ) => {
     ];
 }
 
-const listMoveActionBarItems = ( pokemon, changeContent ) => {
+const listMoveActionBarItems = (
+    pokemon: { [key: string]: any },
+    changeContent: ( element: string ) => void
+): ActionBarItemProps[] => {
     return [
         { item: <button 
             disabled={!pokemon?.next}
@@ -33,26 +42,26 @@ const listMoveActionBarItems = ( pokemon, changeContent ) => {
 const App = () => {
     const [ modalVisible, showModal ] = React.useState(false);
     const [ focusedElement, setFocusedEl ] = React.useState(null);
-    const [ searchQuery, setSearchQuery ] = React.useState(null);
+    const [ searchQuery, setSearchQuery ] = React.useState("");
     const [ total, setTotal ] = React.useState(null); // TODO: consider setting 0 as init val
     const [ favoritesMgt , setFavoritesMgt ] = React.useState(new FavoritesMgt());
     // TODO: consider using another state property to determine whether to know that is showing favorites list
     // and therefore disable search features
     const [ favoritesShown, setFavoritesVisible ] = React.useState(false);
-    const [ list, setList ] = React.useState({});
+    const [ list, setList ] = React.useState<{[key: string]: any}>();
 
     // Updates total count stored in localStorage with given total, if differs
-    const updateTotal = ( total ) => {
+    const updateTotal = ( total: number ) => {
         let storedTotal = localStorage.getItem("total") ? Number(localStorage.getItem("total")) : null;
-        if ( storedTotal && // total already stored
-            storedTotal !== total && // update only when different
-            !isNaN(total) // given total is a number
+        if ( !total || isNaN(total) ) {
+            console.log(`updateTotal - Given total is not a number: ${total}`);
+        } else if ( 
+            storedTotal && // total already stored
+            storedTotal !== total // update only when different
         ) {
-            localStorage.setItem("total", total);
+            localStorage.setItem("total", total.toString());
         } else if ( !storedTotal ) { // in case was not stored yet
-            localStorage.setItem("total", total)
-        } else if ( !isNaN(total) ) {
-            throw Error("Given total is not a number", total);
+            localStorage.setItem("total",  total.toString())
         } // else // skip update cause not needed
     }
 
@@ -83,7 +92,7 @@ const App = () => {
                 item: <SearchBar 
                     value={searchQuery} 
                     disabled={favoritesShown} 
-                    setSearchQuery={(name)=> setSearchQuery(name)}
+                    setSearchQuery={setSearchQuery}
                 />,
                 position: "left" 
             },
@@ -92,7 +101,6 @@ const App = () => {
         ]} />
         <ListView 
             query={searchQuery}
-            total={localStorage.getItem("total")}
             setPokemonList={(list, total) => { setList(list); setTotal(total) }}
             openDetails={(el) => setFocusedEl(el)}
         />
@@ -108,8 +116,7 @@ const App = () => {
                 () => removeFromFavorites()
             )}
             getBtmBarItems={(element) => listMoveActionBarItems(element, (element) => setFocusedEl(list[element]))}
-            data={focusedElement}
-        /> }
+            data={focusedElement} /> }
     </div>)
 }
 
