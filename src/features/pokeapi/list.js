@@ -27,7 +27,7 @@ const list = ( offset, limit ) => {
     });
 }
 
-export const listPokemon = (offset = 0, limit = 24, searchParams = {query: null, total: null}) => dispatch => {
+export const listPokemon = (offset = 0, limit = 24, query = "") => dispatch => {
     // The first dispatch is to mark that we are going to request the list of pokemon names
     // on its response, we are going to mark the call as completed
     dispatch({
@@ -45,7 +45,7 @@ export const listPokemon = (offset = 0, limit = 24, searchParams = {query: null,
             results: null
         }
     })
-    if ( !searchParams.query ) { // npt passin a query
+    if ( !query || query === "" ) { // npt passin a query
         list(offset, limit).then( res => {
             if (res) {
                 dispatch({
@@ -67,10 +67,11 @@ export const listPokemon = (offset = 0, limit = 24, searchParams = {query: null,
                 });
             }
         })
-    } else if ( searchParams.total ) {
-        list(0, searchParams.total).then( res => {
+    } else if ( query && query !== "" ) {
+        let total = Number(localStorage.getItem("total"));
+        list(0, total).then( res => {
             if (res) {
-                var reg = new RegExp(searchParams.query, "i");
+                var reg = new RegExp(query, "i");
                 var index_m = 0; // tracks count of matching results
                 var newResults = res.results.filter( el => {
                     let matches = reg.test(el.name);

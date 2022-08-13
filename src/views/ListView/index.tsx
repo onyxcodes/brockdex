@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {AnyAction, bindActionCreators, Dispatch} from 'redux';
 import { listPokemon } from "../../features/pokeapi/list";
@@ -17,10 +17,8 @@ interface ListViewProps {
     loading: boolean;
     previous: { offset: number; limit: number};
     next: { offset: number; limit: number };
-    total: number;
-    listPokemon: (offset?: number, limit?: number, params?: {
-        query?: string, total?: number
-    }) => void;
+    total?: number;
+    listPokemon: (offset?: number, limit?: number, query?: string) => void;
     query?: string;
     detailedList: { [key: string]: any };
     loadingList: boolean;
@@ -45,7 +43,7 @@ const ListView = ( props: ListViewProps ) => {
     // Should request pokemon (shallow) list only when
     // offset, limit or query changes 
     React.useEffect( () => {
-        listPokemon(offset, limit, { query, total }
+        listPokemon(offset, limit, query
     )}, [offset, limit, query]);
 
     // If result list ( with minimum information ) was loaded
@@ -64,6 +62,7 @@ const ListView = ( props: ListViewProps ) => {
         }
     }, [loadingListSuccess, detailedList.length, listSet]);
 
+    // TODO: consider using useCallback!
     const fetchNext = () => {
         if (list && next) {
             setOffset(next.offset);
