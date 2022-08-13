@@ -1,14 +1,14 @@
 
 class FavoritesMgt {
-    favorites: number[];
+    favorites: (number | string)[];
     favoritesKey: string;
-    constructor( favorites: number[] = [], favoritesKey = "favorites") {
+    constructor( favorites: (number | string)[] = [], favoritesKey = "favorites") {
         this.favorites = favorites;
         this.favoritesKey = favoritesKey;
     }
     
     getFavorites() {
-        let favorites: number[] = [];
+        let favorites: (number | string)[] = [];
         try {
             if (localStorage.getItem("favorites")) favorites = JSON.parse(localStorage.getItem("favorites"));
         } catch (e) {
@@ -17,14 +17,14 @@ class FavoritesMgt {
         return favorites;
     }
 
-    updateFavorites( favorites: number[] ) {
+    updateFavorites( favorites: (number | string)[] ) {
         let favoritesStr: string =  JSON.stringify(favorites)
         localStorage.setItem(this.favoritesKey, favoritesStr);
         this.favorites = favorites;
         return true;
     }
 
-    addToFavorites( id: number ) {
+    addToFavorites( id: number | string ) {
         if (id) {
             let favorites = this.getFavorites();
             if ( !favorites.includes(id) ) {
