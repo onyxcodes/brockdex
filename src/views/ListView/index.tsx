@@ -15,8 +15,8 @@ interface PokeListShallow {
 interface ListViewProps {
     list: PokeListShallow[];
     loading: boolean;
-    previous: { offset: number; limit: number};
-    next: { offset: number; limit: number };
+    previous?: { offset?: number; limit?: number};
+    next?: { offset?: number; limit?: number };
     total?: number;
     listPokemon: (offset?: number, limit?: number, query?: string) => void;
     query?: string;
@@ -31,7 +31,7 @@ interface ListViewProps {
 
 const ListView = ( props: ListViewProps ) => {
     const { 
-        list, loading, previous, next, total, query, listPokemon,
+        list, loading, previous, next, total = 0, query, listPokemon,
         detailedList, loadingList, loadingListSuccess, getPokemonList,
         setPokemonList, openDetails
     } = props;
@@ -39,12 +39,21 @@ const ListView = ( props: ListViewProps ) => {
     const [ listSet, markListSet ] = React.useState(false);
     const [ offset, setOffset ] = React.useState(0);
     const [ limit, setLimit ] = React.useState(28);
+    const [ localQuery, setLocalQuery ] = React.useState("");
+
+    React.useEffect( () => {
+        if (query) {
+            setLocalQuery(query);
+            // Since search query changed reset offest and limit
+            setOffset(0); setLimit(28);
+        }
+    },  [query]);
 
     // Should request pokemon (shallow) list only when
     // offset, limit or query changes 
     React.useEffect( () => {
-        listPokemon(offset, limit, query
-    )}, [offset, limit, query]);
+        listPokemon(offset, limit, localQuery
+    )}, [offset, limit, localQuery]);
 
     // If result list ( with minimum information ) was loaded
     // attempt to load also detailed list
@@ -65,15 +74,15 @@ const ListView = ( props: ListViewProps ) => {
     // TODO: consider using useCallback!
     const fetchNext = () => {
         if (list && next) {
-            setOffset(next.offset);
-            setLimit(next.limit);
+            next.offset && setOffset(next.offset);
+            next.limit && setLimit(next.limit);
         }
     }
 
     const fetchPrevious = () => {
         if (list && previous) {
-            setOffset(previous.offset);
-            setLimit(previous.limit);
+            previous.offset && setOffset(previous.offset);
+            previous.limit && setLimit(previous.limit);
         }
     }
 
@@ -110,7 +119,7 @@ function mapStateToProps({list, detailedList}: {
         list: list?.results || [],
         next: list?.next,
         previous: list?.previous,
-        total: list ? list.total : null,
+        total: list ? list.total : 0,
         loading: list ? list.loading : true,
         error: list ? list.error : false,
         detailedList: detailedList?.results || [],
