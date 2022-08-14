@@ -7,7 +7,7 @@ import React from "react";
 const Loader = ( props: { show: boolean } ) => {
     const { show = false } = props;
     return (
-        show && <div className="loader">Loading</div>
+        show ? <div className="loader">Loading</div> : <></>
     );
 }
 

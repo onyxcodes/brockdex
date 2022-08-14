@@ -10,7 +10,8 @@ class FavoritesMgt {
     getFavorites() {
         let favorites: (number | string)[] = [];
         try {
-            if (localStorage.getItem("favorites")) favorites = JSON.parse(localStorage.getItem("favorites"));
+            let _favorites = localStorage.getItem("favorites");
+            if (_favorites) favorites = JSON.parse(_favorites);
         } catch (e) {
             console.log("getFavorites - problem while fetching or parsing favorites", e);
         }

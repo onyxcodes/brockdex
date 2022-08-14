@@ -39,16 +39,18 @@ const listMoveActionBarItems = (
     ]
 }
 
+
+// TODO: prepare const file for each component and import default state and props values
 const App = () => {
     const [ modalVisible, showModal ] = React.useState(false);
-    const [ focusedElement, setFocusedEl ] = React.useState(null);
+    const [ focusedElement, setFocusedEl ] = React.useState<{ [key: string]: any; } | null>(null);
     const [ searchQuery, setSearchQuery ] = React.useState("");
-    const [ total, setTotal ] = React.useState(null); // TODO: consider setting 0 as init val
+    const [ total, setTotal ] = React.useState<number>(0); // TODO: consider setting 0 as init val
     const [ favoritesMgt , setFavoritesMgt ] = React.useState(new FavoritesMgt());
     // TODO: consider using another state property to determine whether to know that is showing favorites list
     // and therefore disable search features
     const [ favoritesShown, setFavoritesVisible ] = React.useState(false);
-    const [ list, setList ] = React.useState<{[key: string]: any}>();
+    const [ list, setList ] = React.useState<{[key: string]: any}>({});
 
     // Updates total count stored in localStorage with given total, if differs
     const updateTotal = ( total: number ) => {
@@ -76,14 +78,19 @@ const App = () => {
 
     // When called, adds currently focused el to favorites
     const addToFavorites = () => {
-        let favorites = favoritesMgt.addToFavorites(focusedElement.name);
-        setFavoritesMgt(new FavoritesMgt(favorites));
+        if ( focusedElement ) {
+            let favorites = favoritesMgt.addToFavorites(focusedElement.name);
+            setFavoritesMgt(new FavoritesMgt(favorites));
+        } // else throw error
     }
 
     // When called, removes currently focused el to favorites
     const removeFromFavorites = () => {
-        let favorites = favoritesMgt.removeFromFavorites(focusedElement.name);
-        setFavoritesMgt(new FavoritesMgt(favorites));
+        if ( focusedElement ) {
+            let favorites = favoritesMgt.removeFromFavorites(focusedElement.name);
+            setFavoritesMgt(new FavoritesMgt(favorites));
+        } // else throw error
+        
     }
 
     return (<div id="app">

@@ -22,8 +22,11 @@ const PokeCard = ( props: PokeCardProps ) => {
     // The following actually modifies the referenced object in the list passed
     // by the parent component
     // TODO: Check if is a doable practice in React
-    var data = list?.[id];
-    if (data) {
+    var data: {
+        [key: string]: any;
+    } = {};
+    if (list?.[id]) {
+        data = list?.[id];
         data.name = id;
         data.next = next,
         data.previous = previous;

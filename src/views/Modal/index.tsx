@@ -5,7 +5,7 @@ import Loader from "../../components/Loader";
 
 export interface ModalProps {
     title?: string;
-    children?: JSX.Element[];
+    children?: (JSX.Element | undefined)[];
     heroImg?: string;
     // TODO: set accepted sizes, and style accordingly
     size?: string;

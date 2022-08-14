@@ -25,8 +25,8 @@ const Card = ( props: CardProps ) => {
             onClick={onClick}
         >
             <div className="card-hero" style={{
-                backgroundColor: !bgImage && bgColor,
-                backgroundImage: bgImage ? "url("+bgImage+")" : null 
+                backgroundColor: !bgImage && bgColor || undefined,
+                backgroundImage: bgImage ? "url("+bgImage+")" : undefined 
             }}></div>
             <span className="card-title">{title}</span>
         </div>

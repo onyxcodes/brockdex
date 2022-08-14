@@ -2,7 +2,7 @@ import React from "react";
 
 type PropDetailList = any[];
 export type PropDetailListLayout = "row" | "column";
-type PropDetailListValue = (el: {} | "string") => JSX.Element;
+type PropDetailListValue = (el: {[key: string]: any}) => JSX.Element;
 
 const renderList = (
     list: PropDetailList,
@@ -39,7 +39,7 @@ const PropDetail = ( props: PropDetailProps ) => {
             detailClasses = detailClasses.concat(" inline");
             prop = <div className={detailClasses}>
                 <span className="title">
-					{propNameMap[propName] || propName}
+					{propNameMap && propNameMap[propName] || propName}
 				</span>
                 <div className="propDetail-value">{value}</div>
             </div>
@@ -47,21 +47,21 @@ const PropDetail = ( props: PropDetailProps ) => {
         case "text":
             prop = <div className={detailClasses}>
                 <span className="title">
-					{propNameMap[propName] || propName}
+					{propNameMap && propNameMap[propName] || propName}
 				</span>
                 <div className="propDetail-value">{value}</div>
             </div>
             break;
         case "list":
-            let extractor = propValueMap[propName];
+            let extractor = propValueMap && propValueMap[propName];
             if ( value instanceof Array && extractor ) {
                 prop = <div className={detailClasses}>
                     <span className="title">
-                        {propNameMap[propName] || propName}
+                        {propNameMap && propNameMap[propName] || propName}
                     </span>
-                    {renderList(value, propValueMap[propName], propListLayout)}
+                    {renderList(value, extractor, propListLayout)}
                 </div>
-            } else throw new Error("PropDetail - For list prop types, value must be an array");
+            } else throw new Error("PropDetail - For list prop types, value must be an array and extractor function should be defined");
             break;
         default:
             return null;

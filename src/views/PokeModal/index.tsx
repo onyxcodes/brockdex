@@ -37,41 +37,53 @@ const pokemonDataLayout: { [key: string]: PropDetailListLayout } = {
 
 const propListValues = {
     'types': function(el: {
-        type: { name: string }
+        type?: { name: string }
     }) {
-        let className = 'pokemon-type '.concat(el.type.name);
-        return (<div className={className}>
-            {el.type.name}
-        </div>);
+        let element: JSX.Element = <></>;
+        if ( el.type?.name ) {
+            let className = 'pokemon-type '.concat(el.type.name);
+                element = <div className={className}>
+                    {el.type.name}
+                </div>;
+        } // else log error
+        return (element);
     },
     'stats': function(el: {
-        'base_stat': number,
-        'effort': number,
-        'stat': {
-            'name': string,
-            'url': string
+        'base_stat'?: number,
+        'effort'?: number,
+        'stat'?: {
+            'name'?: string,
+            'url'?: string
         }
     }) {
-        let className = 'pokemon-stat',
-            maxValue= 255,
-            color = pokemonTypesColor[el.stat.name];
-        return (<div className={className}>
-            <span className='pokemon-stat-label'>{el.stat.name}</span>
-            <Bar value={el.base_stat} maxValue={maxValue} color={color}/>
-        </div>)
+        let element: JSX.Element = <></>;
+        if ( el.stat?.name && el.base_stat ) {
+            let className = 'pokemon-stat',
+                maxValue= 255,
+                color = pokemonTypesColor[el.stat.name];
+            element = <div className={className}>
+                <span className='pokemon-stat-label'>{el.stat.name}</span>
+                <Bar value={el.base_stat} maxValue={maxValue} color={color}/>
+            </div>;
+        } // else log error
+        return (element);
     },
     'abilities': function(el: {
-        'ability': {
-            'name': string,
-            'url': string
+        'ability'?: {
+            'name'?: string,
+            'url'?: string
         },
-        'is_hidden': boolean,
-        'slot': number
+        'is_hidden'?: boolean,
+        'slot'?: number
     }) {
-        let className = 'pokemon-ability';
-        return (<span className={className}>
-            {el.ability.name}{el.is_hidden && ' '.concat(' (hidden)')}
-        </span>)
+        let element: JSX.Element = <></>;
+        if ( el.ability?.name && el.is_hidden ) {
+            let className = 'pokemon-ability';
+            element = <span className={className}>
+                {el.ability.name}{el.is_hidden && ' '.concat(' (hidden)')}
+            </span>;
+        } // else log error
+        return element;
     }
 }
 
@@ -79,8 +91,8 @@ const renderPropsDetails = (
     props: {[key: string]: any},
     inlineProps: string[] = [],
     listProps: string[] = []
-) => {
-    let details;
+): (JSX.Element | undefined)[]  => {
+    let details: (JSX.Element | undefined)[] = [];
     if (props) details = Object.entries(props).map( ( [key, value], index) => {
         if ( inlineProps.includes(key) ) {
             return <PropDetail 
@@ -109,14 +121,14 @@ interface PokeModalProps extends ModalProps {
     id?: number;
     name: string;
     pokemon?: { [key: string]: any };
-    getPokemon?: (id: number, name: string) => void;
+    getPokemon?: (id?: number, name?: string) => void;
     getBtmBarItems?: (element: {}) => ActionBarItemProps[];
 };
 
 const PokeModal = (props: PokeModalProps) => {
     const { id, name, pokemon, getPokemon, getBtmBarItems } = props;
 
-    React.useEffect(() =>  name && !id && getPokemon(null, name), [name, id]);
+    React.useEffect(() => { if (name && !id && getPokemon) getPokemon(undefined, name)}, [name, id]);
 
     const heroImg = pokemon?.sprites?.other['official-artwork']?.front_default;
     return(
