@@ -7,12 +7,12 @@ import Loader from "../../components/Loader";
 import PokeCard from "../../components/PokeCard";
 import ActionBar from "../../components/ActionBar";
 
-interface PokeListShallow {
-    name: string, url: string
-}
+export interface PokeDataShallow {
+    name: string; url: string
+};
 
 interface ListViewProps {
-    list: PokeListShallow[];
+    list: PokeDataShallow[];
     loading: boolean;
     previous?: { offset?: number; limit?: number};
     next?: { offset?: number; limit?: number };
@@ -22,7 +22,7 @@ interface ListViewProps {
     detailedList: { [key: string]: any };
     loadingList: boolean;
     loadingListSuccess: boolean;
-    getPokemonList: (list: PokeListShallow[]) => void;
+    getPokemonList: (list: PokeDataShallow[]) => void;
     setPokemonList: ( detailtedList: { [key: string]: any }, total: number ) => void;
     // TODO: change to exported inferface, since it's reused
     openDetails: ( el: { [key: string]: any } ) => void;
@@ -57,6 +57,7 @@ const ListView = ( props: ListViewProps ) => {
     // If result list ( with minimum information ) was loaded
     // attempt to load also detailed list
     React.useEffect( () => {
+        debugger;
         if ( list.length && !loadingList && !loadingListSuccess ) {
             getPokemonList(list);
             markListSet(false); // probably this
@@ -110,19 +111,20 @@ const ListView = ( props: ListViewProps ) => {
 }
 
 // TODO: Finish changing to redux-hooks (missing detailList reducer)
-function mapStateToProps({detailedList}: {
-    detailedList: { results: [], loading: boolean; success: boolean}
-}) {
-    const props = { 
-        detailedList: detailedList?.results || [],
-        loadingList: detailedList ? detailedList.loading : false,
-        loadingListSuccess: detailedList ? detailedList.success : false,
-    };
-    return props;
-}
+// function mapStateToProps({detailedList}: {
+//     detailedList: { results: [], loading: boolean; success: boolean}
+// }) {
+//     const props = { 
+//         detailedList: detailedList?.results || [],
+//         loadingList: detailedList ? detailedList.loading : false,
+//         loadingListSuccess: detailedList ? detailedList.success : false,
+//     };
+//     return props;
+// }
 
-function mapDispatchToProps(dispatch: Dispatch<AnyAction>) {
-    return bindActionCreators({getPokemonList}, dispatch);
-}
+// function mapDispatchToProps(dispatch: Dispatch<AnyAction>) {
+//     return bindActionCreators({getPokemonList}, dispatch);
+// }
   
-export default connect(mapStateToProps, mapDispatchToProps)(ListView);
+// export default connect(mapStateToProps, mapDispatchToProps)(ListView);
+export default ListView;

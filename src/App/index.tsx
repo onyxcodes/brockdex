@@ -2,16 +2,18 @@ import React from "react";
 
 import ActionBar, { ActionBarItemProps } from "../components/ActionBar";
 import SearchBar from "../components/SearchBar";
-import ListView from "../views/ListView";
+import ListView, { PokeDataShallow } from "../views/ListView";
 
 import FavoritesMgt from "../features/favoritesMgt";
 import PokeModal from "../views/PokeModal";
 import { useSelector, useDispatch } from "react-redux";
 
 import { listPokemon, ListState } from "../features/pokeapi/list";
+import { getPokemonList, DetailedListState } from "../features/pokeapi/detailedList";
 
 type AppState = {
     list: ListState;
+    detailedList: DetailedListState;
 }
 
 const favoriteActionBarItems = ( 
@@ -109,6 +111,13 @@ const App = () => {
         return dispatch(listPokemon({offset, limit, query}));
     };
 
+    const detailedListData = useSelector<AppState, DetailedListState["results"]>(s => s.detailedList.results);
+    const detailedListLoad = useSelector<AppState, DetailedListState["loading"]>(s => s.detailedList.loading);
+    const detailedListOk = useSelector<AppState, DetailedListState["success"]>(s => s.detailedList.success);
+    const doGetPokemonList = ( list: PokeDataShallow[] ) => {
+        return dispatch(getPokemonList(list))
+    }
+
     return (<div id="app">
         <ActionBar bgColor="blueviolet" position="top" items={[
             { 
@@ -131,6 +140,11 @@ const App = () => {
             next={listNext || undefined}
             previous={listPrevious || undefined}
             // {...reduxProps} TODO1
+
+            detailedList={detailedListData}
+            loadingList={detailedListLoad}
+            loadingListSuccess={detailedListOk}
+            getPokemonList={doGetPokemonList}
             query={searchQuery}
             setPokemonList={(list, total) => { setList(list); setTotal(total) }}
             openDetails={(el) => setFocusedEl(el)}

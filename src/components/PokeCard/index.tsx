@@ -26,7 +26,7 @@ const PokeCard = ( props: PokeCardProps ) => {
         [key: string]: any;
     } = {};
     if (list?.[id]) {
-        data = list?.[id];
+        data = {...list?.[id]}; // TODO1: loses the ability to update referene
         data.name = id;
         data.next = next,
         data.previous = previous;

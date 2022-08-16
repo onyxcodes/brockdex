@@ -1,5 +1,6 @@
-import axios from "axios";
-import { createAsyncThunk, createReducer } from "@reduxjs/toolkit";
+import axios from 'axios';
+import { createAsyncThunk, createReducer } from '@reduxjs/toolkit';
+import { PokeDataShallow } from '../../views/ListView';
 
 interface ListResponse {
     count: number;
@@ -14,15 +15,15 @@ interface ListResponse {
 // TODO: parametrize endpoint
 const list = async ( offset: number, limit: number ) => {
     try {
-        const { data } = await axios.get<ListResponse>("https://pokeapi.co/api/v2/pokemon", {
-            "method": "GET",
-            "headers": {
-                "crossorigin":true,
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Headers": "*"
-            }, "params": {
-                "offset":offset,
-                "limit":  limit
+        const { data } = await axios.get<ListResponse>('https://pokeapi.co/api/v2/pokemon', {
+            'method': 'GET',
+            'headers': {
+                'crossorigin':true,
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Headers': '*'
+            }, 'params': {
+                'offset':offset,
+                'limit':  limit
             }
         });
         if (data && data?.results?.length) return(data);
@@ -33,10 +34,7 @@ const list = async ( offset: number, limit: number ) => {
 }
 
 interface ListPayload {
-    results: {
-        name: string;
-        url: string;
-    }[],
+    results: PokeDataShallow[],
     total: number,
     next: {
         offset: number;
@@ -48,7 +46,6 @@ interface ListPayload {
     } | null,
 }
 
-// First, create the thunk
 export const listPokemon = createAsyncThunk(
     'poke/list',
     async (args: {
@@ -56,14 +53,14 @@ export const listPokemon = createAsyncThunk(
         limit?: number;
         query?: string;
     }, thunkAPI) => {
-        const { offset = 0, limit = 24, query = ""} = args;
+        const { offset = 0, limit = 24, query = ''} = args;
         // The first dispatch use to be to mark the request as started, 
         // it may be omitted because of createAsyncThunk mgt of promises
 
         // This second dispatch is to reset the action to the reducer that handles detailed list 
         // and keeps track of its the status
         thunkAPI.dispatch({
-            type: "POKEMON_LIST",
+            type: 'POKEMON_LIST',
             payload: {
                 loading: false,
                 success: false,
@@ -76,7 +73,7 @@ export const listPokemon = createAsyncThunk(
             next: null,
             previous: null
         };
-        if ( !query || query === "" ) { // not passin a query
+        if ( !query || query === '' ) { // not passin a query
             let res = await list(offset, limit);
             if (res) {
                 payload = {
@@ -92,11 +89,11 @@ export const listPokemon = createAsyncThunk(
                     } : null
                 };
             }
-        } else if ( query && query !== "" ) {
-            let total = Number(localStorage.getItem("total"));
+        } else if ( query && query !== '' ) {
+            let total = Number(localStorage.getItem('total'));
             let res = await list(0, total);
             if (res) {
-                var reg = new RegExp(query, "i");
+                var reg = new RegExp(query, 'i');
                 var index_m = 0; // tracks count of matching results
                 var newResults = res.results.filter( el => {
                     let matches = reg.test(el.name);
@@ -129,7 +126,7 @@ export interface ListState extends ListPayload {
 const initialState = {
     results: [],
     total: 0,
-    loading: true,
+    loading: true, // TODO1: consider initializing to false
     error: undefined,
     next: null,
     previous: null
@@ -146,9 +143,10 @@ const reducer = createReducer(initialState, (builder) => {
             state.previous = payload.previous;
         })
         .addCase(listPokemon.pending, (state, action) => {
+            // TODO1: consider setting loading to true here
             return initialState;
-            // action is inferred correctly here if using TS
         })
+        // TODO2: add failed case 
 });
 
 export default reducer;
