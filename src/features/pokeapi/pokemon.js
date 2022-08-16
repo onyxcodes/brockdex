@@ -40,9 +40,11 @@ export const getPokemon = (id, name) => dispatch => {
         if (res) {
             dispatch({
                 type: "POKEMON",
-                loading: false,
-                error: res.error,
-                payload: res
+                payload: {
+                    loading: false,
+                    error: res.error,
+                    ...res,
+                }
             })
         }
     });
