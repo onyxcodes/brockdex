@@ -6,7 +6,13 @@ import ListView from "../views/ListView";
 
 import FavoritesMgt from "../features/favoritesMgt";
 import PokeModal from "../views/PokeModal";
+import { useSelector, useDispatch } from "react-redux";
 
+import { listPokemon, ListState } from "../features/pokeapi/list";
+
+type AppState = {
+    list: ListState;
+}
 
 const favoriteActionBarItems = ( 
     favorites: (number | string)[],
@@ -42,6 +48,7 @@ const listMoveActionBarItems = (
 
 // TODO: prepare const file for each component and import default state and props values
 const App = () => {
+    const dispatch = useDispatch();
     const [ modalVisible, showModal ] = React.useState(false);
     const [ focusedElement, setFocusedEl ] = React.useState<{ [key: string]: any; } | null>(null);
     const [ searchQuery, setSearchQuery ] = React.useState("");
@@ -93,6 +100,15 @@ const App = () => {
         
     }
 
+    // TODO1: consider exporting to custom hook (useListData) that returns object with these values
+    const listData = useSelector<AppState, ListState["results"]>(s => s.list.results);
+    const listLoading = useSelector<AppState, ListState["loading"]>(s => s.list.loading);
+    const listNext = useSelector<AppState, ListState["next"]>(s => s.list.next);
+    const listPrevious = useSelector<AppState, ListState["previous"]>(s => s.list.previous);
+    const doListPokemon = (offset?: number, limit?:number, query?:string) => {
+        return dispatch(listPokemon({offset, limit, query}));
+    };
+
     return (<div id="app">
         <ActionBar bgColor="blueviolet" position="top" items={[
             { 
@@ -106,7 +122,15 @@ const App = () => {
             { item: <span>BrockDex</span>, position: "center" },
             { item: <button>Favs</button>, position: "right" }
         ]} />
-        <ListView 
+        <ListView
+            list={listData}
+            loading={listLoading}
+            listPokemon={doListPokemon}
+            // TODO: understand if correct approach
+            // may be avoided with TODO1
+            next={listNext || undefined}
+            previous={listPrevious || undefined}
+            // {...reduxProps} TODO1
             query={searchQuery}
             setPokemonList={(list, total) => { setList(list); setTotal(total) }}
             openDetails={(el) => setFocusedEl(el)}

@@ -1,6 +1,5 @@
 import axios from "axios";
-import { createAsyncThunk, createReducer, AsyncThunkAction, AnyAction} from "@reduxjs/toolkit";
-import { Dispatch } from 'redux';
+import { createAsyncThunk, createReducer } from "@reduxjs/toolkit";
 
 interface ListResponse {
     count: number;
@@ -12,6 +11,7 @@ interface ListResponse {
     previous: any;
 }
 
+// TODO: parametrize endpoint
 const list = async ( offset: number, limit: number ) => {
     try {
         const { data } = await axios.get<ListResponse>("https://pokeapi.co/api/v2/pokemon", {
@@ -49,14 +49,14 @@ interface ListPayload {
 }
 
 // First, create the thunk
-const listPokemon = createAsyncThunk(
+export const listPokemon = createAsyncThunk(
     'poke/list',
     async (args: {
-        offset: number;
-        limit: number;
-        query: string;
-    } = {offset: 0, limit: 24, query: ""}, thunkAPI) => {
-        const { offset, limit, query } = args;
+        offset?: number;
+        limit?: number;
+        query?: string;
+    }, thunkAPI) => {
+        const { offset = 0, limit = 24, query = ""} = args;
         // The first dispatch use to be to mark the request as started, 
         // it may be omitted because of createAsyncThunk mgt of promises
 
@@ -120,12 +120,8 @@ const listPokemon = createAsyncThunk(
         return payload;
     }
 )
-  
-export const doListPokemon = (offset = 0, limit = 24, query = "") => (dispatch: Dispatch<any>) => {
-    return dispatch(listPokemon({offset, limit, query}));
-}
 
-interface ListState extends ListPayload {
+export interface ListState extends ListPayload {
     loading: boolean;
     error: undefined;
 }
@@ -153,9 +149,6 @@ const reducer = createReducer(initialState, (builder) => {
             return initialState;
             // action is inferred correctly here if using TS
         })
-        // .addDefaultCase((state, action) => {
-        //     debugger;
-        // })
 });
 
 export default reducer;

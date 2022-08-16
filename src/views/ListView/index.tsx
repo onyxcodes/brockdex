@@ -1,7 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
 import {AnyAction, bindActionCreators, Dispatch} from 'redux';
-import { doListPokemon } from "../../features/pokeapi/list";
 import { getPokemonList } from "../../features/pokeapi/detailedList";
 
 import Loader from "../../components/Loader";
@@ -110,19 +109,11 @@ const ListView = ( props: ListViewProps ) => {
     )
 }
 
-// TODO: Change to redux-hooks
-function mapStateToProps({list, detailedList}: { 
-    list: { results: [], next: {}, previous: {}, total: number; loading: boolean; error: string | boolean }, 
+// TODO: Finish changing to redux-hooks (missing detailList reducer)
+function mapStateToProps({detailedList}: {
     detailedList: { results: [], loading: boolean; success: boolean}
 }) {
-    // debugger;
     const props = { 
-        list: list?.results || [],
-        next: list?.next,
-        previous: list?.previous,
-        total: list ? list.total : 0,
-        loading: list ? list.loading : true,
-        error: list ? list.error : false,
         detailedList: detailedList?.results || [],
         loadingList: detailedList ? detailedList.loading : false,
         loadingListSuccess: detailedList ? detailedList.success : false,
@@ -131,7 +122,7 @@ function mapStateToProps({list, detailedList}: {
 }
 
 function mapDispatchToProps(dispatch: Dispatch<AnyAction>) {
-    return bindActionCreators({listPokemon: doListPokemon, getPokemonList}, dispatch);
+    return bindActionCreators({getPokemonList}, dispatch);
 }
   
 export default connect(mapStateToProps, mapDispatchToProps)(ListView);
