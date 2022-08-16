@@ -1,11 +1,21 @@
 import axios from "axios";
-import { createAsyncThunk, createReducer } from "@reduxjs/toolkit";
+import { createAsyncThunk, createReducer, AsyncThunkAction, AnyAction} from "@reduxjs/toolkit";
+import { Dispatch } from 'redux';
 
-const list = ( offset, limit ) => {
-    return new Promise ( (resolve, reject) => {
-        axios({
+interface ListResponse {
+    count: number;
+    results: {
+        name: string;
+        url: string;
+    }[];
+    next: any;
+    previous: any;
+}
+
+const list = async ( offset: number, limit: number ) => {
+    try {
+        const { data } = await axios.get<ListResponse>("https://pokeapi.co/api/v2/pokemon", {
             "method": "GET",
-            "url": "https://pokeapi.co/api/v2/pokemon",
             "headers": {
                 "crossorigin":true,
                 "Content-Type": "application/json",
@@ -14,24 +24,38 @@ const list = ( offset, limit ) => {
                 "offset":offset,
                 "limit":  limit
             }
-        })
-        .then(({data}) => {
-            if (data && data?.results?.length) resolve(data)
-        })
-        .catch((error) => {
-            console.log(error);
-            let data = {
-                error: error
-            }
-            resolve(data)
-        })
-    });
+        });
+        if (data && data?.results?.length) return(data);
+        else throw Error(`Unexpected response: ${data}`);
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+interface ListPayload {
+    results: {
+        name: string;
+        url: string;
+    }[],
+    total: number,
+    next: {
+        offset: number;
+        limit: number
+    } | null,
+    previous: {
+        offset: number;
+        limit: number
+    } | null,
 }
 
 // First, create the thunk
 const listPokemon = createAsyncThunk(
     'poke/list',
-    async (args = {offset: 0, limit: 24, query: ""}, thunkAPI) => {
+    async (args: {
+        offset: number;
+        limit: number;
+        query: string;
+    } = {offset: 0, limit: 24, query: ""}, thunkAPI) => {
         const { offset, limit, query } = args;
         // The first dispatch use to be to mark the request as started, 
         // it may be omitted because of createAsyncThunk mgt of promises
@@ -46,14 +70,18 @@ const listPokemon = createAsyncThunk(
                 results: null
             }
         });
+        let payload: ListPayload = {
+            total: 0,
+            results: [],
+            next: null,
+            previous: null
+        };
         if ( !query || query === "" ) { // not passin a query
             let res = await list(offset, limit);
             if (res) {
-                let payload = {
-                    loading: false,
+                payload = {
                     total: res.count,
                     results: res.results,
-                    error: res.error,
                     next: res.next ? {
                         offset: (offset || 0) + limit,
                         limit: limit
@@ -63,7 +91,6 @@ const listPokemon = createAsyncThunk(
                         limit: limit
                     } : null
                 };
-                return payload;
             }
         } else if ( query && query !== "" ) {
             let total = Number(localStorage.getItem("total"));
@@ -76,11 +103,9 @@ const listPokemon = createAsyncThunk(
                     if (matches) index_m++;
                     return matches && index_m > offset && index_m <= (offset + limit)
                 });
-                let payload = {
-                    loading: false,
+                payload = {
                     total: res.count,
                     results: newResults,
-                    error: res.error,
                     next: newResults.length < index_m ? {
                         offset: (offset || 0) + limit,
                         limit: limit
@@ -90,14 +115,19 @@ const listPokemon = createAsyncThunk(
                         limit: limit
                     } : null
                 };
-                return payload;
             }
         }
+        return payload;
     }
 )
   
-export const doListPokemon = (offset = 0, limit = 24, query = "") => dispatch => {
+export const doListPokemon = (offset = 0, limit = 24, query = "") => (dispatch: Dispatch<any>) => {
     return dispatch(listPokemon({offset, limit, query}));
+}
+
+interface ListState extends ListPayload {
+    loading: boolean;
+    error: undefined;
 }
 
 const initialState = {
@@ -107,7 +137,7 @@ const initialState = {
     error: undefined,
     next: null,
     previous: null
-};
+} as ListState;
 
 const reducer = createReducer(initialState, (builder) => {
     builder
