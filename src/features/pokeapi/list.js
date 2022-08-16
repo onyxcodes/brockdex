@@ -1,4 +1,5 @@
 import axios from "axios";
+import { createAsyncThunk, createReducer } from "@reduxjs/toolkit";
 
 const list = ( offset, limit ) => {
     return new Promise ( (resolve, reject) => {
@@ -27,49 +28,46 @@ const list = ( offset, limit ) => {
     });
 }
 
-export const listPokemon = (offset = 0, limit = 24, query = "") => dispatch => {
-    // The first dispatch is to mark that we are going to request the list of pokemon names
-    // on its response, we are going to mark the call as completed
-    dispatch({
-        type: "LIST",
-        payload: {
-            loading: true
-        }
-    });
-    // This second dispatch is to reset the action to the reducer that handles detailed list and keeps track of its the status
-    dispatch({
-        type: "POKEMON_LIST",
-        payload: {
-            loading: false,
-            success: false,
-            results: null
-        }
-    })
-    if ( !query || query === "" ) { // npt passin a query
-        list(offset, limit).then( res => {
-            if (res) {
-                dispatch({
-                    type: "LIST",
-                    payload: {
-                        loading: false,
-                        total: res.count,
-                        results: res.results,
-                        error: res.error,
-                        next: res.next ? {
-                            offset: (offset || 0) + limit,
-                            limit: limit
-                        } : null,
-                        previous: res.previous ? {
-                            offset: (offset || 0) - limit,
-                            limit: limit
-                        } : null
-                    }
-                });
+// First, create the thunk
+const listPokemon = createAsyncThunk(
+    'poke/list',
+    async (args = {offset: 0, limit: 24, query: ""}, thunkAPI) => {
+        const { offset, limit, query } = args;
+        // The first dispatch use to be to mark the request as started, 
+        // it may be omitted because of createAsyncThunk mgt of promises
+
+        // This second dispatch is to reset the action to the reducer that handles detailed list 
+        // and keeps track of its the status
+        thunkAPI.dispatch({
+            type: "POKEMON_LIST",
+            payload: {
+                loading: false,
+                success: false,
+                results: null
             }
-        })
-    } else if ( query && query !== "" ) {
-        let total = Number(localStorage.getItem("total"));
-        list(0, total).then( res => {
+        });
+        if ( !query || query === "" ) { // not passin a query
+            let res = await list(offset, limit);
+            if (res) {
+                let payload = {
+                    loading: false,
+                    total: res.count,
+                    results: res.results,
+                    error: res.error,
+                    next: res.next ? {
+                        offset: (offset || 0) + limit,
+                        limit: limit
+                    } : null,
+                    previous: res.previous ? {
+                        offset: (offset || 0) - limit,
+                        limit: limit
+                    } : null
+                };
+                return payload;
+            }
+        } else if ( query && query !== "" ) {
+            let total = Number(localStorage.getItem("total"));
+            let res = await list(0, total);
             if (res) {
                 var reg = new RegExp(query, "i");
                 var index_m = 0; // tracks count of matching results
@@ -78,36 +76,57 @@ export const listPokemon = (offset = 0, limit = 24, query = "") => dispatch => {
                     if (matches) index_m++;
                     return matches && index_m > offset && index_m <= (offset + limit)
                 });
-
-                dispatch({
-                    type: "LIST",
-                    payload: {
-                        loading: false,
-                        total: res.count,
-                        results: newResults,
-                        error: res.error,
-                        next: newResults.length < index_m ? {
-                            offset: (offset || 0) + limit,
-                            limit: limit
-                        } : null,
-                        previous: offset ? {
-                            offset: (offset || 0) - limit,
-                            limit: limit
-                        } : null
-                    }
-                });
-
+                let payload = {
+                    loading: false,
+                    total: res.count,
+                    results: newResults,
+                    error: res.error,
+                    next: newResults.length < index_m ? {
+                        offset: (offset || 0) + limit,
+                        limit: limit
+                    } : null,
+                    previous: offset ? {
+                        offset: (offset || 0) - limit,
+                        limit: limit
+                    } : null
+                };
+                return payload;
             }
-        });
+        }
     }
+)
+  
+export const doListPokemon = (offset = 0, limit = 24, query = "") => dispatch => {
+    return dispatch(listPokemon({offset, limit, query}));
 }
 
-export default function reducer(state = null, action) {
-  switch(action.type) {
-    case "LIST": {
-        return action.payload || null;
-    }
-    default:
-      return state;
-  }
-}
+const initialState = {
+    results: [],
+    total: 0,
+    loading: true,
+    error: undefined,
+    next: null,
+    previous: null
+};
+
+const reducer = createReducer(initialState, (builder) => {
+    builder
+        .addCase(listPokemon.fulfilled, (state, action) => {
+            // uses immer internally so it doesn't need to return state
+            let payload = action.payload;
+            state.loading = false;
+            state.results =  payload.results;
+            state.next = payload.next;
+            state.previous = payload.previous;
+        })
+        .addCase(listPokemon.pending, (state, action) => {
+            return initialState;
+            // action is inferred correctly here if using TS
+        })
+        // .addDefaultCase((state, action) => {
+        //     debugger;
+        // })
+});
+
+export default reducer;
+

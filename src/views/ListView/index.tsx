@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import {AnyAction, bindActionCreators, Dispatch} from 'redux';
-import { listPokemon } from "../../features/pokeapi/list";
+import { doListPokemon } from "../../features/pokeapi/list";
 import { getPokemonList } from "../../features/pokeapi/detailedList";
 
 import Loader from "../../components/Loader";
@@ -42,7 +42,7 @@ const ListView = ( props: ListViewProps ) => {
     const [ localQuery, setLocalQuery ] = React.useState("");
 
     React.useEffect( () => {
-        if (query) {
+        if (query || query === "") {
             setLocalQuery(query);
             // Since search query changed reset offest and limit
             setOffset(0); setLimit(28);
@@ -115,6 +115,7 @@ function mapStateToProps({list, detailedList}: {
     list: { results: [], next: {}, previous: {}, total: number; loading: boolean; error: string | boolean }, 
     detailedList: { results: [], loading: boolean; success: boolean}
 }) {
+    // debugger;
     const props = { 
         list: list?.results || [],
         next: list?.next,
@@ -130,7 +131,7 @@ function mapStateToProps({list, detailedList}: {
 }
 
 function mapDispatchToProps(dispatch: Dispatch<AnyAction>) {
-    return bindActionCreators({listPokemon, getPokemonList}, dispatch);
+    return bindActionCreators({listPokemon: doListPokemon, getPokemonList}, dispatch);
 }
   
 export default connect(mapStateToProps, mapDispatchToProps)(ListView);
