@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { createAsyncThunk, createReducer } from '@reduxjs/toolkit';
 import { PokeDataShallow } from '../../views/ListView';
+import { resetDetailedList } from './detailedList';
 
 interface ListResponse {
     count: number;
@@ -59,14 +60,8 @@ export const listPokemon = createAsyncThunk(
 
         // This second dispatch is to reset the action to the reducer that handles detailed list 
         // and keeps track of its the status
-        thunkAPI.dispatch({
-            type: 'POKEMON_LIST',
-            payload: {
-                loading: false,
-                success: false,
-                results: null
-            }
-        });
+        thunkAPI.dispatch(resetDetailedList());
+        
         let payload: ListPayload = {
             total: 0,
             results: [],

@@ -121,14 +121,14 @@ interface PokeModalProps extends ModalProps {
     id?: number;
     name: string;
     pokemon?: { [key: string]: any };
-    getPokemon?: (id?: number, name?: string) => void;
+    getPokemon: (id?: number, name?: string) => void;
     getBtmBarItems?: (element: {}) => ActionBarItemProps[];
 };
 
 const PokeModal = (props: PokeModalProps) => {
     const { id, name, pokemon, getPokemon, getBtmBarItems } = props;
-
-    React.useEffect(() => { if (name && !id && getPokemon) getPokemon(undefined, name)}, [name, id]);
+    
+    React.useEffect(() => { if (name && !id) getPokemon(undefined, name)}, [name, id]);
 
     const heroImg = pokemon?.sprites?.other['official-artwork']?.front_default;
     return(
@@ -144,10 +144,10 @@ const PokeModal = (props: PokeModalProps) => {
 }
 
 // TODO: Change to hooks
-function mapStateToProps({pokemon}: any, ownProps: { data: any; }) {
+function mapStateToProps({pokemon}: any, ownProps: { id: number; data: any; }) {
     let pokemonData = pokemon,
         loading = false;
-    if ( ownProps.data ) pokemonData = ownProps.data;
+    if ( ownProps.id ) pokemonData = ownProps.data;
     else {
         loading = pokemon?.loading || false;
     }
