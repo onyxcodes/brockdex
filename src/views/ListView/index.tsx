@@ -68,7 +68,6 @@ const ListView = ( props: ListViewProps ) => {
 
     const dispatch = useDispatch();
 
-    // const [ listSet, markListSet ] = React.useState(false);
     const [ offset, setOffset ] = React.useState(0);
     const [ limit, setLimit ] = React.useState(28);
     const [ localQuery, setLocalQuery ] = React.useState("");
@@ -94,7 +93,6 @@ const ListView = ( props: ListViewProps ) => {
         if ( list.length && !loadingList && !loadingListSuccess ) {
             getPokemonList(list);
             setListProcessed(false);
-            // markListSet(false); // probably this
         }
     }, [list, loadingList, loadingListSuccess]);
 
@@ -103,14 +101,14 @@ const ListView = ( props: ListViewProps ) => {
         if (list && next) {
             next.offset && setOffset(next.offset);
             next.limit && setLimit(next.limit);
-        }
+        } // else manage error
     }
 
     const fetchPrevious = () => {
         if (list && previous) {
             previous.offset && setOffset(previous.offset);
             previous.limit && setLimit(previous.limit);
-        }
+        } // else manage error
     }
 
     const { processedList, listComponents } = React.useMemo( () =>
