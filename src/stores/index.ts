@@ -5,8 +5,12 @@ import { configureStore } from '@reduxjs/toolkit';
 
 export const store = configureStore({
   reducer: {
-    list: list,
-    pokemon: pokemon,
-    detailedList, detailedList
+    list,
+    pokemon,
+    detailedList
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    })
 });
