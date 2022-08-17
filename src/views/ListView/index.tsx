@@ -26,7 +26,6 @@ interface ListViewProps {
     loadingList: boolean;
     loadingListSuccess: boolean;
     getPokemonList: (list: PokeDataShallow[]) => void;
-    setPokemonList?: ( detailtedList: { [key: string]: any }, total: number ) => void;
     // TODO: change to exported inferface, since it's reused
     openDetails: ( el: { [key: string]: any } ) => void;
 }
@@ -64,7 +63,7 @@ const ListView = ( props: ListViewProps ) => {
     const { 
         list, loading, previous, next, query, listPokemon,
         detailedList, loadingList, loadingListSuccess, getPokemonList,
-        openDetails, // setPokemonList
+        openDetails
     } = props;
 
     const dispatch = useDispatch();
