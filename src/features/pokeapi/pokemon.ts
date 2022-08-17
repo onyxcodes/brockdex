@@ -1,7 +1,6 @@
 import axios from "axios";
-import { createAsyncThunk, createReducer } from "@reduxjs/toolkit";
+import { createAsyncThunk, createReducer, createAction } from "@reduxjs/toolkit";
 import { PokeDataDetailed } from "./detailedList";
-import { useDispatch } from "react-redux";
 
 export const pokemon = async (name: string) => {
     try {
@@ -32,6 +31,8 @@ export const getPokemon = createAsyncThunk(
     }
 );
 
+export const resetPokemon = createAction('poke/resetPokemon');
+
 export interface PokemonState {
     loading: boolean;
     data: PokeDataDetailed | null
@@ -50,6 +51,9 @@ const reducer = createReducer( initialState, builder => {
         })
         .addCase(getPokemon.pending, (state, action) => {
             state.loading = false;
+            state.data = initialState.data;
+        })
+        .addCase(resetPokemon, (state, action) => {
             state.data = initialState.data;
         })
 });

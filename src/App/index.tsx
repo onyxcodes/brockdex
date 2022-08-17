@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { listPokemon, ListState } from "../features/pokeapi/list";
 import { getPokemonList, DetailedListState } from "../features/pokeapi/detailedList";
-import { getPokemon, PokemonState } from "../features/pokeapi/pokemon";
+import { getPokemon, resetPokemon, PokemonState } from "../features/pokeapi/pokemon";
 
 type AppState = {
     list: ListState;
@@ -84,6 +84,7 @@ const App = () => {
     // and current modal state (if is already shown won't trigger)
     React.useEffect( () => {
         ( !modalVisible || !focusedElement ) && showModal(!!focusedElement);
+        !focusedElement && doResetPokemon();
     }, [focusedElement]);
 
     // When called, adds currently focused el to favorites
@@ -123,6 +124,10 @@ const App = () => {
     const pokemonLoad = useSelector<AppState, PokemonState["loading"]>(s => s.pokemon.loading);
     const doGetPokemon = ( name: string ) => {
         return dispatch(getPokemon(name));
+    }
+
+    const doResetPokemon = () => {
+        return dispatch(resetPokemon());
     }
 
     return (<div id="app">
