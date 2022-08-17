@@ -16,15 +16,15 @@ type AppState = {
     detailedList: DetailedListState;
 }
 
-const favoriteActionBarItems = ( 
+const favoriteActionBarItems = (
     favorites: (number | string)[],
-    favoriteKey: number | string, 
+    favoriteKey: number | string,
     add: () => void,
     remove: () => void
 ): ActionBarItemProps[] => {
     return [
-        { 
-            item: !favorites.includes(favoriteKey) ? 
+        {
+            item: !favorites.includes(favoriteKey) ?
             <button onClick={() => add()}>⭐ Add</button> :
             <button onClick={() => remove()}>⭐ Remove</button>, position: "right"
         }
@@ -36,7 +36,7 @@ const listMoveActionBarItems = (
     changeContent: ( element: string ) => void
 ): ActionBarItemProps[] => {
     return [
-        { item: <button 
+        { item: <button
             disabled={!pokemon?.next}
             onClick={() => changeContent(pokemon?.next)}>Next
         </button>, position: "right"},
@@ -59,14 +59,13 @@ const App = () => {
     // TODO: consider using another state property to determine whether to know that is showing favorites list
     // and therefore disable search features
     const [ favoritesShown, setFavoritesVisible ] = React.useState(false);
-    const [ list, setList ] = React.useState<{[key: string]: any}>({});
 
     // Updates total count stored in localStorage with given total, if differs
     const updateTotal = ( total: number ) => {
         let storedTotal = localStorage.getItem("total") ? Number(localStorage.getItem("total")) : null;
         if ( !total || isNaN(total) ) {
             console.log(`updateTotal - Given total is not a number: ${total}`);
-        } else if ( 
+        } else if (
             storedTotal && // total already stored
             storedTotal !== total // update only when different
         ) {
@@ -99,7 +98,7 @@ const App = () => {
             let favorites = favoritesMgt.removeFromFavorites(focusedElement.name);
             setFavoritesMgt(new FavoritesMgt(favorites));
         } // else throw error
-        
+
     }
 
     // TODO1: consider exporting to custom hook (useListData) that returns object with these values
@@ -114,19 +113,20 @@ const App = () => {
     const detailedListData = useSelector<AppState, DetailedListState["results"]>(s => s.detailedList.results);
     const detailedListLoad = useSelector<AppState, DetailedListState["loading"]>(s => s.detailedList.loading);
     const detailedListOk = useSelector<AppState, DetailedListState["success"]>(s => s.detailedList.success);
+
     const doGetPokemonList = ( list: PokeDataShallow[] ) => {
         return dispatch(getPokemonList(list))
     }
 
     return (<div id="app">
         <ActionBar bgColor="blueviolet" position="top" items={[
-            { 
-                item: <SearchBar 
-                    value={searchQuery} 
-                    disabled={favoritesShown} 
+            {
+                item: <SearchBar
+                    value={searchQuery}
+                    disabled={favoritesShown}
                     setSearchQuery={setSearchQuery}
                 />,
-                position: "left" 
+                position: "left"
             },
             { item: <span>BrockDex</span>, position: "center" },
             { item: <button>Favs</button>, position: "right" }
@@ -146,7 +146,7 @@ const App = () => {
             loadingListSuccess={detailedListOk}
             getPokemonList={doGetPokemonList}
             query={searchQuery}
-            setPokemonList={(list, total) => { setList(list); setTotal(total) }}
+            // setPokemonList={(list, total) => { setList(list); setTotal(total) }}
             openDetails={(el) => setFocusedEl(el)}
         />
         { modalVisible && <PokeModal
@@ -160,7 +160,7 @@ const App = () => {
                 () => addToFavorites(),
                 () => removeFromFavorites()
             )}
-            getBtmBarItems={(element) => listMoveActionBarItems(element, (element) => setFocusedEl(list[element]))}
+            getBtmBarItems={(element) => listMoveActionBarItems( element, (element) => setFocusedEl(detailedListData[element]) )}
             data={focusedElement} /> }
     </div>)
 }
