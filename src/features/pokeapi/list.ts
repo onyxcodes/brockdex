@@ -29,8 +29,9 @@ const list = async ( offset: number, limit: number ) => {
         });
         if (data && data?.results?.length) return(data);
         else throw Error(`Unexpected response: ${data}`);
-    } catch (e) {
+    } catch (e: any) {
         console.log(e);
+        throw new Error(e);
     }
 }
 
@@ -55,10 +56,8 @@ export const listPokemon = createAsyncThunk(
         query?: string;
     }, thunkAPI) => {
         const { offset = 0, limit = 24, query = ''} = args;
-        // The first dispatch use to be to mark the request as started, 
-        // it may be omitted because of createAsyncThunk mgt of promises
 
-        // This second dispatch is to reset the action to the reducer that handles detailed list 
+        // Reset the action to the reducer that handles detailed list 
         // and keeps track of its the status
         thunkAPI.dispatch(resetDetailedList());
         
