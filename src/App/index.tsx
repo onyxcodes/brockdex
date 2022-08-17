@@ -10,10 +10,12 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { listPokemon, ListState } from "../features/pokeapi/list";
 import { getPokemonList, DetailedListState } from "../features/pokeapi/detailedList";
+import { getPokemon, PokemonState } from "../features/pokeapi/pokemon";
 
 type AppState = {
     list: ListState;
     detailedList: DetailedListState;
+    pokemon: PokemonState;
 }
 
 const favoriteActionBarItems = (
@@ -113,9 +115,14 @@ const App = () => {
     const detailedListData = useSelector<AppState, DetailedListState["results"]>(s => s.detailedList.results);
     const detailedListLoad = useSelector<AppState, DetailedListState["loading"]>(s => s.detailedList.loading);
     const detailedListOk = useSelector<AppState, DetailedListState["success"]>(s => s.detailedList.success);
-
     const doGetPokemonList = ( list: PokeDataShallow[] ) => {
-        return dispatch(getPokemonList(list))
+        return dispatch(getPokemonList(list));
+    }
+
+    const pokemonData = useSelector<AppState, PokemonState["data"]>(s => s.pokemon.data);
+    const pokemonLoad = useSelector<AppState, PokemonState["loading"]>(s => s.pokemon.loading);
+    const doGetPokemon = ( name: string ) => {
+        return dispatch(getPokemon(name));
     }
 
     return (<div id="app">
@@ -146,7 +153,6 @@ const App = () => {
             loadingListSuccess={detailedListOk}
             getPokemonList={doGetPokemonList}
             query={searchQuery}
-            // setPokemonList={(list, total) => { setList(list); setTotal(total) }}
             openDetails={(el) => setFocusedEl(el)}
         />
         { modalVisible && <PokeModal
@@ -161,7 +167,9 @@ const App = () => {
                 () => removeFromFavorites()
             )}
             getBtmBarItems={(element) => listMoveActionBarItems( element, (element) => setFocusedEl(detailedListData[element]) )}
-            data={focusedElement} /> }
+            getPokemon={doGetPokemon}
+            loading={pokemonLoad}
+            pokemon={pokemonData || focusedElement || undefined} /> }
     </div>)
 }
 

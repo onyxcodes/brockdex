@@ -1,10 +1,5 @@
 import React from 'react';
 
-import { connect } from 'react-redux';
-import {AnyAction, bindActionCreators, Dispatch} from 'redux';
-
-import { getPokemon } from '../../features/pokeapi/pokemon';
-
 import Modal, { ModalProps } from '../Modal';
 import Bar from '../../components/Bar';
 import PropDetail, { PropDetailListLayout }  from '../../components/PropDetail';
@@ -121,14 +116,14 @@ interface PokeModalProps extends ModalProps {
     id?: number;
     name: string;
     pokemon?: { [key: string]: any };
-    getPokemon: (id?: number, name?: string) => void;
+    getPokemon: (name: string) => void;
     getBtmBarItems?: (element: {}) => ActionBarItemProps[];
 };
 
 const PokeModal = (props: PokeModalProps) => {
     const { id, name, pokemon, getPokemon, getBtmBarItems } = props;
     
-    React.useEffect(() => { if (name && !id) getPokemon(undefined, name)}, [name, id]);
+    React.useEffect(() => { if (name && !id) getPokemon(name)}, [name, id]);
 
     const heroImg = pokemon?.sprites?.other['official-artwork']?.front_default;
     return(
@@ -143,23 +138,4 @@ const PokeModal = (props: PokeModalProps) => {
     )
 }
 
-// TODO: Change to hooks
-function mapStateToProps({pokemon}: any, ownProps: { id: number; data: any; }) {
-    let pokemonData = pokemon,
-        loading = false;
-    if ( ownProps.id ) pokemonData = ownProps.data;
-    else {
-        loading = pokemon?.loading || false;
-    }
-    return { 
-        pokemon: pokemonData, 
-        loading: loading,
-        error: pokemon ? pokemon.error : false
-    }
-}
-
-function mapDispatchToProps(dispatch: Dispatch<AnyAction>) {
-    return bindActionCreators({getPokemon}, dispatch);
-}
-  
-export default connect(mapStateToProps, mapDispatchToProps)(PokeModal);
+export default PokeModal;

@@ -22,7 +22,7 @@ export const getPokemonList = createAsyncThunk(
         };
         for ( var i = 0; i < list.length; i++) {
             let el = list[i];
-            let result = await pokemon(null, el.name);
+            let result = await pokemon(el.name);
             // TODO1: improve error catching 
             // and allow async thunk to mgt through its lifecycle
             let k: string = result.name;
