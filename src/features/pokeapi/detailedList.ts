@@ -61,7 +61,8 @@ const reducer = createReducer( initialState, builder => {
         })
         .addCase(updateDetailedList, (state, action) => {
             let payload = action.payload;
-            state.results = payload;
+            state.results = { ...state.results, ...payload};
+            // state.results = payload;
         })
         .addCase(getPokemonList.fulfilled, (state, action) => {
             let payload = action.payload;

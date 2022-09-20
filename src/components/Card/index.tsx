@@ -1,6 +1,7 @@
 import React from "react";
 
 export interface CardProps {
+    key: string;
     title: string;
     // TODO: set accepted sizes, and style accordingly
     size?: string;

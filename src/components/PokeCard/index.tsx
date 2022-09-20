@@ -4,7 +4,7 @@ import Card, { CardProps }  from '../Card';
 import { PokeDataDetailed } from '../../features/pokeapi/detailedList';
 
 // TODO: Consider extracting list's type to specific type
-interface PokeCardProps extends CardProps {
+export interface PokeCardProps extends CardProps {
     id: string;
     list?: { [key: string]: PokeDataDetailed};
     openDetails?: (data: { [key: string]: any }) => void;
