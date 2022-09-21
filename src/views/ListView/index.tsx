@@ -10,6 +10,8 @@ import list, { listPokemon, ListState, resetList } from "../../features/pokeapi/
 import { AppState } from "../../stores";
 import { UIState } from "../../features/ui";
 import { off } from "process";
+import List from "../../components/List";
+import Selector from "../../components/Selector";
 export interface PokeDataShallow {
     name: string; url: string
 };
@@ -17,88 +19,6 @@ export interface PokeDataShallow {
 const objIsEmpty = ( obj: { [key: string]: any } ) => {
     for (var i in obj) return false;
     return true
-}
-
-
-
-const useProcessListData = ( 
-    list: PokeDataShallow[], 
-    detailedList:  { [key: string]: PokeDataDetailed }, 
-    onClick: (arg: any) => void ) => 
-{
-
-    const [ processedList, setProcessedList ]= React.useState<{ [key: string]: PokeDataDetailed }>({})
-    const [ listComponents, setListComponents ] = React.useState<JSX.Element[]>([])
-
-    React.useEffect( () => {
-        let _processedList: { [key: string]: PokeDataDetailed } = {};
-        setListComponents(list?.map( (i, index) => {
-
-            let _current = detailedList[i.name],
-                current = { ..._current };
-            if (current && _current) {
-                // Attach props
-                current.next = list?.[index+1]?.name;
-                current.previous = list?.[index-1]?.name;
-                _processedList[i.name] = current;
-            }
-            
-            return <PokeCard key={i.name}
-                openDetails={onClick}
-                list={detailedList}
-                next={_current && current.next}
-                previous={_current && current.previous}
-                id={i.name}
-                title={i.name}
-            />
-        }));
-        setProcessedList(_processedList)
-    }, [list, detailedList])
-    
-    return { processed: processedList, elements: listComponents }
-}
-
-interface PageProps {
-    list: any[];
-    listProcessor: (arg: any) => {
-        processed: { [key: string]: any };
-        elements: JSX.Element[]
-    };
-    onProcessEnd: (arg: any) => void;
-}
-const Page = ( props: PageProps ) => {
-    const { list, listProcessor, onProcessEnd
-    } = props;
-
-    const { processed, elements } = listProcessor(list);
-
-    onProcessEnd(processed);
-
-    return <>
-        {elements}
-    </>
-}
-
-const useInfinitePages = (
-    list: any[],
-    pageSize: number,
-    listProcessor: (arg: any) => {
-        processed: { [key: string]: any };
-        elements: JSX.Element[]
-    },
-    onProcessEnd: (arg: any) => void
-) => {
-    let pageNumber = Math.ceil(list.length / pageSize);
-    let pages: JSX.Element[] = [];
-    for ( var i = 0; i < pageNumber; i++ ) {
-        let listSubset = list.slice( i * pageSize, i * pageSize + pageSize );
-        let page = <Page key={i} list={listSubset} 
-            listProcessor={listProcessor}
-            onProcessEnd={onProcessEnd}
-        />
-        pages.push(page)
-    }
-    return pages
 }
 
 interface ListViewProps {
@@ -109,7 +29,6 @@ interface ListViewProps {
 const ListView = ( props: ListViewProps ) => {
     const { 
         openDetails,
-        infiniteScroll = false
     } = props;
 
     const dispatch = useDispatch();
@@ -121,6 +40,7 @@ const ListView = ( props: ListViewProps ) => {
     const [ isListProcessed, setListProcessed ] = React.useState(false);
     const [ contextList, setContextList ] = React.useState<any[]>([]);
     const [ pageNumber, setPageNumber ] = React.useState(1);
+    const [ view, setView ] = React.useState<'page' | 'scroll'>('page');
 
     const query = useSelector<AppState, UIState["query"]>(s => s.ui.query);
 
@@ -132,6 +52,43 @@ const ListView = ( props: ListViewProps ) => {
     const previous = useSelector<AppState, ListState["previous"]>(s => s.list.previous);
 
     const detailedListReq = useSelector<AppState, DetailedListState>(s => s.detailedList);
+
+    const useProcessListData = ( 
+        list: PokeDataShallow[], 
+        detailedList:  { [key: string]: PokeDataDetailed }, 
+        onClick: (arg: any) => void ) => 
+    {
+    
+        const [ processedList, setProcessedList ]= React.useState<{ [key: string]: PokeDataDetailed }>({})
+        const [ listComponents, setListComponents ] = React.useState<JSX.Element[]>([])
+    
+        React.useEffect( () => {
+            let _processedList: { [key: string]: PokeDataDetailed } = {};
+            setListComponents(list?.map( (i, index) => {
+    
+                let _current = detailedList[i.name],
+                    current = { ..._current };
+                if (current && _current) {
+                    // Attach props
+                    current.next = list?.[index+1]?.name;
+                    current.previous = list?.[index-1]?.name;
+                    _processedList[i.name] = current;
+                }
+                
+                return <PokeCard key={i.name}
+                    openDetails={onClick}
+                    list={detailedList}
+                    next={_current && current.next}
+                    previous={_current && current.previous}
+                    id={i.name}
+                    title={i.name}
+                />
+            }));
+            setProcessedList(_processedList)
+        }, [list, detailedList])
+        
+        return { processed: processedList, elements: listComponents }
+    }
     
     // May be redundant
     const doListPokemon = (offset?: number, limit?:number, query?:string) => {
@@ -144,7 +101,7 @@ const ListView = ( props: ListViewProps ) => {
     React.useEffect( () => {
         if (query || query === "") {
             setLocalQuery(query);
-            // Since search query changed reset offest and limit
+            // Since search query or view mode changed reset offest and limit
             setOffset(0); setLimit(28);
             // Also reset the list
             dispatch(resetList())
@@ -180,10 +137,10 @@ const ListView = ( props: ListViewProps ) => {
     // contextList is equal to the complete list when infiniteScroll is enabled
     // if not is limited to current page context and dependant to offset and limit values
     React.useEffect( () => {
-        if ( !infiniteScroll ) {
+        if ( view === 'page' ) {
             setContextList(list.slice(offset, offset + limit))
         } else setContextList(list)
-    }, [offset, limit, list]);
+    }, [offset, limit, list, view]);
 
     // TODO: consider using useCallback!
     const fetchNext = () => {
@@ -211,29 +168,28 @@ const ListView = ( props: ListViewProps ) => {
     
     return(
         <div className="listView">
-            <Loader show={loading} />
-            {/* If infinite scroll is enabled make use of custom hook that generates pages,
-              * alternatively just show the page relative to current page's context
-             */}
-            { infiniteScroll ? 
-                useInfinitePages(
-                    list, 28,
-                    (list) => useProcessListData(list, detailedListReq.results, openDetails), 
-                    updateProcessedList
-                ) :
-                <Page list={contextList} 
-                    listProcessor={(list) => useProcessListData(list, detailedListReq.results, openDetails)}
-                    onProcessEnd={updateProcessedList}
-                />
-            }
-            {/* If infinite scroll is enabled, as of now, show only one button to fetch more data,
-            alternatively show page navigation */}
-            <ActionBar position="bottom"
-                items={[
+            <List 
+                infiniteScroll={view === 'scroll'}
+                list={contextList}
+                pageSize={limit}
+                loading={loading}
+                listProcessor={(_list) => useProcessListData(_list, detailedListReq.results, openDetails)}
+                onProcessEnd={updateProcessedList}
+                headerItems={[
+                    { item: <Selector 
+                        name='view' label='View mode'
+                        data={[
+                            { label: 'Page', value: 'page', selected: true },
+                            { label: 'Scroll', value: 'scroll' },
+                        ]}
+                        onChange={ (selected) => ( selected.value === 'page' || selected.value === 'scroll' ) && setView(selected.value)}
+                    />, position: 'left'}
+                ]}
+                footerItems={ view === 'page' ? [
                     { item: <button onClick={() => fetchPrevious()} disabled={!previous}>Previous</button>, position: "left"},
                     { item: <span>{`Page ${pageNumber}`}</span>, position: "center"},
                     { item: <button onClick={() => fetchNext()} disabled={!next}>Next</button>, position: "right"}
-                ]}
+                ] : [{ item: <button onClick={() => fetchNext()} disabled={!next}>More</button>, position: "center"}]}
             />
         </div>
     )
