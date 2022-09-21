@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
 import { PokeDataShallow } from '../../views/ListView';
-import { resetDetailedList } from './detailedList';
+import { resetDetailListStatus } from './detailedList';
 
 interface ListResponse {
     count: number;
@@ -61,7 +61,7 @@ export const listPokemon = createAsyncThunk(
 
         // Reset the action to the reducer that handles detailed list 
         // and keeps track of its the status
-        thunkAPI.dispatch(resetDetailedList());
+        thunkAPI.dispatch(resetDetailListStatus());
         
         let payload: ListPayload = {
             total: 0,
@@ -156,7 +156,6 @@ const reducer = createReducer(initialState, (builder) => {
         .addCase(listPokemon.rejected, (state, action) => {
             state.loading = false;
             state.success = initialState.success;
-            debugger;
             // state.error = ;
         })
 });
