@@ -94,6 +94,18 @@ code {
   cursor: pointer;
 }
 
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
 .card.medium:hover {
   box-shadow: rgba(0, 0, 0, 10%) 1px 1px 2.5px 2.5px;
 }
@@ -115,9 +127,9 @@ height: 400px;
   border-radius: 0 0 10px 10px;
   margin: -1%;
   flex: 1;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
+  background: linear-gradient(45deg, #e3e3e3, #eeeeee, #ffffff,#eeeeee, #e3e3e3);
+	background-size: 300% 300%;
+	animation: gradient 3s ease infinite;
 }
 
 .modal-fg {
