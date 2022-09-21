@@ -119,7 +119,8 @@ const ListView = ( props: ListViewProps ) => {
     const [ localQuery, setLocalQuery ] = React.useState("");
     const [ isListReqCompleted, setListReqCompleted ] = React.useState(false);
     const [ isListProcessed, setListProcessed ] = React.useState(false);
-    const [ contextList, setContextList ] = React.useState<any[]>([])
+    const [ contextList, setContextList ] = React.useState<any[]>([]);
+    const [ pageNumber, setPageNumber ] = React.useState(1);
 
     const query = useSelector<AppState, UIState["query"]>(s => s.ui.query);
 
@@ -154,6 +155,9 @@ const ListView = ( props: ListViewProps ) => {
     // offset, limit or query changes 
     React.useEffect( () => {
         doListPokemon(offset, limit, localQuery)
+        // Also update page number, given offset and limit values
+        let _pageNumber = Math.ceil((offset + limit) / limit);
+        setPageNumber(_pageNumber);
     }, [offset, limit, localQuery]);
 
     // mark completition of shallow list request
@@ -190,7 +194,6 @@ const ListView = ( props: ListViewProps ) => {
     }
 
     const fetchPrevious = () => {
-        debugger;
         if (list && previous) {
             setOffset(previous.offset);
             setLimit(previous.limit);
@@ -228,6 +231,7 @@ const ListView = ( props: ListViewProps ) => {
             <ActionBar position="bottom"
                 items={[
                     { item: <button onClick={() => fetchPrevious()} disabled={!previous}>Previous</button>, position: "left"},
+                    { item: <span>{`Page ${pageNumber}`}</span>, position: "center"},
                     { item: <button onClick={() => fetchNext()} disabled={!next}>Next</button>, position: "right"}
                 ]}
             />
