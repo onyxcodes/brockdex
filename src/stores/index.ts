@@ -1,7 +1,8 @@
-import list, { listPokemon }from '../features/pokeapi/list';
-import pokemon, { getPokemon } from '../features/pokeapi/pokemon';
-import detailedList, { getPokemonList } from "../features/pokeapi/detailedList"
+import list, { listPokemon, ListState }from '../features/pokeapi/list';
+import pokemon, { getPokemon, PokemonState } from '../features/pokeapi/pokemon';
+import detailedList, { getPokemonList, DetailedListState } from "../features/pokeapi/detailedList"
 import { configureStore, createListenerMiddleware, isRejected } from '@reduxjs/toolkit';
+import ui, { UIState } from '../features/ui';
 
 // Create the middleware instance and methods
 const failListenerMW = createListenerMiddleware();
@@ -16,9 +17,17 @@ failListenerMW.startListening({
   }
 });
 
+export type AppState = {
+  list: ListState;
+  detailedList: DetailedListState;
+  pokemon: PokemonState;
+  ui: UIState
+}
+
 
 export const store = configureStore({
   reducer: {
+    ui,
     list,
     pokemon,
     detailedList

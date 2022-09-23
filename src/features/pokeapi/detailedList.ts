@@ -1,32 +1,44 @@
 import { pokemon } from "./pokemon";
 import { createAction, createAsyncThunk, createReducer } from "@reduxjs/toolkit";
+import { AppState } from "../../stores";
 
 export interface PokeDataDetailed {
     [key: string]: any;
     name: string
 }
 
-export const resetDetailedList = createAction('poke/resetDetailedList');
+export const resetDetailListStatus = createAction('poke/resetDetailListStatus');
 export const updateDetailedList = createAction<{ [key: string]: PokeDataDetailed }>('poke/updateDetailedList');
 
 // TODO3: change list type to PokeShallow []
-export const getPokemonList = createAsyncThunk(
+export const getPokemonList = createAsyncThunk<
+    {
+        results: {[key: string]: PokeDataDetailed}
+    },
+    any[],
+    {
+        /** return type for `thunkApi.getState` */
+        state: AppState
+    }
+>(
     'poke/detailedList',
-    async ( list: any, thunkApi ) => {
+    async ( list, {getState}) => {
         let pokemonList: { [key: string]: any } = {},
         loadedCount = 0,
         payload: {
-            results: { [key: string]: any }
+            results: { [key: string]: PokeDataDetailed }
         } = {
             results: {},
         };
+        
+        let currentResults = getState().detailedList.results
         for ( var i = 0; i < list.length; i++) {
             let el = list[i];
-            let result = await pokemon(el.name);
-            // TODO1: improve error catching 
-            // and allow async thunk to mgt through its lifecycle
-            let k: string = result.name;
-            pokemonList[k] = result;
+            if ( !currentResults.hasOwnProperty(el.name) ) {
+                let result = await pokemon(el.name);
+                let k: string = result.name;
+                pokemonList[k] = result;
+            }
             loadedCount++;
             if ( list.length === loadedCount ) {
                 payload = {
@@ -56,23 +68,24 @@ const initialState = {
 
 const reducer = createReducer( initialState, builder => {
     builder
-        .addCase(resetDetailedList, (state, action) => {
-            return initialState;
+        .addCase(resetDetailListStatus, (state, action) => {
+            state.loading = initialState.loading;
+            state.success = initialState.success;
         })
         .addCase(updateDetailedList, (state, action) => {
             let payload = action.payload;
-            state.results = payload;
+            state.results = Object.assign(state.results, payload)
         })
         .addCase(getPokemonList.fulfilled, (state, action) => {
             let payload = action.payload;
             state.loading = false;
             state.success = true;
-            state.results = payload.results;
+            state.results = Object.assign(state.results, payload.results);
         })
         .addCase(getPokemonList.pending, (state, action) => {
             state.loading = true;
+            state.results = state.results;
             state.success = false;
-            state.results = initialState.results;
         })
 });
 

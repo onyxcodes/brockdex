@@ -12,11 +12,8 @@ import { listPokemon, ListState } from "../features/pokeapi/list";
 import { getPokemonList, DetailedListState } from "../features/pokeapi/detailedList";
 import { getPokemon, resetPokemon, PokemonState } from "../features/pokeapi/pokemon";
 
-type AppState = {
-    list: ListState;
-    detailedList: DetailedListState;
-    pokemon: PokemonState;
-}
+import { AppState } from "../stores";
+import { setQuery, UIState } from "../features/ui";
 
 const favoriteActionBarItems = (
     favorites: (number | string)[],
@@ -55,8 +52,7 @@ const App = () => {
     const dispatch = useDispatch();
     const [ modalVisible, showModal ] = React.useState(false);
     const [ focusedElement, setFocusedEl ] = React.useState<{ [key: string]: any; } | null>(null);
-    const [ searchQuery, setSearchQuery ] = React.useState("");
-    const [ total, setTotal ] = React.useState<number>(0); // TODO: consider setting 0 as init val
+    // const [ searchQuery, setSearchQuery ] = React.useState("");
     const [ favoritesMgt , setFavoritesMgt ] = React.useState(new FavoritesMgt());
     // TODO: consider using another state property to determine whether to know that is showing favorites list
     // and therefore disable search features
@@ -66,7 +62,7 @@ const App = () => {
     const updateTotal = ( total: number ) => {
         let storedTotal = localStorage.getItem("total") ? Number(localStorage.getItem("total")) : null;
         if ( !total || isNaN(total) ) {
-            console.log(`updateTotal - Given total is not a number: ${total}`);
+            console.log(`updateTotal - Given total is not a number or 0: ${total}`);
         } else if (
             storedTotal && // total already stored
             storedTotal !== total // update only when different
@@ -77,8 +73,16 @@ const App = () => {
         } // else // skip update cause not needed
     }
 
+    const responseTotal = useSelector<AppState, ListState["total"]>(s => s.list.total);
+
+    const searchQuery = useSelector<AppState, UIState['query']>(s => s.ui.query);
+
+    const setSearchQuery = React.useCallback( (query) => {
+        dispatch(setQuery(query))
+    }, [dispatch])
+
     // Updates with total number of pokemon, only once when list first loads
-    React.useEffect( () => updateTotal(total), [total] );
+    React.useEffect( () => updateTotal(responseTotal), [responseTotal] );
 
     // The PokeModal will be shown/hidden based on focusedElement presence
     // and current modal state (if is already shown won't trigger)
@@ -104,21 +108,7 @@ const App = () => {
 
     }
 
-    // TODO1: consider exporting to custom hook (useListData) that returns object with these values
-    const listData = useSelector<AppState, ListState["results"]>(s => s.list.results);
-    const listLoading = useSelector<AppState, ListState["loading"]>(s => s.list.loading);
-    const listNext = useSelector<AppState, ListState["next"]>(s => s.list.next);
-    const listPrevious = useSelector<AppState, ListState["previous"]>(s => s.list.previous);
-    const doListPokemon = (offset?: number, limit?:number, query?:string) => {
-        return dispatch(listPokemon({offset, limit, query}));
-    };
-
     const detailedListData = useSelector<AppState, DetailedListState["results"]>(s => s.detailedList.results);
-    const detailedListLoad = useSelector<AppState, DetailedListState["loading"]>(s => s.detailedList.loading);
-    const detailedListOk = useSelector<AppState, DetailedListState["success"]>(s => s.detailedList.success);
-    const doGetPokemonList = ( list: PokeDataShallow[] ) => {
-        return dispatch(getPokemonList(list));
-    }
 
     const pokemonData = useSelector<AppState, PokemonState["data"]>(s => s.pokemon.data);
     const pokemonLoad = useSelector<AppState, PokemonState["loading"]>(s => s.pokemon.loading);
@@ -144,20 +134,7 @@ const App = () => {
             { item: <button>Favs</button>, position: "right" }
         ]} />
         <ListView
-            list={listData}
-            loading={listLoading}
-            listPokemon={doListPokemon}
-            // TODO: understand if correct approach
-            // may be avoided with TODO1
-            next={listNext || undefined}
-            previous={listPrevious || undefined}
-            // {...reduxProps} TODO1
-
-            detailedList={detailedListData}
-            loadingList={detailedListLoad}
-            loadingListSuccess={detailedListOk}
-            getPokemonList={doGetPokemonList}
-            query={searchQuery}
+            // query={searchQuery}
             openDetails={(el) => setFocusedEl(el)}
         />
         { modalVisible && <PokeModal

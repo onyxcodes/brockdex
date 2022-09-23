@@ -1,6 +1,7 @@
 import React from "react";
 
 export interface CardProps {
+    key: string;
     title: string;
     // TODO: set accepted sizes, and style accordingly
     size?: string;
@@ -25,7 +26,9 @@ const Card = ( props: CardProps ) => {
             onClick={onClick}
         >
             <div className="card-hero" style={{
-                backgroundColor: !bgImage && bgColor || undefined,
+                backgroundRepeat: bgImage ? 'no-repeat' : undefined,
+                backgroundSize: bgImage ? 'contain' : undefined,
+                backgroundPosition: bgImage ? 'center' : undefined,
                 backgroundImage: bgImage ? "url("+bgImage+")" : undefined 
             }}></div>
             <span className="card-title">{title}</span>

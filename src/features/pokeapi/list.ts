@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { createAsyncThunk, createReducer } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
 import { PokeDataShallow } from '../../views/ListView';
-import { resetDetailedList } from './detailedList';
+import { resetDetailListStatus } from './detailedList';
 
 interface ListResponse {
     count: number;
@@ -48,6 +48,8 @@ interface ListPayload {
     } | null,
 }
 
+export const resetList = createAction('poke/resetList');
+
 export const listPokemon = createAsyncThunk(
     'poke/list',
     async (args: {
@@ -59,7 +61,7 @@ export const listPokemon = createAsyncThunk(
 
         // Reset the action to the reducer that handles detailed list 
         // and keeps track of its the status
-        thunkAPI.dispatch(resetDetailedList());
+        thunkAPI.dispatch(resetDetailListStatus());
         
         let payload: ListPayload = {
             total: 0,
@@ -68,6 +70,7 @@ export const listPokemon = createAsyncThunk(
             previous: null
         };
         if ( !query || query === '' ) { // not passin a query
+            // Check if already in memory
             let res = await list(offset, limit);
             if (res) {
                 payload = {
@@ -85,6 +88,8 @@ export const listPokemon = createAsyncThunk(
             }
         } else if ( query && query !== '' ) {
             let total = Number(localStorage.getItem('total'));
+            // Reset view by resettting list and detailedList
+            // thunkAPI.dispatch(resetList());
             let res = await list(0, total);
             if (res) {
                 var reg = new RegExp(query, 'i');
@@ -115,32 +120,44 @@ export const listPokemon = createAsyncThunk(
 export interface ListState extends ListPayload {
     loading: boolean;
     error: undefined;
+    success: boolean;
 }
 
 const initialState = {
     results: [],
     total: 0,
-    loading: true, // TODO1: consider initializing to false
+    loading: false,
     error: undefined,
     next: null,
-    previous: null
+    previous: null,
+    success: false
 } as ListState;
 
 const reducer = createReducer(initialState, (builder) => {
     builder
-        .addCase(listPokemon.fulfilled, (state, action) => {
-            // uses immer internally so it doesn't need to return state
-            let payload = action.payload;
-            state.loading = false;
-            state.results =  payload.results;
-            state.next = payload.next;
-            state.previous = payload.previous;
-        })
-        .addCase(listPokemon.pending, (state, action) => {
-            // TODO1: consider setting loading to true here
+        .addCase(resetList, (state, action) => {
             return initialState;
         })
-        // TODO2: add failed case 
+        .addCase(listPokemon.fulfilled, (state, action) => {
+            const { offset, limit, query } = action.meta.arg;
+            let payload = action.payload;
+            state.loading = initialState.loading;
+            state.total = payload.total;
+            state.results.splice(offset || 0, limit || 0, ...payload.results);
+            state.next = payload.next;
+            state.previous = payload.previous;
+            state.success = true;
+        })
+        .addCase(listPokemon.pending, (state, action) => {
+            state.loading = true;
+            state.success = initialState.success;
+            state.error = initialState.error;
+        })
+        .addCase(listPokemon.rejected, (state, action) => {
+            state.loading = false;
+            state.success = initialState.success;
+            // state.error = ;
+        })
 });
 
 export default reducer;
