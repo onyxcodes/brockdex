@@ -1,4 +1,5 @@
 import React from "react";
+import './index.scss';
 
 type PropDetailList = any[];
 export type PropDetailListLayout = "row" | "column";

@@ -1,8 +1,6 @@
 import React from "react";
 
-/* TODO: make it a more stylish loader 
- * Consider localization meanwhile
-*/
+import './index.scss';
 
 const Loader = ( props: { show: boolean } ) => {
     const { show = false } = props;

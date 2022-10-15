@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import './style.css';
 class SearchBar extends Component {
     constructor(props) {
         super(props);
@@ -34,12 +34,12 @@ class SearchBar extends Component {
     }
     render() {
         return(
-            <>
+            <div className='searchbar'>
                 <input type="text" disabled={this.props.disabled} placeholder="Search by name"
                     onChange={ (e) => this.prepareSearch(e)}
                 />
                 <button onClick={ () => this.performSearch()} disabled={this.state.searchBtnDisabled}>🔍 Search</button>
-            </>
+            </div>
         )
     }
 }

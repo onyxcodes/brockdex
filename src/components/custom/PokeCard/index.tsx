@@ -1,26 +1,33 @@
 import React from 'react';
 
-import Card, { CardProps }  from '../Card';
-import { PokeDataDetailed } from '../../features/pokeapi/detailedList';
+import { useDispatch } from 'react-redux';
+import Card, { CardProps }  from 'components/commons/Card';
+import { PokeDataDetailed } from 'features/pokeapi/detailedList';
+import { setFocusedPokemon } from 'features/pokeapi/pokemon';
 
 // TODO: Consider extracting list's type to specific type
 export interface PokeCardProps extends CardProps {
     id: string;
     list?: { [key: string]: PokeDataDetailed};
-    openDetails?: (data: { [key: string]: any }) => void;
+    // openDetails?: (data: { [key: string]: any }) => void;
     next?: string;
     previous?: string;
 }
 
 const PokeCard = ( props: PokeCardProps ) => {
     const { id, list,
-        openDetails, 
+        // openDetails, 
         next, previous
     }  = props;
+    const dispatch = useDispatch();
     const [ bgImage, setBgImage ] = React.useState(undefined);
     const [ detailsData, setDetailsData ] = React.useState({
         name: id
     });
+
+    const doFocusPokemon = React.useCallback( () => {
+        dispatch(setFocusedPokemon(detailsData))
+    }, [dispatch, detailsData]);
 
     var data: PokeDataDetailed = {
         name: id
@@ -40,10 +47,13 @@ const PokeCard = ( props: PokeCardProps ) => {
             setDetailsData(data);
         }
     }, [pokeData]);
+
+   
    
     return (
         <Card
-            onClick={() => openDetails && openDetails(detailsData)}
+            onClick={doFocusPokemon}
+            // onClick={() => openDetails && openDetails(detailsData)}
             bgImage={bgImage}
             {...props}
         />

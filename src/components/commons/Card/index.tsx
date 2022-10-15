@@ -1,12 +1,13 @@
 import React from "react";
+import './index.scss';
 
 export interface CardProps {
     key: string;
     title: string;
     // TODO: set accepted sizes, and style accordingly
     size?: string;
-    classes?: string;
-    onClick?: () => void;
+    className?: string;
+    onClick?: (args: any) => void;
     bgColor?: string;
     bgImage?: string;
 }
@@ -14,15 +15,14 @@ const Card = ( props: CardProps ) => {
     const {
         title, size = "medium", onClick, 
         bgColor = "#999999", bgImage,
-        classes = "card"
+        className
     } = props;
 
-    let cardClasses = classes;
-    cardClasses = size ? cardClasses.concat(" "+size) : cardClasses;
+    let cardClass = `card ${size} m1`;
 
     return(
         <div 
-            className={cardClasses}
+            className={cardClass}
             onClick={onClick}
         >
             <div className="card-hero" style={{

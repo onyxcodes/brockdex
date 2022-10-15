@@ -3,10 +3,10 @@ import React from 'react';
 interface PageProps {
     list: any[];
     listProcessor: (arg: any) => {
-        processed: { [key: string]: any };
+        processed?: any;
         elements: JSX.Element[]
     };
-    onProcessEnd: (arg: any) => void;
+    onProcessEnd?: (arg: any) => void;
 }
 const Page = ( props: PageProps ) => {
     const { list, listProcessor, onProcessEnd
@@ -14,7 +14,8 @@ const Page = ( props: PageProps ) => {
 
     const { processed, elements } = listProcessor(list);
 
-    onProcessEnd(processed);
+    // When provided execute a callback after executing listProcessor
+    if (onProcessEnd) onProcessEnd(processed);
 
     return <>
         {elements}
