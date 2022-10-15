@@ -77,8 +77,16 @@ const config = {
     ],
     alias: {
       'react-dom': '@hot-loader/react-dom',
-      'pouchdb-promise$': "pouchdb-promise/lib/index.js"
-    },
+      'pouchdb-promise$': "pouchdb-promise/lib/index.js",
+      'styles': path.resolve(__dirname, "src/styles"),
+      'components': path.resolve(__dirname, "src/components"),
+      'hooks': path.resolve(__dirname, "src/hooks"),
+      'views': path.resolve(__dirname, "src/views"),
+      'assets': path.resolve(__dirname, "src/assets"),
+      'features': path.resolve(__dirname, "src/features"),
+      'store': path.resolve(__dirname, "src/store"),
+      'utils': path.resolve(__dirname, "src/utils"),
+    }
   },
 };
 
