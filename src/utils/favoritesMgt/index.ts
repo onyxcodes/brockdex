@@ -1,13 +1,15 @@
-
 class FavoritesMgt {
     favorites: (number | string)[];
     favoritesKey: string;
     constructor( favorites: (number | string)[] = [], favoritesKey = "favorites") {
-        this.favorites = favorites;
+        this.favorites = favorites || FavoritesMgt.getFavorites();
         this.favoritesKey = favoritesKey;
     }
     
-    getFavorites() {
+    // TODO; Consider making it a static method
+    // therefore forcing the initialization of class object by passing the result of this method
+    // Consequently modify add and remove to use the favorites stored 
+    static getFavorites() {
         let favorites: (number | string)[] = [];
         try {
             let _favorites = localStorage.getItem("favorites");
@@ -27,7 +29,7 @@ class FavoritesMgt {
 
     addToFavorites( id: number | string ) {
         if (id) {
-            let favorites = this.getFavorites();
+            let favorites = this.favorites
             if ( !favorites.includes(id) ) {
                 favorites.push(id);
                 this.updateFavorites(favorites);
@@ -36,9 +38,9 @@ class FavoritesMgt {
         } else throw new Error("addToFavorites - missing id parameter");
     }
 
-    removeFromFavorites(id: number) {
+    removeFromFavorites(id: number | string) {
         if (id) {
-            let favorites = this.getFavorites();
+            let favorites = this.favorites
             let found = false;
             favorites = favorites.filter( element => {
                 if (!found) found = element === id;
