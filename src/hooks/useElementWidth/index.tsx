@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * 
+ *
  * https://dev.to/vitaliemaldur/resize-event-listener-using-react-hooks-1k0c
  */
 const useElementWidth = (element?: HTMLElement | null, property: 'clientWidth' | 'offsetWidth' = 'clientWidth') => {
