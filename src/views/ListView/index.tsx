@@ -7,7 +7,7 @@ import list, { listPokemon, ListState, resetList } from "features/pokeapi/list";
 import { AppState } from "store";
 import { UIState } from "features/ui";
 import List from "components/commons/List";
-import Select from "components/commons/Form/Select";
+import Select, { SelectOption } from "components/commons/Form/Select";
 
 import Button from 'components/commons/Button';
 export interface PokeDataShallow {
@@ -137,20 +137,19 @@ const ListView = ( props: ListViewProps ) => {
         } else setContextList(list)
     }, [offset, limit, list, view]);
 
-    // TODO: consider using useCallback!
-    const fetchNext = () => {
+    const fetchNext = React.useCallback(() => {
         if (list && next) {
             setOffset(next.offset);
             setLimit(next.limit);
-        } // else manage error
-    }
+        }
+    }, [list, next]);
 
-    const fetchPrevious = () => {
+    const fetchPrevious = React.useCallback(() => {
         if (list && previous) {
             setOffset(previous.offset);
             setLimit(previous.limit);
-        } // else manage error
-    }
+        }
+    }, [list, previous]);
 
     // Method that will be used as callback when 
     const updateProcessedList = React.useCallback( (processedList) => {
@@ -160,6 +159,14 @@ const ListView = ( props: ListViewProps ) => {
         };
     }, [isListProcessed]);
 
+    const doProcessListData = React.useCallback( (_list: any) => {
+        return useProcessListData(_list, detailedListReq.results)
+    }, [detailedListReq.results]);
+
+    const onPaginationModeChange = React.useCallback( (selected: SelectOption) => {
+        ( selected.value === 'page' || selected.value === 'scroll' ) && setView(selected.value)
+    }, []);
+
     // add loading through hook
     
     return(
@@ -168,7 +175,7 @@ const ListView = ( props: ListViewProps ) => {
                 infiniteScroll={view === 'scroll'}
                 data={contextList}
                 pageSize={limit}
-                listProcessor={(_list) => useProcessListData(_list, detailedListReq.results)}
+                listProcessor={doProcessListData}
                 onProcessEnd={updateProcessedList}
                 headerItems={[
                     { item: <Select 
@@ -177,14 +184,14 @@ const ListView = ( props: ListViewProps ) => {
                             { label: 'Page', value: 'page', selected: true },
                             { label: 'Scroll', value: 'scroll' },
                         ]}
-                        onChange={ (selected) => ( selected.value === 'page' || selected.value === 'scroll' ) && setView(selected.value)}
+                        onChange={onPaginationModeChange}
                     />, position: 'left', key: 'pagination'}
                 ]}
                 footerItems={ view === 'page' ? [
-                    { item: <Button type='primary' onClick={() => fetchPrevious()} disabled={!previous}>Previous</Button>, position: "left", key: 'nav-previous'},
+                    { item: <Button type='primary' onClick={fetchPrevious} disabled={!previous}>Previous</Button>, position: "left", key: 'nav-previous'},
                     { item: <span>{`Page ${pageNumber}`}</span>, position: "center", key: 'nav-page'},
-                    { item: <Button type='primary' onClick={() => fetchNext()} disabled={!next}>Next</Button>, position: "right", key: 'nav-next'}
-                ] : [{ item: <Button type='primary' onClick={() => fetchNext()} disabled={!next}>More</Button>, position: "center", key: 'nav-more'}]}
+                    { item: <Button type='primary' onClick={fetchNext} disabled={!next}>Next</Button>, position: "right", key: 'nav-next'}
+                ] : [{ item: <Button type='primary' onClick={fetchNext} disabled={!next}>More</Button>, position: "center", key: 'nav-more'}]}
             />
         </div>
     )

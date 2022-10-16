@@ -12,7 +12,7 @@ const triggerNativeEvent = ( el: HTMLSelectElement, value: string ) => {
     el.dispatchEvent(event);
 }
     
-type SelectOption = {
+export type SelectOption = {
     label: string;
     value: string;
     selected?: boolean;
