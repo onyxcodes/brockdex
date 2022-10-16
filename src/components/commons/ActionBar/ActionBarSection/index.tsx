@@ -2,7 +2,7 @@ import React from 'react';
 import useElementWidth from 'hooks/useElementWidth';
 import { ActionBarItemProps } from 'components/commons/ActionBar';
 import ActionBarItem, { ActionBarItemRef } from 'components/commons/ActionBar/ActionBarItem';
-import Modal from 'components/commons/Modal';
+import Sidebar from 'components/commons/Sidebar';
 import Button from 'components/commons/Button';
 
 import './index.scss';
@@ -53,9 +53,9 @@ const ActionBarAltSection = ( props: ActionBarAltSection ) => {
 
     return <>
         <Button title={title} shape='circle' iconName='ellipsis-v' onClick={show}/>
-        { modalState && <Modal visible={modalState} closeModal={hide}>
+        { modalState && <Sidebar visible={modalState} closeSidebar={hide}>
             <div ref={refSetter} className='actionbar-section-content'>{_items}</div>
-        </Modal> }
+        </Sidebar> }
     </>
 }
 
