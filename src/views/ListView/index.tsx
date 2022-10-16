@@ -1,17 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { DetailedListState, getPokemonList, PokeDataDetailed, updateDetailedList } from "../../features/pokeapi/detailedList";
+import { DetailedListState, getPokemonList, PokeDataDetailed, updateDetailedList } from "features/pokeapi/detailedList";
 
-import Loader from "../../components/Loader";
-import PokeCard, { PokeCardProps } from "../../components/PokeCard";
-import ActionBar from "../../components/ActionBar";
-import { CardProps } from "../../components/Card";
-import list, { listPokemon, ListState, resetList } from "../../features/pokeapi/list";
-import { AppState } from "../../stores";
-import { UIState } from "../../features/ui";
-import { off } from "process";
-import List from "../../components/List";
-import Selector from "../../components/Selector";
+import Loader from "components/commons/Loader";
+import PokeCard, { PokeCardProps } from "components/custom/PokeCard";
+import ActionBar from "components/commons/ActionBar";
+import { CardProps } from "components/commons/Card";
+import list, { listPokemon, ListState, resetList } from "features/pokeapi/list";
+import { AppState } from "store";
+import { UIState } from "features/ui";
+import List from "components/commons/List";
+import Select from "components/commons/Form/Select";
 export interface PokeDataShallow {
     name: string; url: string
 };
@@ -24,11 +23,11 @@ const objIsEmpty = ( obj: { [key: string]: any } ) => {
 interface ListViewProps {
     query?: string;
     infiniteScroll?: boolean;
-    openDetails: ( el: { [key: string]: any } ) => void;
+    // openDetails: ( el: { [key: string]: any } ) => void;
 }
 const ListView = ( props: ListViewProps ) => {
     const { 
-        openDetails,
+        // openDetails,
     } = props;
 
     const dispatch = useDispatch();
@@ -56,8 +55,8 @@ const ListView = ( props: ListViewProps ) => {
     const useProcessListData = ( 
         list: PokeDataShallow[], 
         detailedList:  { [key: string]: PokeDataDetailed }, 
-        onClick: (arg: any) => void ) => 
-    {
+        // onClick: (arg: any) => void
+    ) => {
     
         const [ processedList, setProcessedList ]= React.useState<{ [key: string]: PokeDataDetailed }>({})
         const [ listComponents, setListComponents ] = React.useState<JSX.Element[]>([])
@@ -76,7 +75,7 @@ const ListView = ( props: ListViewProps ) => {
                 }
                 
                 return <PokeCard key={i.name}
-                    openDetails={onClick}
+                    // openDetails={onClick}
                     list={detailedList}
                     next={_current && current.next}
                     previous={_current && current.previous}
@@ -165,31 +164,31 @@ const ListView = ( props: ListViewProps ) => {
         };
     }, [isListProcessed]);
 
+    // add loading through hook
     
     return(
         <div className="listView">
             <List 
                 infiniteScroll={view === 'scroll'}
-                list={contextList}
+                data={contextList}
                 pageSize={limit}
-                loading={loading}
-                listProcessor={(_list) => useProcessListData(_list, detailedListReq.results, openDetails)}
+                listProcessor={(_list) => useProcessListData(_list, detailedListReq.results)}
                 onProcessEnd={updateProcessedList}
                 headerItems={[
-                    { item: <Selector 
+                    { item: <Select 
                         name='view' label='View mode'
-                        data={[
+                        options={[
                             { label: 'Page', value: 'page', selected: true },
                             { label: 'Scroll', value: 'scroll' },
                         ]}
                         onChange={ (selected) => ( selected.value === 'page' || selected.value === 'scroll' ) && setView(selected.value)}
-                    />, position: 'left'}
+                    />, position: 'left', key: 'pagination'}
                 ]}
                 footerItems={ view === 'page' ? [
-                    { item: <button onClick={() => fetchPrevious()} disabled={!previous}>Previous</button>, position: "left"},
-                    { item: <span>{`Page ${pageNumber}`}</span>, position: "center"},
-                    { item: <button onClick={() => fetchNext()} disabled={!next}>Next</button>, position: "right"}
-                ] : [{ item: <button onClick={() => fetchNext()} disabled={!next}>More</button>, position: "center"}]}
+                    { item: <button onClick={() => fetchPrevious()} disabled={!previous}>Previous</button>, position: "left", key: 'nav-previous'},
+                    { item: <span>{`Page ${pageNumber}`}</span>, position: "center", key: 'nav-page'},
+                    { item: <button onClick={() => fetchNext()} disabled={!next}>Next</button>, position: "right", key: 'nav-next'}
+                ] : [{ item: <button onClick={() => fetchNext()} disabled={!next}>More</button>, position: "center", key: 'nav-more'}]}
             />
         </div>
     )

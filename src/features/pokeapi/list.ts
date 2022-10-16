@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
-import { PokeDataShallow } from '../../views/ListView';
+import { PokeDataShallow } from 'views/ListView';
 import { resetDetailListStatus } from './detailedList';
 
 interface ListResponse {
