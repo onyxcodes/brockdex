@@ -129,6 +129,7 @@ const App = () => {
 
     return (<div id="app">
         <div id='modal-area'></div>
+        <div id='sidebar-area'></div>
         <main>
             <ActionBar type='primary' position="top" items={[
                 {
