@@ -5,8 +5,10 @@ import ActionBarItem, { ActionBarItemRef } from 'components/commons/ActionBar/Ac
 import Modal from 'components/commons/Modal';
 import Button from 'components/commons/Button';
 
+import './index.scss';
+
 interface ActionBarAltSection {
-    items: React.ReactNode;
+    items: JSX.Element[];
     title?: string;
 }
 const ActionBarAltSection = ( props: ActionBarAltSection ) => {
@@ -21,9 +23,39 @@ const ActionBarAltSection = ( props: ActionBarAltSection ) => {
         setModalState(true)
     }, []);
 
+    const [ gotRef, markRefPresence ] = React.useState(false); 
+
+    // Reference to the html div containing this section
+    const ref = React.useRef<HTMLDivElement | null>(null);
+
+    const refSetter = React.useCallback( (node) => {
+        if (ref.current) {
+            //
+        }
+
+        if (node) {
+            markRefPresence(true)
+        }
+
+        // Save a reference to the node
+        ref.current = node
+    }, []);
+
+
+    // Re-access and alter items list to change the section ref
+    const _items = React.useMemo( () => items.map( element => {
+        return <element.type 
+            {...element.props}
+            siblingWeight={1}
+            sectionRef={ref}
+        />
+    }), [items])
+
     return <>
         <Button title={title} shape='circle' iconName='ellipsis-v' onClick={show}/>
-        { modalState && <Modal visible={modalState} closeModal={hide}>{items}</Modal> }
+        { modalState && <Modal visible={modalState} closeModal={hide}>
+            <div ref={refSetter} className='actionbar-section-content'>{_items}</div>
+        </Modal> }
     </>
 }
 
@@ -66,7 +98,7 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
         markCenterItemPresence
     ] = React.useState(false);
 
-    // TODO: Explain how refs alone can be used in array deps
+    // TODO: Explain how refs alone can't be used in array deps
     const [ gotRef, markRefPresence ] = React.useState(false); 
 
     const sectionWidth = useElementWidth(ref.current);
@@ -114,7 +146,7 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
                     key={i.key}
                     sectionRef={ref}
                     setReady={addItemRef}
-                    // ref={addItemRef}
+                    scale={i.scale}
                 />
             } else if (!hasCenteredItems && i?.position === 'center') {
                 markCenterItemPresence(true);;

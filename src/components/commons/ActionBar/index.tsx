@@ -7,6 +7,7 @@ export interface ActionBarItemProps {
     position: "left" | "center" | "right";
     title?: string;
     key: string;
+    scale?: boolean;
 }
 
 export interface ActionBarProps {

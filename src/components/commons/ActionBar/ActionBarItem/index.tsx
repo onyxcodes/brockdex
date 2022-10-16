@@ -58,25 +58,26 @@ const ActionBarItem = ( props: ActionBarItem ) => {
 
     const sectionWidth = useElementWidth(sectionRef?.current);
 
-    // React.useEffect( () => {
-    //     if (uniqueKey === 'favorite-add' ) debugger;
-    // }, [sectionRef])
+    React.useEffect( () => {
+        if (uniqueKey === 'favorite-add' ) debugger;
+    }, [sectionRef])
     
 
     // If scaling is enabled and configured correctly, checks if it should switch to scaled form
     React.useLayoutEffect( () => {
         // console.log('calculating for scaling', { originalWidth, sectionWidth: sectionWidth, item: uniqueKey, scaling: scaling})
-        console.log({uniqueKey, sectionWidth, originalWidth})
+        console.log({uniqueKey, sectionWidth, originalWidth, siblingWeight})
         if ( scale && scaleFactor && sectionWidth && siblingWeight && originalWidth ) {
-            if ( !scaling.value && originalWidth * scaleFactor >= sectionWidth / siblingWeight ) {
+            if ( !scaling.value && originalWidth * scaleFactor > sectionWidth / siblingWeight ) {
                 setScaled({value: true, width: 0})
                 console.log(`item original width exceeds sectionRef's`, scaling);
-            } else if ( (scaling.value || scaling.value == null) && originalWidth * scaleFactor < sectionWidth / siblingWeight ) {
+            } else if ( (scaling.value || scaling.value == null) && originalWidth * scaleFactor <= sectionWidth / siblingWeight ) {
                 setScaled({value: false, width: 0})
                 console.log('disabling scaling', { originalWidth, sectionWidth: sectionWidth, item: uniqueKey});
-            }
+            } 
+        } else if ( !scale ) {
+            setScaled({value: false, width: 0})
         }
-
     }, [originalWidth, scale, scaleFactor, sectionWidth, uniqueKey]);
 
     const currentWidth = useElementWidth(ref.current, 'offsetWidth');
