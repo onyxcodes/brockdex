@@ -1,4 +1,4 @@
-import React, { ForwardedRef } from 'react';
+import React, { ForwardedRef, MutableRefObject } from 'react';
 import './index.scss';
 
 import ActionBarAltItem from 'components/commons/ActionBar/ActionBarAltItem';
@@ -13,35 +13,37 @@ interface ActionBarItem {
     scaleFactor?: number;
     alt?: JSX.Element;
     uniqueKey: string | number;
-    section?: HTMLElement | null;
-    // notifyScaleUpdate: () => void;
+    sectionRef?: MutableRefObject<HTMLDivElement | null>;
+    setReady?: ( arg: any ) => void;
 }
 export type ActionBarItemRef = {
-    width: number;
     element: HTMLDivElement | null;
     key: string | number;
 }
 const ActionBarItem = React.forwardRef<ActionBarItemRef, ActionBarItem>( ( props, itemRef ) => {
     const {
-        item, scale = false,
+        item, scale = true,
         scaleFactor = 1,
         uniqueKey,
         title,
-        section,
+        sectionRef,
         alt = <ActionBarAltItem item={item} title={title} />,
         siblingWeight = scaleFactor,
-        // notifyScaleUpdate
+        setReady,
     } = props;
     const ref = React.useRef<HTMLDivElement | null>(null);
-    // const [content, setContent ] = React.useState({
-    //     isScaled: false,
-    //     item: item
-    // }); 
+ 
+    // Describes whethere the item should be scaled or not
+    const [ scaling, setScaled ] = React.useState<{
+        value: boolean | null;
+        width: number
+    }>({
+        value: null,
+        width: 0
+    });
 
-    // Use a reference instead of a state value for better persistence
-    // const scaleRef = React.useRef(false);
-    // const scaleRef = React.useRef(false);
-    const [ isScaled, setScaled ] = React.useState(false);
+    // Keeps track of original width before scaling
+    // Needed to understand when it shoulg go back to original form
     const [originalWidth, setOriginalWidth ] = React.useState(ref.current?.clientWidth || 0); 
 
     // As soon as we get a hold of the div's reference, gets its width and store it
@@ -52,39 +54,71 @@ const ActionBarItem = React.forwardRef<ActionBarItemRef, ActionBarItem>( ( props
         }
     }, [item]);
 
-    const sectionWidth = useElementWidth(section);
+   
 
-    // If scaling is enabled and configured correctly, checks if it should switch to scaled item 
-    React.useEffect( () => {
-        // console.log('calculating for scaling', { originalWidth, sectionWidth: sectionWidth, item: uniqueKey, isScaled: isScaled})
+    const sectionWidth = useElementWidth(sectionRef?.current);
+
+    // React.useEffect( () => {
+    //     if (uniqueKey === 'favorite-add' ) debugger;
+    // }, [sectionRef])
+    
+
+    // If scaling is enabled and configured correctly, checks if it should switch to scaled form
+    React.useLayoutEffect( () => {
+        // console.log('calculating for scaling', { originalWidth, sectionWidth: sectionWidth, item: uniqueKey, scaling: scaling})
+        console.log({uniqueKey, sectionWidth, originalWidth})
         if ( scale && scaleFactor && sectionWidth && siblingWeight && originalWidth ) {
-            if ( !isScaled && originalWidth * scaleFactor >= sectionWidth / siblingWeight ) {
-                setScaled(true)
-                // console.log(`item original width exceeds section's`, isScaled);
-            } else if ( isScaled && originalWidth * scaleFactor < sectionWidth / siblingWeight ) {
-                setScaled(false)
-                // console.log('disabling scaling', { originalWidth, sectionWidth: sectionWidth, item: uniqueKey});
+            if ( !scaling.value && originalWidth * scaleFactor >= sectionWidth / siblingWeight ) {
+                setScaled({value: true, width: 0})
+                console.log(`item original width exceeds sectionRef's`, scaling);
+            } else if ( (scaling.value || scaling.value == null) && originalWidth * scaleFactor < sectionWidth / siblingWeight ) {
+                setScaled({value: false, width: 0})
+                console.log('disabling scaling', { originalWidth, sectionWidth: sectionWidth, item: uniqueKey});
             }
         }
 
-        // reset to default
-        // return () => is(false)
     }, [originalWidth, scale, scaleFactor, sectionWidth, uniqueKey]);
 
     const currentWidth = useElementWidth(ref.current, 'offsetWidth');
 
-    // Tweaks the exposed ref to supply the updated width
+    // Tweaks the exposed ref to supply the key
     React.useImperativeHandle( itemRef, () => ({
-        width: currentWidth,
         element: ref.current,
         key: uniqueKey
     }), [currentWidth, ref]); // ref may be omitted since currentWidth depends on it
 
-    const renderedItem = React.useMemo( () => {
-        return !isScaled ? item : alt;
-    }, [isScaled, item, alt]);
+    // const customRef = React.useMemo( () => ({
+    //     element: ref.current,
+    //     key: uniqueKey
+    // }), [currentWidth, ref]); // ref may be omitted since currentWidth depends on it
 
-    // React.useEffect( () => notifyScaleUpdate && notifyScaleUpdate(), [isScaled]);
+    const renderedItem = React.useMemo( () => {
+        return !scaling.value ? item : alt;
+    }, [scaling, item, alt]);
+
+    React.useEffect( () => {
+        const width = ref.current?.clientWidth || 0;
+        if ( (scaling.value === true || scaling.value === false) && scaling.width !== width ) {
+            // console.log({currentWidth, element: ref.current, width});
+            setScaled({ value: scaling.value, width });
+        }
+    }, [scaling, ref]);
+
+    React.useEffect( () => {
+        const customRef = {
+            element: ref.current,
+            key: uniqueKey
+        }
+        let timeoutId: number;
+        if (renderedItem && scaling.width ) {
+            timeoutId = window.setTimeout( () => setReady && setReady(customRef), 500);
+        }
+        // setReady && setReady(customRef)
+
+        return () => {
+            if (timeoutId) window.clearTimeout(timeoutId)
+        }
+    }, [renderedItem, scaling]);
     
     return <div ref={ref} className="actionbar-item p025 f jcc">{renderedItem}</div>
 });

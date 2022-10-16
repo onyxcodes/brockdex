@@ -36,7 +36,7 @@ const useElementWidth = (element?: HTMLElement | null, property: 'clientWidth' |
 	// Tracks elemenet width also when changing in content size
 	React.useEffect(() => {
 		setWidth(element?.[property] || 0)
-	}, [element])
+	}, [element?.[property]])
 
 	return width;
 }

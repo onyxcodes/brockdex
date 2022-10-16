@@ -192,12 +192,12 @@ const PokeModal = (props: PokeModalProps) => {
         const add = { 
             item: <button onClick={doAddToFavorites}>⭐ Add</button>, position: "right",
             title: 'Add to favorites',
-            key: 'add'
+            key: 'favorite-add'
         }
         const remove = {
             item: <button onClick={doRemoveFromFavorites}>⭐ Remove</button>,position: "right",
             title: 'Remove from favorites',
-            key: 'remove'
+            key: 'favorite-remove'
         }
         if (name) return [
             !favorites.includes(name) ? add : remove
