@@ -80,7 +80,7 @@ const propListValues = {
         'slot'?: number
     }) {
         let element: JSX.Element = <></>;
-        if ( el.ability?.name && el.is_hidden ) {
+        if ( el.ability?.name ) {
             let className = 'pokemon-ability';
             element = <span className={className}>
                 {el.ability.name}{el.is_hidden && ' '.concat(' (hidden)')}
@@ -121,21 +121,11 @@ const renderPropsDetails = (
 }
 
 interface PokeModalProps {
-    // id?: number;
-    // name: string;
-    // pokemon?: { [key: string]: any };
-    // getPokemon: (name: string) => void;
-    // getBtmBarItems?: (element: {}) => ActionBarItemProps[];
+    // placeholder
 };
 
 const PokeModal = (props: PokeModalProps) => {
-    const { 
-        // id, 
-        // name,
-        // pokemon,
-        // getPokemon,
-        // getBtmBarItems
-    } = props;
+    
     const dispatch = useDispatch();
 
     const doGetPokemon = (name: string) => {
@@ -216,10 +206,10 @@ const PokeModal = (props: PokeModalProps) => {
             btmActionBarItems={getNavigation}
             topActionBarItems={getActionBarItems}
         >
-            <div className='pokemonData-data'>
+            <div className='pokemon-data f fd-row mfd-col'>
                 { heroImg && <div 
-                    className="hero-container"
-                >   <div className="hero"
+                    className="pokemon-hero-container"
+                >   <div className="hero r-4-5"
                         style={{
                             backgroundImage: 
                                 "url("+heroImg+")"
@@ -228,7 +218,7 @@ const PokeModal = (props: PokeModalProps) => {
                     &nbsp;
                     </div>
                 </div> }
-                <div className="modal-content-details">
+                <div className="pokemon-details">
                     {pokemonData && renderPropsDetails({...pokemonData}, inlineProps, listProps)}
                 </div>
             </div>

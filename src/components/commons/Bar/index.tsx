@@ -1,4 +1,4 @@
-import React from "react";
+import './index.scss';
 
 interface BarProps {
     value: number;
