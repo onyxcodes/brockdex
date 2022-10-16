@@ -2,15 +2,14 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DetailedListState, getPokemonList, PokeDataDetailed, updateDetailedList } from "features/pokeapi/detailedList";
 
-import Loader from "components/commons/Loader";
-import PokeCard, { PokeCardProps } from "components/custom/PokeCard";
-import ActionBar from "components/commons/ActionBar";
-import { CardProps } from "components/commons/Card";
+import PokeCard from "components/custom/PokeCard";
 import list, { listPokemon, ListState, resetList } from "features/pokeapi/list";
 import { AppState } from "store";
 import { UIState } from "features/ui";
 import List from "components/commons/List";
 import Select from "components/commons/Form/Select";
+
+import Button from 'components/commons/Button';
 export interface PokeDataShallow {
     name: string; url: string
 };
@@ -45,7 +44,8 @@ const ListView = ( props: ListViewProps ) => {
 
     const listReq = useSelector<AppState, ListState>(s => s.list);
     const list = listReq.results;
-    const loading = useSelector<AppState, ListState["loading"]>(s => s.list.loading);
+
+    // const loading = useSelector<AppState, ListState["loading"]>(s => s.list.loading);
 
     const next = useSelector<AppState, ListState["next"]>(s => s.list.next);
     const previous = useSelector<AppState, ListState["previous"]>(s => s.list.previous);
@@ -55,7 +55,6 @@ const ListView = ( props: ListViewProps ) => {
     const useProcessListData = ( 
         list: PokeDataShallow[], 
         detailedList:  { [key: string]: PokeDataDetailed }, 
-        // onClick: (arg: any) => void
     ) => {
     
         const [ processedList, setProcessedList ]= React.useState<{ [key: string]: PokeDataDetailed }>({})
@@ -75,7 +74,6 @@ const ListView = ( props: ListViewProps ) => {
                 }
                 
                 return <PokeCard key={i.name}
-                    // openDetails={onClick}
                     list={detailedList}
                     next={_current && current.next}
                     previous={_current && current.previous}
@@ -185,10 +183,10 @@ const ListView = ( props: ListViewProps ) => {
                     />, position: 'left', key: 'pagination'}
                 ]}
                 footerItems={ view === 'page' ? [
-                    { item: <button onClick={() => fetchPrevious()} disabled={!previous}>Previous</button>, position: "left", key: 'nav-previous'},
+                    { item: <Button type='primary' onClick={() => fetchPrevious()} disabled={!previous}>Previous</Button>, position: "left", key: 'nav-previous'},
                     { item: <span>{`Page ${pageNumber}`}</span>, position: "center", key: 'nav-page'},
-                    { item: <button onClick={() => fetchNext()} disabled={!next}>Next</button>, position: "right", key: 'nav-next'}
-                ] : [{ item: <button onClick={() => fetchNext()} disabled={!next}>More</button>, position: "center", key: 'nav-more'}]}
+                    { item: <Button type='primary' onClick={() => fetchNext()} disabled={!next}>Next</Button>, position: "right", key: 'nav-next'}
+                ] : [{ item: <Button type='primary' onClick={() => fetchNext()} disabled={!next}>More</Button>, position: "center", key: 'nav-more'}]}
             />
         </div>
     )
