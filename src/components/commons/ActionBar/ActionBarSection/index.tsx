@@ -41,17 +41,16 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
     // Reference to the html div containing this section
     const ref = React.useRef<HTMLDivElement | null>(null);
 
-    // Reference that will get populated with the items of this ection
-    
+    // Reference that will get populated with the items of this section
     const itemsList = React.useRef<{
         [key: string]: HTMLElement | null
     }>({});
 
+    // State obj that mirrors above reference conten, just because refs changes
+    // can't be tracked in array of deps of react hooks, while a state update does
     const [_itemsList, updateItemsList ] = React.useState(itemsList.current);
 
-    // Helps recognize when an item get added or changed to width item refs list 
-    const [itemsListChange, markItemsListChange ]= React.useState(false);
-
+    // 
     const [ scaling, setScaling ] = React.useState({
         value: false,
         itemsWidth: 0 // needed to track items total width before scaling
@@ -67,6 +66,7 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
         markCenterItemPresence
     ] = React.useState(false);
 
+    // TODO: Explain how refs alone can be used in array deps
     const [ gotRef, markRefPresence ] = React.useState(false); 
 
     const sectionWidth = useElementWidth(ref.current);
@@ -81,7 +81,7 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
             updateItemsList({...itemsList.current})
             return itemsList.current[item.key];
         }
-    }, [itemsListChange]);
+    }, []);
 
     const refSetter = React.useCallback( (node) => {
         if (ref.current) {
@@ -104,22 +104,36 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
     const _items = React.useMemo(() => {
         let trueIndex = -1;
 
-        return items.map( i => {
-        if (i?.position === type) {
-            trueIndex++;
-            return <ActionBarItem
-                item={i.item}
-                title={i.title}
-                uniqueKey={i.key}
-                key={i.key}
-                sectionRef={ref}
-                setReady={addItemRef}
-                // ref={addItemRef}
-            />
-        } else if (!hasCenteredItems && i?.position === 'center') {
-            markCenterItemPresence(true);;
-        } 
-    }).filter( e => !!e )}, [items]);
+        const sectionItems = items.map( i => {
+            if (i?.position === type) {
+                trueIndex++;
+                return <ActionBarItem
+                    item={i.item}
+                    title={i.title}
+                    uniqueKey={i.key}
+                    key={i.key}
+                    sectionRef={ref}
+                    setReady={addItemRef}
+                    // ref={addItemRef}
+                />
+            } else if (!hasCenteredItems && i?.position === 'center') {
+                markCenterItemPresence(true);;
+            } 
+            // Even though there's the following filter, ts still thinks there may be undef values
+        }).filter( e => e !== undefined ) as JSX.Element[];
+
+        // The section items length is used to set the siblingWeight, used for the item scaling function
+        // TODO: It would be better to supply a specific weight based on the element size
+        if (sectionItems.length) console.log(`section at ${type} has n. items`, sectionItems.length)
+        return sectionItems
+            .map( element => {
+                return <element.type
+                    {...element.props}
+                    siblingWeight={sectionItems.length}
+                />
+            })
+            
+    }, [items]);
 
     React.useEffect( () => {
         // The unique key was enforced to assure that the list object contains

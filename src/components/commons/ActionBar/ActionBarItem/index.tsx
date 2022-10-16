@@ -20,7 +20,7 @@ export type ActionBarItemRef = {
     element: HTMLDivElement | null;
     key: string | number;
 }
-const ActionBarItem = React.forwardRef<ActionBarItemRef, ActionBarItem>( ( props, itemRef ) => {
+const ActionBarItem = ( props: ActionBarItem ) => {
     const {
         item, scale = true,
         scaleFactor = 1,
@@ -81,11 +81,6 @@ const ActionBarItem = React.forwardRef<ActionBarItemRef, ActionBarItem>( ( props
 
     const currentWidth = useElementWidth(ref.current, 'offsetWidth');
 
-    // Tweaks the exposed ref to supply the key
-    React.useImperativeHandle( itemRef, () => ({
-        element: ref.current,
-        key: uniqueKey
-    }), [currentWidth, ref]); // ref may be omitted since currentWidth depends on it
 
     // const customRef = React.useMemo( () => ({
     //     element: ref.current,
@@ -121,6 +116,6 @@ const ActionBarItem = React.forwardRef<ActionBarItemRef, ActionBarItem>( ( props
     }, [renderedItem, scaling]);
     
     return <div ref={ref} className="actionbar-item p025 f jcc">{renderedItem}</div>
-});
+}
 
 export default ActionBarItem;
