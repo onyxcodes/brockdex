@@ -2,11 +2,11 @@ import setQuery from './query'
 import { createReducer } from '@reduxjs/toolkit'
 
 export interface UIState {
-    query:string | null;
+    query: string | undefined;
 }
 
 const initalState = {
-    query: null,
+    query: '',
 } as UIState;
 
 const reducer = createReducer(initalState, builder => { builder
