@@ -11,7 +11,7 @@ export interface ModalProps {
     children?: React.ReactNode;
     visible?: boolean;
     loading?: boolean;
-    closeModal: () => void;
+    closeModal?: () => void;
     topActionBarItems?: ActionBarItemProps[] | (() => ActionBarItemProps[]);
     btmActionBarItems?: ActionBarItemProps[] | (() => ActionBarItemProps[]);
 };
