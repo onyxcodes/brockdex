@@ -1,22 +1,13 @@
-import list, { listPokemon, ListState }from 'features/pokeapi/list';
-import pokemon, { getPokemon, PokemonState } from 'features/pokeapi/pokemon';
-import detailedList, { getPokemonList, DetailedListState } from "features/pokeapi/detailedList"
-import { configureStore, createListenerMiddleware, isRejected } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import ui, { UIState } from 'features/ui';
 import favorites, { FavoritesState } from 'features/favoritesMgt';
 
-// Create the middleware instance and methods
-const failListenerMW = createListenerMiddleware();
-
-const isARequestAction = isRejected( listPokemon, getPokemon, getPokemonList );
-
-failListenerMW.startListening({
-  // actionCreator: AnyAction,
-  matcher: isARequestAction,
-  effect: async (action, listenerApi) => {
-    console.log("Request was rejected, logging", action);
-  }
-});
+import {
+	detailedList, DetailedListState,
+	pokemon, PokemonState,
+	list, ListState,
+	pendingListener, fulfilledListener, rejectedListener
+} from 'features/pokeapi';
 
 export type AppState = {
   list: ListState;
@@ -25,7 +16,6 @@ export type AppState = {
   favorites: FavoritesState;
   ui: UIState
 }
-
 
 export const store = configureStore({
   reducer: {
@@ -39,5 +29,9 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
     })
-    .prepend(failListenerMW.middleware)
+    .prepend(
+		pendingListener.middleware,
+		fulfilledListener.middleware,
+		rejectedListener.middleware
+	)
 });
