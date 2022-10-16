@@ -20,13 +20,11 @@ const objIsEmpty = ( obj: { [key: string]: any } ) => {
 }
 
 interface ListViewProps {
-    query?: string;
-    infiniteScroll?: boolean;
-    // openDetails: ( el: { [key: string]: any } ) => void;
+    //
 }
 const ListView = ( props: ListViewProps ) => {
     const { 
-        // openDetails,
+        //
     } = props;
 
     const dispatch = useDispatch();
