@@ -1,10 +1,11 @@
 import React from 'react';
-import Modal from 'components/commons/Modal';
+import useModal from 'hooks/useModal';
 import Button from 'components/commons/Button';
 
 interface ActionBarAltItem {
     item: JSX.Element;
     title?: string;
+    alt?: JSX.Element;
 }
 
 /** 
@@ -13,20 +14,20 @@ interface ActionBarAltItem {
  * If provided, uses a specific element as 'trigger'
  */
 const ActionBarAltItem = ( props: ActionBarAltItem ) => {
-    const { item, title } = props;
-    const [ modalState, setModalState ] = React.useState(false);
-    
-    const hide = React.useCallback( () => {
-        setModalState(false)
-    }, []);
+    const { item, title, alt } = props;
 
-    const show = React.useCallback( () => {
-        setModalState(true)
-    }, []);
+    const { Modal, open: openModal } = useModal();
+
+    const trigger = alt ? <alt.type 
+        {...alt.props}
+        // TODO: Consider the use case in which the alternative element already has an onClick,
+        // should it be fired too?
+        onClick={openModal} 
+    /> : <Button title={title} shape='circle' iconName='ellipsis-h' onClick={openModal}/>
 
     return <>
-        <Button title={title} shape='circle' iconName='ellipsis-h' onClick={show}/>
-        { modalState && <Modal visible={modalState} closeModal={hide}>{item}</Modal> }
+        { trigger }
+        { <Modal title={title}>{item}</Modal> }
     </>
 }
 

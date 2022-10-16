@@ -8,6 +8,7 @@ export interface ActionBarItemProps {
     title?: string;
     key: string;
     scale?: boolean;
+    alt?: JSX.Element;
 }
 
 export interface ActionBarProps {

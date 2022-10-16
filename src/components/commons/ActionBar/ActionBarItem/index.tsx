@@ -27,11 +27,13 @@ const ActionBarItem = ( props: ActionBarItem ) => {
         uniqueKey,
         title,
         sectionRef,
-        alt = <ActionBarAltItem item={item} title={title} />,
+        alt,
         siblingWeight = scaleFactor,
         setReady,
     } = props;
     const ref = React.useRef<HTMLDivElement | null>(null);
+
+    const _alt = <ActionBarAltItem item={item} title={title} alt={alt} />;
  
     // Describes whethere the item should be scaled or not
     const [ scaling, setScaled ] = React.useState<{
@@ -89,8 +91,8 @@ const ActionBarItem = ( props: ActionBarItem ) => {
     // }), [currentWidth, ref]); // ref may be omitted since currentWidth depends on it
 
     const renderedItem = React.useMemo( () => {
-        return !scaling.value ? item : alt;
-    }, [scaling, item, alt]);
+        return !scaling.value ? item : _alt;
+    }, [scaling, item, _alt]);
 
     React.useEffect( () => {
         const width = ref.current?.clientWidth || 0;

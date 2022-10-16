@@ -3,12 +3,12 @@ import './index.scss';
 import Button from 'components/commons/Button';
 import ReactDOM from 'react-dom';
 
-interface SidebarProps {
+export interface SidebarProps {
     visible?: boolean;
     closeSidebar?: () => void;
     header?: JSX.Element;
     footer?: JSX.Element;
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 const Sidebar = ( props: SidebarProps ) => {
     const {
