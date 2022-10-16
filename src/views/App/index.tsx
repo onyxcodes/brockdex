@@ -42,12 +42,13 @@ const App = () => {
                 {
                     item: <PokeSearch/>,
                     title: 'Search',
-                    position: "left",
+                    position: "right",
                     key: 'searchbar',
                     alt: <Button title='Search' shape='circle' iconName='search'/>
                 },
                 { item: <span>BrockDex</span>, position: "center", key: 'app-logo' },
-                { item: <button>Favs</button>, position: "right", key: 'favorite-btn' }
+                // TODO
+                // { item: <button>Favs</button>, position: "right", key: 'favorite-btn' }
             ]} />
             <ListView/>
             <PokeModal/>
