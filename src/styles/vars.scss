@@ -20,7 +20,10 @@ $font-alt-body-style: normal;
 $primary-color: #FF7575;
 // $primary-color: #9900ff;
 $primary-color-dark: darken($primary-color, 30%);
-$primary-color-light:  lighten($primary-color, 30%);
+
+// TODO: extract the lightness from primary color to decide the best amount to use for lighten
+// i.e.: 30% lighten of already light colors result in a white color..
+$primary-color-light:  lighten($primary-color, 15%);
 
 $primary-color-alpha: rgba($primary-color, 0.35);
 $primary-color-alpha-dark: rgba($primary-color-dark, 0.35);
