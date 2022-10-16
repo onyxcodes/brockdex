@@ -9,6 +9,7 @@ import ListView from "views/ListView";
 import PokeModal from "components/custom/PokeModal";
 import PokeSearch from 'components/custom/PokeSearch';
 import Button from 'components/commons/Button';
+import NotificationArea from 'components/commons/NotificationArea';
 
 import 'styles/index.scss';
 
@@ -37,6 +38,7 @@ const App = () => {
     return <div id="app">
         <div id='modal-area'></div>
         <div id='sidebar-area'></div>
+        <NotificationArea />
         <main>
             <ActionBar type='primary' position="top" items={[
                 {
