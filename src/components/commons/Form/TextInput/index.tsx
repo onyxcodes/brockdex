@@ -43,7 +43,7 @@ const TextInput = React.forwardRef( ( props: TextInputProps, ref: React.Forwarde
     }), [isInvalid]);
 
     let inputClass = 'input-text f',
-        inputWrapperClass = 'input-wrapper-class m05 f';
+        inputWrapperClass = 'input-wrapper m05 f';
 
     if ( inline ) inputWrapperClass = `${inputWrapperClass} fd-row`;
     else inputWrapperClass = `${inputWrapperClass} fd-col`;

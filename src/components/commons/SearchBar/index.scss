@@ -4,4 +4,14 @@
     flex-direction: row;
     align-items: center;
     width: fit-content;
+    min-width: 12rem;
+
+    .input-wrapper {
+        margin-right: 0 !important;
+    }
+
+    .btn {
+        margin-left: auto;
+        padding: 0.5rem;
+    }
 }

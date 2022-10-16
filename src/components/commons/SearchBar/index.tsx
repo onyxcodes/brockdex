@@ -5,6 +5,10 @@ import TextInput from 'components/commons/Form/TextInput';
 import { InputRefType } from 'components/commons/Form/types';
 import Button from 'components/commons/Button';
 
+// TODO: Consider the creation and usage of a Form.SearchInput
+// instead of Form.TextInput. The idea is to better integrate 
+// the button inside the input component tree
+
 interface SearchBarProps {
     disabled?: boolean;
     placeholder?: string;

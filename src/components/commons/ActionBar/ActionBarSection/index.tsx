@@ -2,8 +2,8 @@ import React from 'react';
 import useElementWidth from 'hooks/useElementWidth';
 import { ActionBarItemProps } from 'components/commons/ActionBar';
 import ActionBarItem, { ActionBarItemRef } from 'components/commons/ActionBar/ActionBarItem';
-import Sidebar from 'components/commons/Sidebar';
 import Button from 'components/commons/Button';
+import useSidebar from 'hooks/useSidebar';
 
 import './index.scss';
 
@@ -13,15 +13,6 @@ interface ActionBarAltSection {
 }
 const ActionBarAltSection = ( props: ActionBarAltSection ) => {
     const { items, title } = props;
-    const [ modalState, setModalState ] = React.useState(false);
-    
-    const hide = React.useCallback( () => {
-        setModalState(false)
-    }, []);
-
-    const show = React.useCallback( () => {
-        setModalState(true)
-    }, []);
 
     const [ gotRef, markRefPresence ] = React.useState(false); 
 
@@ -44,16 +35,19 @@ const ActionBarAltSection = ( props: ActionBarAltSection ) => {
 
     // Re-access and alter items list to change the section ref
     const _items = React.useMemo( () => items.map( element => {
-        return <element.type 
+        return <element.type
+            key={element.key}
             {...element.props}
             siblingWeight={1}
             sectionRef={ref}
         />
-    }), [items])
+    }), [items]);
+
+    const { Sidebar, open: openSidebar } = useSidebar();
 
     return <>
-        <Button title={title} shape='circle' iconName='ellipsis-v' onClick={show}/>
-        { modalState && <Sidebar visible={modalState} closeSidebar={hide}>
+        <Button title={title} shape='circle' iconName='ellipsis-v' onClick={openSidebar}/>
+        { <Sidebar>
             <div ref={refSetter} className='actionbar-section-content'>{_items}</div>
         </Sidebar> }
     </>
@@ -147,6 +141,7 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
                     sectionRef={ref}
                     setReady={addItemRef}
                     scale={i.scale}
+                    alt={i.alt}
                 />
             } else if (!hasCenteredItems && i?.position === 'center') {
                 markCenterItemPresence(true);;
@@ -160,6 +155,7 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
         return sectionItems
             .map( element => {
                 return <element.type
+                    key={element.key}
                     {...element.props}
                     siblingWeight={sectionItems.length}
                 />

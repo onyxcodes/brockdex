@@ -8,6 +8,7 @@ import ListView from "views/ListView";
 
 import PokeModal from "components/custom/PokeModal";
 import PokeSearch from 'components/custom/PokeSearch';
+import Button from 'components/commons/Button';
 
 import 'styles/index.scss';
 
@@ -41,11 +42,13 @@ const App = () => {
                 {
                     item: <PokeSearch/>,
                     title: 'Search',
-                    position: "left",
-                    key: 'searchbar'
+                    position: "right",
+                    key: 'searchbar',
+                    alt: <Button title='Search' shape='circle' iconName='search'/>
                 },
                 { item: <span>BrockDex</span>, position: "center", key: 'app-logo' },
-                { item: <button>Favs</button>, position: "right", key: 'favorite-btn' }
+                // TODO
+                // { item: <button>Favs</button>, position: "right", key: 'favorite-btn' }
             ]} />
             <ListView/>
             <PokeModal/>
