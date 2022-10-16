@@ -11,6 +11,7 @@ import { getPokemon, resetPokemon, setFocusedPokemon, PokemonState } from "featu
 import { AppState } from "store";
 import { DetailedListState, PokeDataDetailed } from "features/pokeapi/detailedList";
 import { FavoritesState, addToFavorites, removeFromFavorites } from 'features/favoritesMgt';
+import Button from 'components/commons/Button';
 
 
 const inlineProps = ['base_experience', 'weight', 'height'];
@@ -160,19 +161,21 @@ const PokeModal = (props: PokeModalProps) => {
 
     React.useEffect(() => { if (name && !id) doGetPokemon(name)}, [name, id]);
 
+    // TODO: Removing inline function with more specific callback,
+    // since the arguments are available in the context
     const getNavigation = React.useCallback( (): ActionBarItemProps[] => {
         return [
             {
-                item: <button
+                item: <Button
                     disabled={!pokemonData?.next}
                     onClick={() => doFocusPokemon(detailedList[pokemonData?.next])}>Next
-                </button>, position: "right", key: 'nav-next'
+                </Button>, position: "right", key: 'nav-next'
             },
             {
-                item: <button
+                item: <Button
                     disabled={!pokemonData?.previous}
                     onClick={() => doFocusPokemon(detailedList[pokemonData?.previous])}>Previous
-                </button>, position: "left", key: 'nav-text'
+                </Button>, position: "left", key: 'nav-text'
             }
         ]
     }, [pokemonData, detailedList]);
@@ -190,12 +193,13 @@ const PokeModal = (props: PokeModalProps) => {
     const getActionBarItems = React.useCallback( () => {
         console.log('favorites', favorites);
         const add = { 
-            item: <button onClick={doAddToFavorites}>⭐ Add</button>, position: "right",
+            item: <Button iconName='star' type='primary' onClick={doAddToFavorites}>Add</Button>, position: "right",
             title: 'Add to favorites',
             key: 'favorite-add'
         }
         const remove = {
-            item: <button onClick={doRemoveFromFavorites}>⭐ Remove</button>,position: "right",
+            item: <Button iconName='star-o' type='primary' onClick={doRemoveFromFavorites}>Remove</Button>,
+            position: "right",
             title: 'Remove from favorites',
             key: 'favorite-remove'
         }

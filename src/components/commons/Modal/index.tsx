@@ -41,7 +41,8 @@ const Modal = (props: ModalProps) => {
         <div className={modalFgClass}>
             <ActionBar position="top"
                 items={[
-                    title ? { item: <span>{title}</span>, position: "center", key: 'modal-title' } : null,
+                    // TODO: change definition (also accept function) at a lower level (ActionBarProps)
+                    title ? { item: <span>{title}</span>, position: "center", key: 'modal-title', scale: false } : null,
                     ...(topActionBarItems instanceof Function && topActionBarItems() || topActionBarItems instanceof Array && topActionBarItems || []),
                     { 
                         item: <Button shape='circle' type='primary' onClick={closeModal} iconName='close' />,
