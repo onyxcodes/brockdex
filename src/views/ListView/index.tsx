@@ -1,17 +1,15 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { DetailedListState, getPokemonList, PokeDataDetailed, updateDetailedList } from "../../features/pokeapi/detailedList";
+import { DetailedListState, getPokemonList, PokeDataDetailed, updateDetailedList } from "features/pokeapi/detailedList";
 
-import Loader from "../../components/Loader";
-import PokeCard, { PokeCardProps } from "../../components/PokeCard";
-import ActionBar from "../../components/ActionBar";
-import { CardProps } from "../../components/Card";
-import list, { listPokemon, ListState, resetList } from "../../features/pokeapi/list";
-import { AppState } from "../../stores";
-import { UIState } from "../../features/ui";
-import { off } from "process";
-import List from "../../components/List";
-import Selector from "../../components/Selector";
+import PokeCard from "components/custom/PokeCard";
+import list, { listPokemon, ListState, resetList } from "features/pokeapi/list";
+import { AppState } from "store";
+import { UIState } from "features/ui";
+import List from "components/commons/List";
+import Select, { SelectOption } from "components/commons/Form/Select";
+
+import Button from 'components/commons/Button';
 export interface PokeDataShallow {
     name: string; url: string
 };
@@ -22,13 +20,11 @@ const objIsEmpty = ( obj: { [key: string]: any } ) => {
 }
 
 interface ListViewProps {
-    query?: string;
-    infiniteScroll?: boolean;
-    openDetails: ( el: { [key: string]: any } ) => void;
+    //
 }
 const ListView = ( props: ListViewProps ) => {
     const { 
-        openDetails,
+        //
     } = props;
 
     const dispatch = useDispatch();
@@ -46,7 +42,8 @@ const ListView = ( props: ListViewProps ) => {
 
     const listReq = useSelector<AppState, ListState>(s => s.list);
     const list = listReq.results;
-    const loading = useSelector<AppState, ListState["loading"]>(s => s.list.loading);
+
+    // const loading = useSelector<AppState, ListState["loading"]>(s => s.list.loading);
 
     const next = useSelector<AppState, ListState["next"]>(s => s.list.next);
     const previous = useSelector<AppState, ListState["previous"]>(s => s.list.previous);
@@ -56,8 +53,7 @@ const ListView = ( props: ListViewProps ) => {
     const useProcessListData = ( 
         list: PokeDataShallow[], 
         detailedList:  { [key: string]: PokeDataDetailed }, 
-        onClick: (arg: any) => void ) => 
-    {
+    ) => {
     
         const [ processedList, setProcessedList ]= React.useState<{ [key: string]: PokeDataDetailed }>({})
         const [ listComponents, setListComponents ] = React.useState<JSX.Element[]>([])
@@ -76,7 +72,6 @@ const ListView = ( props: ListViewProps ) => {
                 }
                 
                 return <PokeCard key={i.name}
-                    openDetails={onClick}
                     list={detailedList}
                     next={_current && current.next}
                     previous={_current && current.previous}
@@ -142,20 +137,19 @@ const ListView = ( props: ListViewProps ) => {
         } else setContextList(list)
     }, [offset, limit, list, view]);
 
-    // TODO: consider using useCallback!
-    const fetchNext = () => {
+    const fetchNext = React.useCallback(() => {
         if (list && next) {
             setOffset(next.offset);
             setLimit(next.limit);
-        } // else manage error
-    }
+        }
+    }, [list, next]);
 
-    const fetchPrevious = () => {
+    const fetchPrevious = React.useCallback(() => {
         if (list && previous) {
             setOffset(previous.offset);
             setLimit(previous.limit);
-        } // else manage error
-    }
+        }
+    }, [list, previous]);
 
     // Method that will be used as callback when 
     const updateProcessedList = React.useCallback( (processedList) => {
@@ -165,31 +159,39 @@ const ListView = ( props: ListViewProps ) => {
         };
     }, [isListProcessed]);
 
+    const doProcessListData = React.useCallback( (_list: any) => {
+        return useProcessListData(_list, detailedListReq.results)
+    }, [detailedListReq.results]);
+
+    const onPaginationModeChange = React.useCallback( (selected: SelectOption) => {
+        ( selected.value === 'page' || selected.value === 'scroll' ) && setView(selected.value)
+    }, []);
+
+    // add loading through hook
     
     return(
         <div className="listView">
             <List 
                 infiniteScroll={view === 'scroll'}
-                list={contextList}
+                data={contextList}
                 pageSize={limit}
-                loading={loading}
-                listProcessor={(_list) => useProcessListData(_list, detailedListReq.results, openDetails)}
+                listProcessor={doProcessListData}
                 onProcessEnd={updateProcessedList}
                 headerItems={[
-                    { item: <Selector 
+                    { item: <Select 
                         name='view' label='View mode'
-                        data={[
+                        options={[
                             { label: 'Page', value: 'page', selected: true },
                             { label: 'Scroll', value: 'scroll' },
                         ]}
-                        onChange={ (selected) => ( selected.value === 'page' || selected.value === 'scroll' ) && setView(selected.value)}
-                    />, position: 'left'}
+                        onChange={onPaginationModeChange}
+                    />, position: 'left', key: 'pagination'}
                 ]}
                 footerItems={ view === 'page' ? [
-                    { item: <button onClick={() => fetchPrevious()} disabled={!previous}>Previous</button>, position: "left"},
-                    { item: <span>{`Page ${pageNumber}`}</span>, position: "center"},
-                    { item: <button onClick={() => fetchNext()} disabled={!next}>Next</button>, position: "right"}
-                ] : [{ item: <button onClick={() => fetchNext()} disabled={!next}>More</button>, position: "center"}]}
+                    { item: <Button type='primary' onClick={fetchPrevious} disabled={!previous}>Previous</Button>, position: "left", key: 'nav-previous'},
+                    { item: <span>{`Page ${pageNumber}`}</span>, position: "center", key: 'nav-page'},
+                    { item: <Button type='primary' onClick={fetchNext} disabled={!next}>Next</Button>, position: "right", key: 'nav-next'}
+                ] : [{ item: <Button type='primary' onClick={fetchNext} disabled={!next}>More</Button>, position: "center", key: 'nav-more'}]}
             />
         </div>
     )

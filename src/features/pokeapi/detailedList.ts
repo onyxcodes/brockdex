@@ -1,6 +1,6 @@
-import { pokemon } from "./pokemon";
 import { createAction, createAsyncThunk, createReducer } from "@reduxjs/toolkit";
-import { AppState } from "../../stores";
+import { AppState } from "store";
+import { pokemon } from "./pokemon";
 
 export interface PokeDataDetailed {
     [key: string]: any;

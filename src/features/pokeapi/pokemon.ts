@@ -14,8 +14,8 @@ export const pokemon = async (name: string) => {
         });
         if (data?.id) return data;
         else throw Error(`Unexpected response: ${data}`);
-    } catch (e) {
-        console.log(e)
+    } catch (e: any) {
+        throw new Error(e);
     }      
 }
 
@@ -31,7 +31,15 @@ export const getPokemon = createAsyncThunk(
     }
 );
 
+// TODO: Understand if it can be omitted
 export const resetPokemon = createAction('poke/resetPokemon');
+
+export const setFocusedPokemon = createAction('poke/setFocus',
+    (data: PokeDataDetailed ) => {
+        const payload = data;
+        return { payload } 
+    }
+)
 
 export interface PokemonState {
     loading: boolean;
@@ -44,6 +52,9 @@ const initialState = {
 
 const reducer = createReducer( initialState, builder => {
     builder
+        .addCase(setFocusedPokemon, (state, action) => {
+            state.data = action.payload;
+        })
         .addCase(getPokemon.fulfilled, (state, action) => {
             let payload = action.payload;
             state.data = payload;

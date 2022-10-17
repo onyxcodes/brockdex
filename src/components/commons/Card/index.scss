@@ -1,0 +1,35 @@
+.card {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: clip;
+    background: white;
+    box-shadow: rgba(0, 0, 0, 10%) 1px 1px 1px 1px;
+    cursor: pointer;
+}
+
+.card.medium:hover {
+    box-shadow: rgba(0, 0, 0, 10%) 1px 1px 2.5px 2.5px;
+}
+
+.card.medium {
+    width: 250px;
+    height: 400px;
+}
+
+.card-title {
+    height: 32px;
+    display: flex;
+    place-content: center;
+    align-items: center;
+}
+
+.card-hero {
+    border-bottom: transparent solid;
+    border-radius: 0 0 10px 10px;
+    margin: -1%;
+    flex: 1;
+    background: linear-gradient(45deg, #e3e3e3, #eeeeee, #ffffff, #eeeeee, #e3e3e3);
+    background-size: 300% 300%;
+    animation: gradient 3s ease infinite;
+}
