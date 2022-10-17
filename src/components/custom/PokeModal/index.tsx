@@ -13,6 +13,8 @@ import { DetailedListState, PokeDataDetailed } from "features/pokeapi/detailedLi
 import { FavoritesState, addToFavorites, removeFromFavorites } from 'features/favoritesMgt';
 import Button from 'components/commons/Button';
 
+import logger from 'utils/logger';
+
 
 const inlineProps = ['base_experience', 'weight', 'height'];
 const listProps = ['types', 'stats', 'abilities'];
@@ -85,7 +87,7 @@ const propListValues = {
             element = <span className={className}>
                 {el.ability.name}{el.is_hidden && ' '.concat(' (hidden)')}
             </span>;
-        } // else log error
+        }
         return element;
     }
 }
@@ -181,7 +183,7 @@ const PokeModal = (props: PokeModalProps) => {
     }, [dispatch, name]);
 
     const getActionBarItems = React.useCallback( () => {
-        console.log('favorites', favorites);
+        logger.debug(favorites, 'PokeModal - got favorites');
         const add = { 
             item: <Button iconName='star' type='primary' onClick={doAddToFavorites}>Add</Button>, position: "right",
             title: 'Add to favorites',

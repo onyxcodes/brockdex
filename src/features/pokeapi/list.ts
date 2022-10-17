@@ -30,7 +30,6 @@ const list = async ( offset: number, limit: number ) => {
         if (data && data?.results?.length) return(data);
         else throw Error(`Unexpected response: ${data}`);
     } catch (e: any) {
-        console.log(e);
         throw new Error(e);
     }
 }
@@ -152,11 +151,6 @@ const reducer = createReducer(initialState, (builder) => {
             state.loading = true;
             state.success = initialState.success;
             state.error = initialState.error;
-        })
-        .addCase(listPokemon.rejected, (state, action) => {
-            state.loading = false;
-            state.success = initialState.success;
-            // state.error = ;
         })
 });
 
