@@ -5,6 +5,8 @@ import ActionBarItem, { ActionBarItemRef } from 'components/commons/ActionBar/Ac
 import Button from 'components/commons/Button';
 import useSidebar from 'hooks/useSidebar';
 
+import logger from 'utils/logger';
+
 import './index.scss';
 
 interface ActionBarAltSection {
@@ -101,8 +103,6 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
 
     const addItemRef = React.useCallback( ( item: ActionBarItemRef | null) => {
         if ( item && item.element && type !== 'center' ) {
-            if ( item.key == 'favorite-remove' || item.key == 'close-modal') debugger;
-            // markItemsListChange(!itemsListChange)
             itemsList.current[item.key] = item.element;
             updateItemsList({...itemsList.current})
             return itemsList.current[item.key];
@@ -151,7 +151,7 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
 
         // The section items length is used to set the siblingWeight, used for the item scaling function
         // TODO: It would be better to supply a specific weight based on the element size
-        if (sectionItems.length) console.log(`section at ${type} has n. items`, sectionItems.length)
+        if (sectionItems.length) logger.debug(`section at ${type} has n. items`, sectionItems.length);
         return sectionItems
             .map( element => {
                 return <element.type
@@ -187,15 +187,15 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
         const totalItemsWidth = Object.values( _itemList).reduce( (total, element) => {
             return total + (element?.offsetWidth || 0);
         }, 0);
-        console.log('Calculating whether it should scale', {sectionWidth, totalItemsWidth, scaling})
+        logger.debug({sectionWidth, totalItemsWidth, scaling}, 'ActionBarSection - calculating whether it should scale')
         if ( !scaling.value && totalItemsWidth && sectionWidth && totalItemsWidth >= sectionWidth) {
-            console.log('Section should scale', {sectionWidth, totalItemsWidth})
+            logger.debug({sectionWidth, totalItemsWidth}, 'ActionBarSection - should scale');
             setScaling({
                 value: true,
                 itemsWidth: totalItemsWidth
             });
         } else if ( scaling.value && scaling.itemsWidth && sectionWidth && scaling.itemsWidth < sectionWidth ) {
-            console.log('Section should not scale', {sectionWidth, itemsWidth: scaling.itemsWidth})
+            logger.debug({sectionWidth, itemsWidth: scaling.itemsWidth}, 'ActionBarSection - should not scale');
             setScaling({
                 value: false,
                 itemsWidth: 0
@@ -203,22 +203,7 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
         }
     }, [sectionWidth, scaling]);
 
-    // if ( sectionWidth ) debugger
-
-
     React.useEffect( () => {
-        // let timeoutId: number;
-
-        // // scaling disabled for center sections
-        // if ( type !== 'center' ) {
-        //     // gives time to paint the dom 
-        //     // and also children items to switch to their scaled versions
-        //     timeoutId = window.setTimeout( () => alterScaling(itemsList.current),150);
-        // }
-
-        // return () => {
-        //     if (timeoutId) window.clearTimeout(timeoutId)
-        // }
         alterScaling(itemsList.current)
     }, [_itemsList, sectionWidth]);
 
@@ -230,7 +215,6 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
     // Renders the component only if it has items of it's type,
     // or there are items in the center section
     return (_items.length || hasCenteredItems) ? <div className={actionBarSectionClass} ref={refSetter}>
-    {/* // return (_items.length || hasCenteredItems) ? <div className={actionBarSectionClass} ref={ref}> */}
         {renderedItem}
     </div> : null;
 }

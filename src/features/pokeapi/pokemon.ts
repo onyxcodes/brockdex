@@ -14,8 +14,8 @@ export const pokemon = async (name: string) => {
         });
         if (data?.id) return data;
         else throw Error(`Unexpected response: ${data}`);
-    } catch (e) {
-        console.log(e)
+    } catch (e: any) {
+        throw new Error(e);
     }      
 }
 
@@ -67,9 +67,6 @@ const reducer = createReducer( initialState, builder => {
         .addCase(resetPokemon, (state, action) => {
             state.data = initialState.data;
         })
-        // .addDefaultCase((state, action) => {
-        //     debugger;
-        // })
 });
 
 export default reducer;

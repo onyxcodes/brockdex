@@ -11,6 +11,8 @@ import PokeSearch from 'components/custom/PokeSearch';
 import Button from 'components/commons/Button';
 import NotificationArea from 'components/commons/NotificationArea';
 
+import logger from 'utils/logger';
+
 import 'styles/index.scss';
 
 const App = () => {
@@ -19,7 +21,7 @@ const App = () => {
     const updateTotal = (total: number) => {
         let storedTotal = localStorage.getItem("total") ? Number(localStorage.getItem("total")) : null;
         if (!total || isNaN(total)) {
-            console.log(`updateTotal - Given total is not a number or 0: ${total}`);
+            logger.debug({total}, 'updateTotal - Given total is not a number or 0');
         } else if (
             storedTotal && // total already stored
             storedTotal !== total // update only when different

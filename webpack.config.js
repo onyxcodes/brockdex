@@ -16,6 +16,9 @@ const config = {
   entry: "./src/index.tsx",
   output: {
     path: path.resolve(__dirname, "docs"),
+    publicPath: '/',
+    filename: '[name].[contenthash].js',
+    clean: true,
   },
   devServer: {
     host: "localhost",
@@ -75,6 +78,19 @@ const config = {
       '.jsx',
       '.css', ".tsx", ".ts"
     ],
+    optimization: {
+      runtimeChunk: 'single',
+      splitChunks: {
+        maxSize: 300000,
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all'
+          }
+        }
+      }
+    },
     alias: {
       'react-dom': '@hot-loader/react-dom',
       'pouchdb-promise$': "pouchdb-promise/lib/index.js",
