@@ -68,6 +68,19 @@ const config = {
       // Learn more about loaders from https://webpack.js.org/loaders/
     ],
   },
+  optimization: {
+    runtimeChunk: 'single',
+    splitChunks: {
+      maxSize: 300000,
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all'
+        }
+      }
+    }
+  },
   resolve: {
     fallback: {
       "os": require.resolve("os-browserify/browser"),
@@ -78,19 +91,6 @@ const config = {
       '.jsx',
       '.css', ".tsx", ".ts"
     ],
-    optimization: {
-      runtimeChunk: 'single',
-      splitChunks: {
-        maxSize: 300000,
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all'
-          }
-        }
-      }
-    },
     alias: {
       'react-dom': '@hot-loader/react-dom',
       'pouchdb-promise$': "pouchdb-promise/lib/index.js",
