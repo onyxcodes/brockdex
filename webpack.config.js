@@ -16,7 +16,6 @@ const config = {
   entry: "./src/index.tsx",
   output: {
     path: path.resolve(__dirname, "docs"),
-    publicPath: '/',
     filename: '[name].[contenthash].js',
     clean: true,
   },
