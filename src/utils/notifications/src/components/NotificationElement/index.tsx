@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import Icon from 'components/commons/Icon';
-import Alert, { AlertElement } from 'components/commons/Alert';
-import { Notification as NotificationType } from 'features/ui';
+import Alert from '../Alert';
+import { Notifier } from '../../../';
+import ReactDOM from 'react-dom';
 
-const getGenericIcon = ( type: NotificationType['level'] ) => {
+const getGenericIcon = ( type: Notifier.NotificationObject['level'] ) => {
     let iconName;
     switch (type) {
         
@@ -27,22 +28,14 @@ const getGenericIcon = ( type: NotificationType['level'] ) => {
             iconName = 'info-circle';
         break;
     }
-    return <div className='alert-icon f aic p05'>
-        <Icon name={iconName} />
-    </div>
+
+    return <Icon name={iconName} />
 }
 
-interface NotificationProps extends NotificationType {
-    element?: AlertElement;
-    showIcon?: boolean;
-    buttons?: JSX.Element[];
-    onClose?: () => void;
-    showElapsedTime?: boolean;
-    closeOnAction?: boolean;
-    getIcon?: (type: string) => JSX.Element;
-}
-const Notification = (props: NotificationProps): AlertElement => {
+const NotificationElement: Notifier.NotificationElement<Notifier.NotificationElementProps> = (props): JSX.Element => {
     const {
+        areaId = 'modal-area',
+        active = true,
         id,
         level = 'info',
         message, actions,
@@ -54,11 +47,17 @@ const Notification = (props: NotificationProps): AlertElement => {
         buttons,
         closeOnAction = true,
         onClose,
-        element = <Alert/>,
+        Component = Alert,
         getIcon = getGenericIcon,
     } = props;
 
     const [ visible, setVisible ] = React.useState(true);
+
+    React.useEffect( () => {
+        if (active !== visible) {
+            setVisible(active);
+        }
+    }, [active]);
 
     let alertIcon;
     if (showIcon) {
@@ -80,24 +79,23 @@ const Notification = (props: NotificationProps): AlertElement => {
         setVisible(false);
     }, []);
 
-    return <element.type
-        key={id}
+    const area = document.getElementById(areaId);
+
+    return area ? ReactDOM.createPortal(<Component
         icon={alertIcon}
         visible={visible}
         onClose={onClose}
         showClose={clearable}
         closeAlert={hide}
-        // NOTE: if a custom element was specified with its props
-        // same props will override above 'deafults'
-        {...element.props}
     >
         <>
             <span>{message}</span>
+            {/* TODO: Change to more appropriate className */}
             {renderedButtons?.length && <div className='alert-buttons px05 f jcc'>
                 {renderedButtons}
             </div>}
         </>
-    </element.type>
+    </Component>, area) : <></>;
 }
 
-export default Notification;
+export default NotificationElement;
