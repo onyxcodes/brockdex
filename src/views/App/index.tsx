@@ -9,7 +9,7 @@ import ListView from "views/ListView";
 import PokeModal from "components/custom/PokeModal";
 import PokeSearch from 'components/custom/PokeSearch';
 import Button from 'components/commons/Button';
-import NotificationArea from 'components/commons/NotificationArea';
+import { NotificationArea, Notifier } from 'utils/notifications';
 
 import logger from 'utils/logger';
 
@@ -34,13 +34,17 @@ const App = () => {
 
     const responseTotal = useSelector<AppState, ListState["total"]>(s => s.list.total);
 
+    const notifications = useSelector<AppState, Notifier.NotificationObject[]>( s => s.notifications);
+
     // Updates with total number of pokemon, only once when list first loads
     React.useEffect(() => updateTotal(responseTotal), [responseTotal]);
 
     return <div id="app">
         <div id='modal-area'></div>
         <div id='sidebar-area'></div>
-        <NotificationArea />
+        <NotificationArea
+            notifications={notifications}
+        />
         <main>
             <ActionBar type='primary' position="top" items={[
                 {

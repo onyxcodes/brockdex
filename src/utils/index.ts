@@ -1,4 +1,4 @@
-import { isAsyncThunkAction, AnyAction, AsyncThunk } from '@reduxjs/toolkit';
+import { isAsyncThunkAction, AnyAction, AsyncThunk, Dispatch } from '@reduxjs/toolkit';
 import { store } from 'store';
 import { listPokemon, getPokemonList, getPokemon } from 'features/pokeapi';
 
@@ -19,16 +19,16 @@ const getActionCreator = ( action: AnyAction, creators: AsyncThunk<any, any, {}>
 }
 
 const globalFunctions: {
-    [key: string]: (...args: any[]) => void;
+    [key: string]: (...args: any[]) => (dispatch: Dispatch<any>) => void;
 } = {
-    test: (notificationId: string) => {
-        logger.debug({notificationId}, 'test - called for notification');
-    },
-    reattemptAction: (notificationId: string, {action}) => {
+    // test: (notificationId: string) => {
+    //     logger.debug({notificationId}, 'test - called for notification');
+    // },
+    reattemptAction: (notificationId: string, {action}) => (dispatch) => {
         logger.debug({action}, 'reattemptAction - called for action');
         const actionCreator = getActionCreator(action, [listPokemon, getPokemonList, getPokemon]);
         if ( isAsyncThunkAction(action) && actionCreator ) {
-            store.dispatch(actionCreator(action.meta.arg));
+            dispatch(actionCreator(action.meta.arg));
         }
     }
 }
