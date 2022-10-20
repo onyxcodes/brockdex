@@ -12,6 +12,7 @@ interface ButtonProps {
     shape?: 'default' | 'circle';
     className?: string
 }
+// TODO: Add as property to enable specifying which html tag will be used for dom
 const Button = ( props: ButtonProps ) => {
     const { 
         iconName,
