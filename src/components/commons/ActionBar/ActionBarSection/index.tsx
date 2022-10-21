@@ -16,11 +16,10 @@ interface ActionBarAltSection {
 const ActionBarAltSection = ( props: ActionBarAltSection ) => {
     const { items, title } = props;
 
-    const [ gotRef, markRefPresence ] = React.useState(false); 
-
-    // Reference to the html div containing this section
+    // TODO: Since it is a reusable practice, consider exporting to somewhere else
+    // Remember to accept as argument additional conditions for marking the ref presence
+    const [ gotRef, markRefPresence ] = React.useState(false);     // Reference to the html div containing this section
     const ref = React.useRef<HTMLDivElement | null>(null);
-
     const refSetter = React.useCallback( (node) => {
         if (ref.current) {
             //
@@ -49,9 +48,9 @@ const ActionBarAltSection = ( props: ActionBarAltSection ) => {
 
     return <>
         <Button title={title} shape='circle' iconName='ellipsis-v' onClick={openSidebar}/>
-        { <Sidebar>
+        <Sidebar>
             <div ref={refSetter} className='actionbar-section-content'>{_items}</div>
-        </Sidebar> }
+        </Sidebar>
     </>
 }
 
@@ -74,7 +73,7 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
         [key: string]: HTMLElement | null
     }>({});
 
-    // State obj that mirrors above reference conten, just because refs changes
+    // State obj that mirrors above reference content, just because refs changes
     // can't be tracked in array of deps of react hooks, while a state update does
     const [_itemsList, updateItemsList ] = React.useState(itemsList.current);
 
@@ -103,6 +102,8 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
 
     const addItemRef = React.useCallback( ( item: ActionBarItemRef | null) => {
         if ( item && item.element && type !== 'center' ) {
+            // The unique key was enforced to assure that the list object contains
+            // unique elements
             itemsList.current[item.key] = item.element;
             updateItemsList({...itemsList.current})
             return itemsList.current[item.key];
@@ -128,11 +129,11 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
      * and checks if there are items that belong to the 'center' section
      */
     const _items = React.useMemo(() => {
-        let trueIndex = -1;
+        // let trueIndex = -1;
 
         const sectionItems = items.map( i => {
             if (i?.position === type) {
-                trueIndex++;
+                // trueIndex++;
                 return <ActionBarItem
                     item={i.item}
                     title={i.title}
@@ -164,23 +165,12 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
     }, [items]);
 
     React.useEffect( () => {
-        // The unique key was enforced to assure that the list object contains
-        // unique elements
-
-        // If the parent changes the items after mounting the list object
-        // may contain element no longer in view, although their width will be 0
-
-        // TODO: Find a way to remove elements in the list 
-        // or rebuild correctly the object list
-
-        // TODO: Maybe a Set could be used instead of the object?
-        // Dunno whether it can descern the same DOM elements..
         itemsList.current = { ...itemsList.current };
     }, [_items]);
 
     // Given a list of items, uses their width to obain the total width
     // then, based on the current scaling state, the section's width and the total calculate
-    // descide whether it shouldv update scaling state 
+    // and descide whether it shouldv update scaling state 
     const alterScaling = React.useCallback( (_itemList: {
         [key: string]: HTMLElement | null
     }) => {
@@ -204,7 +194,7 @@ const ActionBarSection = ( props: AcctionBarSectionProps ) => {
     }, [sectionWidth, scaling]);
 
     React.useEffect( () => {
-        alterScaling(itemsList.current)
+        alterScaling(itemsList.current);
     }, [_itemsList, sectionWidth]);
 
     // Shows an alternative version of the section when scaling value is set to true
