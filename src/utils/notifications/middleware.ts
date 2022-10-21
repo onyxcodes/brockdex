@@ -20,7 +20,12 @@ type MiddlewareConf = {
 	// TODO: As of now actionDescriptors may be used to use a specifing message when a thunk is pending
 	// But it may be useful also for the rejection or fulfilled cases
 	actionDescriptors?: {
-		[actionName: string]: string;
+		pending?: {
+			[actionName: string]: string;
+		}
+		rejected?: {
+			[actionName: string]: string;
+		}
 	},
 	callbacks?: {
 		[key: string]: ActionCallback;
@@ -37,13 +42,12 @@ const notificationsMiddleware = (
 			if ( isAsyncThunkAction(action) && actionCreator ) {
 				dispatch(actionCreator(action.meta.arg));
 			}
-		}
+		},
+		// Anything else as defaults?
 	}, ...options?.callbacks }
 
 	// Callback listener
-
 	const callbackListener = createListenerMiddleware();
-
 	callbackListener.startListening({
 		actionCreator: callback,
 		effect: async (action, listenerApi) => {
@@ -72,13 +76,14 @@ const notificationsMiddleware = (
 			// Prepare and dispatch error notification
 			let errNotification: Notifier.NewNotificationObject = {
 				id: nanoid(),
-				level: 'error',
-				message: `Something went wrong while processing your request - (${actionType})`,
+				type: 'error',
+				message: options?.actionDescriptors?.rejected?.[actionType] 
+					|| `Something went wrong while processing your request - (${actionType})`,
 				clearable: true,
 				timestamp: new Date().getTime(),
 				actions: [{
 					label: 'Try again',
-					globalFnName: 'reattemptAction',
+					callback: 'reattemptAction',
 					payload: {
 						action
 					}
@@ -101,8 +106,9 @@ const notificationsMiddleware = (
 			// Prepare and dispatch loading notification
 			let loadingNotification: Notifier.NewNotificationObject = {
 				id: action.meta.requestId,
-				level: 'pending',
-				message: options?.actionDescriptors?.[actionType] || 'Loading..',
+				type: 'pending',
+				message: options?.actionDescriptors?.pending?.[actionType] 
+					|| `Performing your request - (${actionType})`,
 				clearable: false,
 				timestamp: new Date().getTime(),
 			}

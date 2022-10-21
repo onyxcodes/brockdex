@@ -23,9 +23,16 @@ const { pendingListener, fulfilledListener, rejectedListener, callbackListener }
   [getPokemonList, getPokemon, listPokemon],
   {
     actionDescriptors: {
-      [getPokemonList.typePrefix]: 'Loading pokemon information..',
-      [listPokemon.typePrefix]: 'Loading pokemon list..',
-      [getPokemon.typePrefix]: 'Loading pokemon..'
+      pending: {
+        [getPokemonList.typePrefix]: 'Loading pokemon information..',
+        [listPokemon.typePrefix]: 'Loading pokemon list..',
+        [getPokemon.typePrefix]: 'Loading pokemon..'
+      },
+      rejected: {
+        [getPokemonList.typePrefix]: 'There was a problem while loading pokemon information..',
+        [listPokemon.typePrefix]: 'There was a problem while loading pokemon list..',
+        [getPokemon.typePrefix]: 'There was a problem while loading pokemon..'
+      }
     }
   }
 );
