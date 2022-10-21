@@ -4,7 +4,7 @@ import Alert from '../Alert';
 import { Notifier } from '../../../';
 import ReactDOM from 'react-dom';
 
-const getGenericIcon = ( type: Notifier.NotificationObject['level'] ) => {
+const getGenericIcon = ( type: Notifier.NotificationObject['type'] ) => {
     let iconName;
     switch (type) {
         
@@ -37,7 +37,7 @@ const NotificationElement: Notifier.NotificationElement<Notifier.NotificationEle
         areaId = 'modal-area',
         active = true,
         id,
-        level = 'info',
+        type = 'info',
         message, actions,
         clearable = true,
         timeout,
@@ -47,8 +47,8 @@ const NotificationElement: Notifier.NotificationElement<Notifier.NotificationEle
         buttons,
         closeOnAction = true,
         onClose,
-        Component = Alert,
-        getIcon = getGenericIcon,
+        alert = <Alert />,
+        getIcon,
     } = props;
 
     const [ visible, setVisible ] = React.useState(true);
@@ -61,7 +61,10 @@ const NotificationElement: Notifier.NotificationElement<Notifier.NotificationEle
 
     let alertIcon;
     if (showIcon) {
-        alertIcon = getIcon(level);
+        // When provided use custom icon mapping
+        alertIcon = getIcon && getIcon(type);
+        // If it wasn't mapped yet use default icon mapping
+        if (!alertIcon) alertIcon = getGenericIcon(type);
     }
 
     const renderedButtons = React.useMemo(() => buttons?.map((button, i) => {
@@ -71,7 +74,7 @@ const NotificationElement: Notifier.NotificationElement<Notifier.NotificationEle
         }
         return <button.type key={button.key || i}
             {...button.props}
-            onClick={() => extendedOnClick()}
+            onClick={extendedOnClick}
         />
     }), [buttons]);
 
@@ -81,7 +84,13 @@ const NotificationElement: Notifier.NotificationElement<Notifier.NotificationEle
 
     const area = document.getElementById(areaId);
 
-    return area ? ReactDOM.createPortal(<Component
+    // TODO: consider using type guard for alert
+    const isAlert = (element: JSX.Element): element is Notifier.Alert => {
+        return true;
+    }
+
+    return area ? ReactDOM.createPortal(<alert.type
+        {...alert.props}
         icon={alertIcon}
         visible={visible}
         onClose={onClose}
@@ -95,7 +104,7 @@ const NotificationElement: Notifier.NotificationElement<Notifier.NotificationEle
                 {renderedButtons}
             </div>}
         </>
-    </Component>, area) : <></>;
+    </alert.type>, area) : <></>;
 }
 
 export default NotificationElement;
