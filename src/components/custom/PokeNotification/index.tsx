@@ -1,15 +1,18 @@
 import { useCallback } from 'react';
+import './index.scss';
 import { Notifier, NotificationElement} from 'utils/notifications';
+import Pokeball from 'components/custom/Pokeball';
+import {Alert} from 'utils/notifications/index';
 
 // Uses the same props of NotificationElement, but without customizability properties
-interface PokeNotificationProps extends Omit<Notifier.NotificationElementProps, 'Component' | 'getIcon'> {
+interface PokeNotificationProps extends Omit<Notifier.NotificationElementProps, 'alert' | 'getIcon'> {
     //
 }
 
 const PokeNotification: Notifier.NotificationElement<PokeNotificationProps> = ( props ) => {
     const {
         id,
-        level = 'info',
+        type = 'info',
         message, actions,
         clearable = true,
         timeout,
@@ -22,26 +25,36 @@ const PokeNotification: Notifier.NotificationElement<PokeNotificationProps> = ( 
     } = props;
 
     const getIcon = useCallback(() => {
-        switch(level) {
-            case 'warning':
-                return <i>W</i>
-            case 'debug':
-                return <i>D</i>
+        let icon;
+        switch(type) {
             case 'error':
-                return <i>E</i>
+            case 'warning':
+                icon = <img className='floating-unown' src={require('assets/unown_esclamation_mark.png')}/>;
+            break;
+            // case 'debug':
+            //     icon = <i>D</i>;
+            // break;
             case 'prompt':
-                return <i>Pr</i>
+                icon = <img className='floating-unown' src={require('assets/unown_question_mark.png')}/>;
+            break;
             case 'pending':
-                return <i>Pe</i>
-            case 'info':
-            default:
-                return <i>I</i>
+                icon = <Pokeball animated={true}/>;
+            break;
+            // case 'info':
+            // default:
+            //     return <i>I</i>
         }
-    }, [level]);
+
+        return icon ? <div 
+            className='pokenotification-icon'>
+            {icon}
+        </div> : undefined;
+    }, [type]);
 
     return <NotificationElement
         {...props}
         getIcon={getIcon}
+        alert={<Alert className='pokealert'/>}
     />
 }
 
