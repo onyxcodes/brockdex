@@ -10,7 +10,7 @@ import { Notifier } from '../../../';
 
 // Other alerts component can be implemented as
 // i
-const Alert: Notifier.Alert = (props) => {
+const Alert = (props: Notifier.AlertProps): Notifier.Alert => {
     const {
         icon,
         visible = true,

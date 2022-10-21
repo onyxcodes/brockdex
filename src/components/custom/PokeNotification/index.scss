@@ -1,0 +1,22 @@
+.pokenotification-icon {
+    height: 50px;
+    width: 50px;
+
+    img {
+        width: 100%;
+        width: 100%;
+    }
+}
+
+.floating-unown {
+    animation: floating 7.5s ease-in-out infinite
+}
+
+@keyframes floating {
+    0% { transform: translate(0,  0); }
+    20%  { transform: translate(-1rem, -1rem); }
+    40%  { transform: translate(1rem, -1rem); }
+    60%  { transform: translate(0, 0); }
+    80%  { transform: translate(-1rem, 1rem); }
+    100%  { transform: translate(0, 0); }
+}

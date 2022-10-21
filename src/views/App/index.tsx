@@ -14,6 +14,7 @@ import { NotificationArea, Notifier } from 'utils/notifications';
 import logger from 'utils/logger';
 
 import 'styles/index.scss';
+import PokeNotification from 'components/custom/PokeNotification';
 
 const App = () => {
     // TODO: Move this somewhere more appropriate
@@ -34,7 +35,7 @@ const App = () => {
 
     const responseTotal = useSelector<AppState, ListState["total"]>(s => s.list.total);
 
-    const notifications = useSelector<AppState, Notifier.NotificationObject[]>( s => s.notifications);
+    const notifications = useSelector<AppState, Notifier.NotificationObject[]>( s => s.notifications );
 
     // Updates with total number of pokemon, only once when list first loads
     React.useEffect(() => updateTotal(responseTotal), [responseTotal]);
@@ -44,6 +45,9 @@ const App = () => {
         <div id='sidebar-area'></div>
         <NotificationArea
             notifications={notifications}
+            options={{
+                element: <PokeNotification/>
+            }}
         />
         <main>
             <ActionBar type='primary' position="top" items={[

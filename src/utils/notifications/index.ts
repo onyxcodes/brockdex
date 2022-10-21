@@ -4,18 +4,22 @@ import NotificationElement from './src/components/NotificationElement';
 import NotificationArea from './src/components/NotificationArea';
 import Alert from './src/components/Alert';
 import { createNotification, clearNotifications, updateNotification, removeNotification, loadNotifications, callback } from './notifications';
+import { ReactElement } from 'react';
 
 export namespace Notifier {
+
+    // TODO: Consider changing name to Type or Category
+    export type NotificationType = 'info' | 'pending' | 'warning' | 'prompt' | 'error' | 'debug' | string;
 
     export type NotificationObject = {
         id?: string;
         active?: boolean;
-        level?: 'info' | 'pending' | 'warning' | 'prompt' | 'error' | 'debug';
+        type?: NotificationType;
         message?: string;
         actions?: {
             label: string;
             payload?: { [key: string]: any };
-            globalFnName: string;
+            callback: string;
         }[];
         clearable?: boolean;
         timeout?: number;
@@ -26,7 +30,7 @@ export namespace Notifier {
     export interface NewNotificationObject extends NotificationObject {
         id: string;
         message: string;
-        // level: 'info' | 'pending' | 'warning' | 'prompt' | 'error' | 'debug';
+        // type: 'info' | 'pending' | 'warning' | 'prompt' | 'error' | 'debug';
     }
 
     // The usal purpose of the update notification object is to
@@ -36,7 +40,7 @@ export namespace Notifier {
     }
 
 
-    // TODO: Consider not extending NotificationType
+    // TODO: Consider not extending NotificationObject
     // or omit the not-needed props:
     // actions
     // id (since the component rendering the notification will apply the key)
@@ -51,26 +55,27 @@ export namespace Notifier {
     // What about both?
     export interface AlertProps {
         onClose?: () => void;
+        children?: React.ReactNode;
         icon?: JSX.Element;
         visible?: boolean;
         closeAlert?: () => void;
         className?: string;
         showClose?: boolean;
     }
-    export type Alert<P extends AlertProps = AlertProps> = React.FC<P>;
+    export type Alert = ReactElement<AlertProps, any>;
     export interface NotificationElementProps extends NotificationObject {
         // areaId determines in which area the notification will be mounted
-        // I decided to specify this option at this (component) level
-        // to allow different "types"/"target" of notifications to be 
+        // I decided to specify this option at this (component) type
+        // to allow different "types"/"category" of notifications to be 
         // placed in separate spaces
         areaId?: string;
-        Component?: Alert;
+        alert?: JSX.Element;
         showIcon?: boolean;
         buttons?: JSX.Element[];
         onClose?: () => void;
         showElapsedTime?: boolean;
         closeOnAction?: boolean;
-        getIcon?: (type: string) => JSX.Element;
+        getIcon?: (type: string) => JSX.Element | undefined;
     }
 
     export type NotificationElement<P extends NotificationElementProps = NotificationElementProps> = React.VFC<P>;
