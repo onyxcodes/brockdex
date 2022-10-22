@@ -9,11 +9,14 @@ import Button from 'components/commons/Button';
 import { removeNotification, callback } from '../../../.';
 
 type NotificationAreaElOpts = {
+    element?: never;
     alert?: Notifier.Alert;
-    iconMapping?: (type: string) => JSX.Element;
+    iconMapping?: (type: string) => JSX.Element | undefined;
 }
 type NotificationAreaOpts = {
-    element: ReactElement<Notifier.NotificationElementProps, any>
+    element: ReactElement<Notifier.NotificationElementProps, any>;
+    alert?: never;
+    iconMapping?: never;
 };
 
 interface NotificationAreaProps {
@@ -27,9 +30,7 @@ const NotificationArea: React.VFC<NotificationAreaProps> = (props) => {
         notifications,
         types,
         areaId = 'notification-area',
-        options = {
-            element: <NotificationElement/>
-        } 
+        options,
     } = props;
     const dispatch = useDispatch();
 
@@ -49,13 +50,14 @@ const NotificationArea: React.VFC<NotificationAreaProps> = (props) => {
         id && dispatch(removeNotification(id))
     }, [dispatch]);
 
-    // TODO use ts type predicate
-    const element: NotificationAreaOpts['element'] = options?.hasOwnProperty('element') ?
-        (options as NotificationAreaOpts).element : <NotificationElement/>;
+    const isAreaOpts = (opts: NotificationAreaOpts | NotificationAreaElOpts | undefined): opts is NotificationAreaOpts => {
+        return opts?.hasOwnProperty('element') || false;
+    }
 
-    // TODO use ts type predicate
-    const componentOptions: NotificationAreaElOpts = options?.hasOwnProperty('alert') ?
-        options as NotificationAreaElOpts : { };
+    const element = options?.element || <NotificationElement/>;
+
+    const componentOptions: NotificationAreaElOpts = !isAreaOpts(options) && options ?
+        options : {};
 
     const renderedNotifications = React.useMemo( () => {
         if (gotRef) {
