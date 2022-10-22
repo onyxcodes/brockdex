@@ -5,7 +5,7 @@ import Pokeball from 'components/custom/Pokeball';
 import {Alert} from 'utils/notifications/index';
 
 // Uses the same props of NotificationElement, but without customizability properties
-interface PokeNotificationProps extends Omit<Notifier.NotificationElementProps, 'alert' | 'getIcon'> {
+interface PokeNotificationProps extends Omit<Notifier.NotificationElementProps, 'alert' | 'iconMapping'> {
     //
 }
 
@@ -53,7 +53,7 @@ const PokeNotification: Notifier.NotificationElement<PokeNotificationProps> = ( 
 
     return <NotificationElement
         {...props}
-        getIcon={getIcon}
+        iconMapping={getIcon}
         alert={<Alert className='pokealert'/>}
     />
 }

@@ -75,7 +75,7 @@ export namespace Notifier {
         onClose?: () => void;
         showElapsedTime?: boolean;
         closeOnAction?: boolean;
-        getIcon?: (type: string) => JSX.Element | undefined;
+        iconMapping?: (type: string) => JSX.Element | undefined;
     }
 
     export type NotificationElement<P extends NotificationElementProps = NotificationElementProps> = React.VFC<P>;
