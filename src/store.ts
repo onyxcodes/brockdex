@@ -1,8 +1,8 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, Dispatch } from '@reduxjs/toolkit';
 import ui, { UIState } from 'features/ui';
-import favorites, { FavoritesState } from 'features/favoritesMgt';
-
-import { notificationsMiddleware, notifications, Notifier } from 'utils/notifications';
+import favorites, { FavoritesState } from 'features/favorites';
+import _localStorage from 'utils/localStorage';
+import { notificationsMiddleware, notifications, Notifier, removeNotification } from 'utils/notifications';
 
 import {
 	detailedList, DetailedListState, getPokemonList,
@@ -19,6 +19,17 @@ export type AppState = {
   notifications: Notifier.NotificationObject[]
 }
 
+const storeDataUsageConsent = (
+  notificationId: string, 
+  payload: {
+    [key: string]: any;
+  }
+) => (dispatch: Dispatch) => {
+  const { result } = payload;
+  _localStorage.set('dataUsageConsent', result);
+  // dispatch(removeNotification(notificationId));
+}
+
 const { pendingListener, fulfilledListener, rejectedListener, callbackListener } = notificationsMiddleware(
   [getPokemonList, getPokemon, listPokemon],
   {
@@ -33,6 +44,9 @@ const { pendingListener, fulfilledListener, rejectedListener, callbackListener }
         [listPokemon.typePrefix]: 'There was a problem while loading pokemon list..',
         [getPokemon.typePrefix]: 'There was a problem while loading pokemon..'
       }
+    },
+    callbacks: {
+      storeDataUsageConsent: storeDataUsageConsent
     }
   }
 );
