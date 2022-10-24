@@ -48,7 +48,7 @@ const NotificationElement: Notifier.NotificationElement<Notifier.NotificationEle
         closeOnAction = true,
         onClose,
         alert = <Alert />,
-        getIcon,
+        iconMapping,
     } = props;
 
     const [ visible, setVisible ] = React.useState(true);
@@ -62,7 +62,7 @@ const NotificationElement: Notifier.NotificationElement<Notifier.NotificationEle
     let alertIcon;
     if (showIcon) {
         // When provided use custom icon mapping
-        alertIcon = getIcon && getIcon(type);
+        alertIcon = iconMapping && iconMapping(type);
         // If it wasn't mapped yet use default icon mapping
         if (!alertIcon) alertIcon = getGenericIcon(type);
     }

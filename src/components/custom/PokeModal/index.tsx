@@ -10,7 +10,7 @@ import { ActionBarItemProps } from 'components/commons/ActionBar';
 import { getPokemon, resetPokemon, setFocusedPokemon, PokemonState } from "features/pokeapi/pokemon";
 import { AppState } from "store";
 import { DetailedListState, PokeDataDetailed } from "features/pokeapi/detailedList";
-import { FavoritesState, addToFavorites, removeFromFavorites } from 'features/favoritesMgt';
+import { FavoritesState, addToFavorites, removeFromFavorites } from 'features/favorites';
 import Button from 'components/commons/Button';
 
 import logger from 'utils/logger';

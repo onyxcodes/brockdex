@@ -1,16 +1,9 @@
-import FavoritesMgt from 'utils/favoritesMgt';
+import _localStorage from 'utils/localStorage';
 import { createReducer, createAction } from '@reduxjs/toolkit';
-
-// TODO: Modify favorites mgt add/remove methos to just return the added element
-// therefore change the following action creatore to supply as payload the added/removed element
-// and change the reducer accordingly
 
 export const addToFavorites = createAction('favorites/add', 
     (arg: string) => {
-        const favoritesMgt = new FavoritesMgt(
-            FavoritesMgt.getFavorites()
-        );
-        let favorites = favoritesMgt.addToFavorites(arg);
+        let favorites = _localStorage.add('favorites', arg);
         return {
             payload: favorites
         }
@@ -19,10 +12,7 @@ export const addToFavorites = createAction('favorites/add',
 
 export const removeFromFavorites = createAction('favorites/remove', 
     (arg: string) => {
-        const favoritesMgt = new FavoritesMgt(
-            FavoritesMgt.getFavorites()
-        );
-        let favorites = favoritesMgt.removeFromFavorites(arg);
+        let favorites = _localStorage.remove('favorites', arg);
         return {
             payload: favorites
         }
@@ -33,7 +23,7 @@ export type FavoritesState = {
     favorites: (string | number)[]
 }
 const initialState = {
-    favorites: FavoritesMgt.getFavorites(),
+    favorites: _localStorage.get('favorites') || [],
 } as FavoritesState;
 
 const reducer = createReducer(initialState, builder => {
