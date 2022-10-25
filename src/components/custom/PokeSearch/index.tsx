@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'store';
 import { setQuery, UIState } from 'features/ui';
 
-import SearchBar from 'components/commons/SearchBar';
+import {SearchBar} from 'alenite-design';
 
 const PokeSearch = () => {
     const dispatch = useDispatch();

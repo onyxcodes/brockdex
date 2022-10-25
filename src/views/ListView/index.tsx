@@ -1,15 +1,15 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DetailedListState, getPokemonList, PokeDataDetailed, updateDetailedList } from "features/pokeapi/detailedList";
-
+import _localStorage from "utils/localStorage";
 import PokeCard from "components/custom/PokeCard";
 import list, { listPokemon, ListState, resetList } from "features/pokeapi/list";
 import { AppState } from "store";
 import { UIState } from "features/ui";
-import List from "components/commons/List";
-import Select, { SelectOption } from "components/commons/Form/Select";
+import { Select, Button, List } from 'alenite-design';
+import { SelectOption } from 'alenite-design/lib/components/Form/Select';
 
-import Button from 'components/commons/Button';
+// import Button from 'components/commons/Button';
 export interface PokeDataShallow {
     name: string; url: string
 };
@@ -43,7 +43,22 @@ const ListView = ( props: ListViewProps ) => {
     const listReq = useSelector<AppState, ListState>(s => s.list);
     const list = listReq.results;
 
-    // const loading = useSelector<AppState, ListState["loading"]>(s => s.list.loading);
+    // TODO: Move this somewhere more appropriate, like list
+    // Updates total count stored in localStorage with given total, if differs
+    const updateTotal = (total: number) => {
+        let storedTotal = _localStorage.get('total');
+        if (
+            total && !storedTotal &&
+            storedTotal !== total
+        ) {
+            localStorage.setItem("total", total.toString());
+        }
+    }
+
+    const responseTotal = useSelector<AppState, ListState["total"]>(s => s.list.total);
+
+    // Updates with total number of pokemon, only once when list first loads
+    React.useEffect(() => updateTotal(responseTotal), [responseTotal]);
 
     const next = useSelector<AppState, ListState["next"]>(s => s.list.next);
     const previous = useSelector<AppState, ListState["previous"]>(s => s.list.previous);

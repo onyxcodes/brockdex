@@ -1,44 +1,45 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ListState } from "features/pokeapi/list";
 import { AppState } from "store";
-
-import ActionBar from "components/commons/ActionBar";
 import ListView from "views/ListView";
-
+import _localStorage from 'utils/localStorage';
 import PokeModal from "components/custom/PokeModal";
 import PokeSearch from 'components/custom/PokeSearch';
-import Button from 'components/commons/Button';
-import { NotificationArea, Notifier } from 'utils/notifications';
-
-import logger from 'utils/logger';
+import Pokeball from 'components/custom/Pokeball';
+import {Button, ActionBar} from 'alenite-design';
+import { nanoid } from '@reduxjs/toolkit';
+require('alenite-design/lib/main.css')
+import { NotificationArea, Notifier, createNotification } from 'utils/notifications';
 
 import 'styles/index.scss';
-import PokeNotification from 'components/custom/PokeNotification';
+import 'components/custom/PokeNotification/index.scss';
 
 const App = () => {
-    // TODO: Move this somewhere more appropriate
-    // Updates total count stored in localStorage with given total, if differs
-    const updateTotal = (total: number) => {
-        let storedTotal = localStorage.getItem("total") ? Number(localStorage.getItem("total")) : null;
-        if (!total || isNaN(total)) {
-            logger.debug({total}, 'updateTotal - Given total is not a number or 0');
-        } else if (
-            storedTotal && // total already stored
-            storedTotal !== total // update only when different
-        ) {
-            localStorage.setItem("total", total.toString());
-        } else if (!storedTotal) { // in case was not stored yet
-            localStorage.setItem("total", total.toString())
-        } // else // skip update cause not needed
-    }
-
-    const responseTotal = useSelector<AppState, ListState["total"]>(s => s.list.total);
-
+    const dispatch = useDispatch();
     const notifications = useSelector<AppState, Notifier.NotificationObject[]>( s => s.notifications );
 
-    // Updates with total number of pokemon, only once when list first loads
-    React.useEffect(() => updateTotal(responseTotal), [responseTotal]);
+    const dataUsageConsent = _localStorage.getBoolean('dataUsageConsent');
+    React.useEffect( () => {
+        if ( dataUsageConsent == null ) {
+            let promptNotification: Notifier.NewNotificationObject = {
+                id: nanoid(),
+                type: 'prompt',
+                message: 'Can I steal your data?',
+                clearable: false,
+                actions: [
+                    { label: 'Yes', callback: 'storeDataUsageConsent', payload: {
+                        result: true
+                    } },
+                    { label: 'No', callback: 'storeDataUsageConsent', payload: {
+                        result: false
+                    } },
+                ]
+            }
+            dispatch(createNotification(promptNotification));
+        }
+    }, [dataUsageConsent]);
+    
 
     return <div id="app">
         <div id='modal-area'></div>
@@ -46,7 +47,32 @@ const App = () => {
         <NotificationArea
             notifications={notifications}
             options={{
-                element: <PokeNotification/>
+                iconMapping(type) {
+                    let icon;
+                    switch(type) {
+                        case 'error':
+                        case 'warning':
+                            icon = <img className='floating-unown' src={require('assets/unown_esclamation_mark.png')}/>;
+                        break;
+                        // case 'debug':
+                        //     icon = <i>D</i>;
+                        // break;
+                        case 'prompt':
+                            icon = <img className='floating-unown' src={require('assets/unown_question_mark.png')}/>;
+                        break;
+                        case 'pending':
+                            icon = <Pokeball animated={true}/>;
+                        break;
+                        // case 'info':
+                        // default:
+                        //     return <i>I</i>
+                    }
+
+                    return icon ? <div 
+                        className='pokenotification-icon'>
+                        {icon}
+                    </div> : undefined;
+                },
             }}
         />
         <main>
@@ -56,7 +82,8 @@ const App = () => {
                     title: 'Search',
                     position: "right",
                     key: 'searchbar',
-                    alt: <Button title='Search' shape='circle' iconName='search'/>
+                    alt: <Button shape='default' iconName='search'/>
+                    // alt: <Button title='Search' shape='circle' iconName='search'/>
                 },
                 { item: <span>BrockDex</span>, position: "center", key: 'app-logo' },
                 // TODO
