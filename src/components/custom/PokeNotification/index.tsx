@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import './index.scss';
 import { Notifier, NotificationElement} from 'utils/notifications';
 import Pokeball from 'components/custom/Pokeball';
-import {Alert} from 'utils/notifications/index';
+import {Alert} from 'alenite-design';
 
 // Uses the same props of NotificationElement, but without customizability properties
 interface PokeNotificationProps extends Omit<Notifier.NotificationElementProps, 'alert' | 'iconMapping'> {

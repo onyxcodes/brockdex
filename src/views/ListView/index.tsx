@@ -6,10 +6,10 @@ import PokeCard from "components/custom/PokeCard";
 import list, { listPokemon, ListState, resetList } from "features/pokeapi/list";
 import { AppState } from "store";
 import { UIState } from "features/ui";
-import List from "components/commons/List";
-import Select, { SelectOption } from "components/commons/Form/Select";
+import { Select, Button, List } from 'alenite-design';
+import { SelectOption } from 'alenite-design/lib/components/Form/Select';
 
-import Button from 'components/commons/Button';
+// import Button from 'components/commons/Button';
 export interface PokeDataShallow {
     name: string; url: string
 };

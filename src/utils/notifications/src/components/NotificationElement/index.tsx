@@ -1,6 +1,5 @@
-import React, { ReactNode } from 'react';
-import Icon from 'components/commons/Icon';
-import Alert from '../Alert';
+import React from 'react';
+import {Icon, Alert} from 'alenite-design';
 import { Notifier } from '../../../';
 import ReactDOM from 'react-dom';
 
@@ -83,11 +82,6 @@ const NotificationElement: Notifier.NotificationElement<Notifier.NotificationEle
     }, []);
 
     const area = document.getElementById(areaId);
-
-    // TODO: consider using type guard for alert
-    const isAlert = (element: JSX.Element): element is Notifier.Alert => {
-        return true;
-    }
 
     return area ? ReactDOM.createPortal(<alert.type
         {...alert.props}

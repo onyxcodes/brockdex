@@ -2,7 +2,6 @@ import notificationsMiddleware from './middleware';
 import notifications from './notifications';
 import NotificationElement from './src/components/NotificationElement';
 import NotificationArea from './src/components/NotificationArea';
-import Alert from './src/components/Alert';
 import { createNotification, clearNotifications, updateNotification, removeNotification, loadNotifications, callback } from './notifications';
 import { ReactElement } from 'react';
 
@@ -53,16 +52,6 @@ export namespace Notifier {
     // i.e.: useNotifications( Component?: AlertType, iconMappingFn );
     // instead of useNotifications(MyCustomNotification)
     // What about both?
-    export interface AlertProps {
-        onClose?: () => void;
-        children?: React.ReactNode;
-        icon?: JSX.Element;
-        visible?: boolean;
-        closeAlert?: () => void;
-        className?: string;
-        showClose?: boolean;
-    }
-    export type Alert = ReactElement<AlertProps, any>;
     export interface NotificationElementProps extends NotificationObject {
         // areaId determines in which area the notification will be mounted
         // I decided to specify this option at this (component) type
@@ -81,7 +70,7 @@ export namespace Notifier {
     export type NotificationElement<P extends NotificationElementProps = NotificationElementProps> = React.VFC<P>;
 }
 
-export { NotificationElement, NotificationArea, Alert };
+export { NotificationElement, NotificationArea };
 export { createNotification, clearNotifications, updateNotification, removeNotification, loadNotifications, callback };
 export { notifications, notificationsMiddleware };
 

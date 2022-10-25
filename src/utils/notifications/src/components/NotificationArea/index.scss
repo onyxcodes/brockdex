@@ -5,7 +5,8 @@
     max-height: 100%;
     max-width: 100%;
     flex-direction: column-reverse;
-    .alert {
+    &> div {
+    // .alert {
         position: relative !important;
     }
 }

@@ -4,13 +4,13 @@ import './index.scss';
 
 import { Notifier } from '../../../';
 import NotificationElement from '../NotificationElement';
-import Button from 'components/commons/Button';
+import {Button} from 'alenite-design';
 
 import { removeNotification, callback } from '../../../.';
 
 type NotificationAreaElOpts = {
     element?: never;
-    alert?: Notifier.Alert;
+    alert?: JSX.Element;
     iconMapping?: (type: string) => JSX.Element | undefined;
 }
 type NotificationAreaOpts = {

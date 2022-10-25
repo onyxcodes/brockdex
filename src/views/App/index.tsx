@@ -2,17 +2,15 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ListState } from "features/pokeapi/list";
 import { AppState } from "store";
-import ActionBar from "components/commons/ActionBar";
 import ListView from "views/ListView";
 import _localStorage from 'utils/localStorage';
 import PokeModal from "components/custom/PokeModal";
 import PokeSearch from 'components/custom/PokeSearch';
 import Pokeball from 'components/custom/Pokeball';
-import Button from 'components/commons/Button';
+import {Button, ActionBar} from 'alenite-design';
 import { nanoid } from '@reduxjs/toolkit';
+require('alenite-design/lib/main.css')
 import { NotificationArea, Notifier, createNotification } from 'utils/notifications';
-
-import logger from 'utils/logger';
 
 import 'styles/index.scss';
 import 'components/custom/PokeNotification/index.scss';
@@ -84,7 +82,8 @@ const App = () => {
                     title: 'Search',
                     position: "right",
                     key: 'searchbar',
-                    alt: <Button title='Search' shape='circle' iconName='search'/>
+                    alt: <Button shape='default' iconName='search'/>
+                    // alt: <Button title='Search' shape='circle' iconName='search'/>
                 },
                 { item: <span>BrockDex</span>, position: "center", key: 'app-logo' },
                 // TODO

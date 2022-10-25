@@ -3,18 +3,16 @@ import './index.scss';
 
 import { useSelector, useDispatch } from "react-redux";
 
-import Modal, { ModalProps } from 'components/commons/Modal';
 import Bar from 'components/commons/Bar';
 import PropDetail, { PropDetailListLayout }  from 'components/custom/PropDetail';
-import { ActionBarItemProps } from 'components/commons/ActionBar';
+import { ActionBarItemConfig } from 'alenite-design/lib/components/ActionBar';
 import { getPokemon, resetPokemon, setFocusedPokemon, PokemonState } from "features/pokeapi/pokemon";
 import { AppState } from "store";
 import { DetailedListState, PokeDataDetailed } from "features/pokeapi/detailedList";
 import { FavoritesState, addToFavorites, removeFromFavorites } from 'features/favorites';
-import Button from 'components/commons/Button';
+import { Button, Modal } from 'alenite-design';
 
 import logger from 'utils/logger';
-
 
 const inlineProps = ['base_experience', 'weight', 'height'];
 const listProps = ['types', 'stats', 'abilities'];
@@ -155,7 +153,7 @@ const PokeModal = (props: PokeModalProps) => {
 
     // TODO: Removing inline function with more specific callback,
     // since the arguments are available in the context
-    const getNavigation = React.useCallback( (): ActionBarItemProps[] => {
+    const getNavigation = React.useCallback( (): ActionBarItemConfig[] => {
         return [
             {
                 item: <Button
@@ -198,7 +196,7 @@ const PokeModal = (props: PokeModalProps) => {
         if (name) return [
             !favorites.includes(name) ? add : remove
         ]; else return []
-    }, [favorites, name]) as () => ActionBarItemProps[];
+    }, [favorites, name]) as () => ActionBarItemConfig[];
 
     return(
         <Modal
