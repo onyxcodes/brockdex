@@ -1,19 +1,20 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { ListState } from "features/pokeapi/list";
 import { AppState } from "store";
 import ListView from "views/ListView";
 import _localStorage from 'utils/localStorage';
 import PokeModal from "components/custom/PokeModal";
 import PokeSearch from 'components/custom/PokeSearch';
 import Pokeball from 'components/custom/Pokeball';
-import {Button, ActionBar} from 'alenite-design';
+import {Button, ActionBar, setAccentStyle} from 'alenite-design';
 import { nanoid } from '@reduxjs/toolkit';
-require('alenite-design/lib/main.css')
 import { NotificationArea, Notifier, createNotification } from 'react-redux-notifier';
 
 import 'styles/index.scss';
 import 'components/custom/PokeNotification/index.scss';
+
+require('alenite-design/lib/index.css')
+
 
 const App = () => {
     const dispatch = useDispatch();
@@ -40,13 +41,16 @@ const App = () => {
         }
     }, [dataUsageConsent]);
     
+    const appStyle = setAccentStyle({}, {
+        accent: '#FF7575',
+    })
 
-    return <div id="app">
+    return <div id="app" style={appStyle}>
         <div id='modal-area'></div>
         <div id='sidebar-area'></div>
         <NotificationArea
             notifications={notifications}
-dispatch={dispatch}
+            dispatch={dispatch}
             options={{
                 iconMapping(type) {
                     let icon;
@@ -83,7 +87,7 @@ dispatch={dispatch}
                     title: 'Search',
                     position: "right",
                     key: 'searchbar',
-                    alt: <Button shape='circle iconName='search'/>
+                    alt: <Button shape='circle' iconName='search'/>
                     // alt: <Button title='Search' shape='circle' iconName='search'/>
                 },
                 { item: <span>BrockDex</span>, position: "center", key: 'app-logo' },

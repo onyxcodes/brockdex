@@ -1,11 +1,5 @@
-@use './vars';
-@use './utils';
-
-@import './typography';
-@import './layers';
-@import './lists';
-@import './animations';
-@import './global';
+@use '~alenite-design/lib/styles/vars';
+@use '~alenite-design/lib/styles/utils';
 
 @include utils.google-font("Sora");
 @include utils.google-font("Fira+Mono:700");
@@ -17,7 +11,7 @@
 
 body {
   margin: 0;
-  background-color: vars.$bg-color;
+  background-color: #eeeeee;
 }
 
 body, #root, #app {
