@@ -10,7 +10,7 @@ import Pokeball from 'components/custom/Pokeball';
 import {Button, ActionBar} from 'alenite-design';
 import { nanoid } from '@reduxjs/toolkit';
 require('alenite-design/lib/main.css')
-import { NotificationArea, Notifier, createNotification } from 'utils/notifications';
+import { NotificationArea, Notifier, createNotification } from 'react-redux-notifier';
 
 import 'styles/index.scss';
 import 'components/custom/PokeNotification/index.scss';
@@ -46,6 +46,7 @@ const App = () => {
         <div id='sidebar-area'></div>
         <NotificationArea
             notifications={notifications}
+dispatch={dispatch}
             options={{
                 iconMapping(type) {
                     let icon;
@@ -82,7 +83,7 @@ const App = () => {
                     title: 'Search',
                     position: "right",
                     key: 'searchbar',
-                    alt: <Button shape='default' iconName='search'/>
+                    alt: <Button shape='circle iconName='search'/>
                     // alt: <Button title='Search' shape='circle' iconName='search'/>
                 },
                 { item: <span>BrockDex</span>, position: "center", key: 'app-logo' },

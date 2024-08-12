@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import './index.scss';
-import { Notifier, NotificationElement} from 'utils/notifications';
+import { Notifier, NotificationElement} from 'react-redux-notifier';
 import Pokeball from 'components/custom/Pokeball';
 import {Alert} from 'alenite-design';
 

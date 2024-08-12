@@ -2,7 +2,7 @@ import { configureStore, Dispatch } from '@reduxjs/toolkit';
 import ui, { UIState } from 'features/ui';
 import favorites, { FavoritesState } from 'features/favorites';
 import _localStorage from 'utils/localStorage';
-import { notificationsMiddleware, notifications, Notifier, removeNotification } from 'utils/notifications';
+import { notificationsMiddleware, notifications, Notifier, removeNotification } from 'react-redux-notifier';
 
 import {
 	detailedList, DetailedListState, getPokemonList,
